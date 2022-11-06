@@ -2,7 +2,7 @@ package bls_test
 
 import (
 	"github.com/OpenFilWallet/OpenFilWallet/lib/hd"
-	"github.com/filecoin-project/lotus/chain/wallet/key"
+	"github.com/filecoin-project/lotus/chain/wallet"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -32,7 +32,7 @@ func TestRoundtrip(t *testing.T) {
 		Type:       types.KTBLS,
 		PrivateKey: pk,
 	}
-	k, err := key.NewKey(ki)
+	k, err := wallet.NewKey(ki)
 	require.NoError(t, err)
 
 	p := []byte("potato")

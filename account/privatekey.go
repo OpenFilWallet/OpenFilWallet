@@ -12,12 +12,13 @@ import (
 	_ "github.com/OpenFilWallet/OpenFilWallet/lib/sigs/secp"
 	filcrypto "github.com/filecoin-project/go-state-types/crypto"
 	"github.com/filecoin-project/lotus/chain/types"
-	"github.com/filecoin-project/lotus/chain/wallet/key"
+	"github.com/filecoin-project/lotus/chain/wallet"
+
 	"golang.org/x/xerrors"
 	"strings"
 )
 
-func GeneratePrivateKey(walletDB datastore.WalletDB, mnemonic string, sigType filcrypto.SigType, passwordKey []byte) (*key.Key, error) {
+func GeneratePrivateKey(walletDB datastore.WalletDB, mnemonic string, sigType filcrypto.SigType, passwordKey []byte) (*wallet.Key, error) {
 	keyType, err := sigType.Name()
 	if err != nil {
 		return nil, err
@@ -59,7 +60,7 @@ func GeneratePrivateKey(walletDB datastore.WalletDB, mnemonic string, sigType fi
 		return nil, err
 	}
 
-	nk, err := key.NewKey(ki)
+	nk, err := wallet.NewKey(ki)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func ImportPrivateKey(walletDB datastore.WalletDB, priKey, keyFormat string, pas
 		return err
 	}
 
-	nk, err := key.NewKey(*ki)
+	nk, err := wallet.NewKey(*ki)
 	if err != nil {
 		return err
 	}
@@ -105,17 +106,17 @@ func ImportPrivateKey(walletDB datastore.WalletDB, priKey, keyFormat string, pas
 	})
 }
 
-func LoadPrivateKey(walletDB datastore.WalletDB, passwordKey []byte) ([]key.Key, error) {
+func LoadPrivateKey(walletDB datastore.WalletDB, passwordKey []byte) ([]wallet.Key, error) {
 	privateWallets, err := walletDB.WalletList()
 	if err != nil {
 		return nil, err
 	}
 
-	var keys = make([]key.Key, 0)
-	for _, wallet := range privateWallets {
+	var keys = make([]wallet.Key, 0)
+	for _, pri := range privateWallets {
 		var ki types.KeyInfo
 
-		decryptKey, err := crypto.Decrypt(wallet.PriKey, passwordKey)
+		decryptKey, err := crypto.Decrypt(pri.PriKey, passwordKey)
 		if err != nil {
 			return nil, err
 		}
@@ -125,7 +126,7 @@ func LoadPrivateKey(walletDB datastore.WalletDB, passwordKey []byte) ([]key.Key,
 			return nil, err
 		}
 
-		nk, err := key.NewKey(ki)
+		nk, err := wallet.NewKey(ki)
 		if err != nil {
 			return nil, err
 		}
