@@ -6,8 +6,16 @@ import (
 	"testing"
 )
 
+func TestGenerateEncryptKey(t *testing.T) {
+	key1 := GenerateEncryptKey([]byte("hello world"))
+	key2 := GenerateEncryptKey([]byte("hello world"))
+	require.Equal(t, key1, key2)
+}
+
 func TestEncryptAndDecrypt(t *testing.T) {
-	key := Hash256("hello world")
+	key := Hash256([]byte("hello world"))
+
+	t.Log(hex.EncodeToString(key))
 
 	data := "OpenFilWallet Encrypt"
 	encryptedData, err := Encrypt([]byte(data), key)

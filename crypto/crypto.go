@@ -5,8 +5,19 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
+	"golang.org/x/crypto/scrypt"
 	"io"
 )
+
+func GenerateEncryptKey(data []byte) []byte {
+	sk, err := scrypt.Key(data, nil, 32768, 8, 1, 32)
+	if err != nil {
+		panic(err)
+	}
+
+	sum := sha256.Sum256(append(data, sk...))
+	return sum[:]
+}
 
 func Hash256(data []byte) []byte {
 	sum := sha256.Sum256(data)
