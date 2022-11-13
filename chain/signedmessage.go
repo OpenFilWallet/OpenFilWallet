@@ -22,8 +22,20 @@ type SignedMessage struct {
 	Signature string  `json:"signature"`
 }
 
-func BuildSignedMessage(signedMsg *SignedMessage) (*types.SignedMessage, error) {
-	tMsg, err := BuildMessage(&signedMsg.Message)
+func BuildSignedMessage(msg *Message, signature crypto.Signature) (*SignedMessage, error) {
+	sign, err := EncodeSignature(signature)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SignedMessage{
+		Message:   *msg,
+		Signature: sign,
+	}, nil
+}
+
+func DecodeSignedMessage(signedMsg *SignedMessage) (*types.SignedMessage, error) {
+	tMsg, err := DecodeMessage(&signedMsg.Message)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package chain
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/filecoin-project/go-address"
@@ -34,7 +35,36 @@ type ParamsInfo struct {
 	Params string `json:"params"`
 }
 
-func BuildMessage(msg *Message) (*types.Message, error) {
+func EncodeMessage(msg *types.Message, params interface{}) (*Message, error) {
+	paramsInfo, err := EncodeParams(params)
+	if err != nil {
+		return nil, err
+	}
+
+	dp, err := DecodeParams(*paramsInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	if !bytes.Equal(dp, msg.Params) {
+		return nil, errors.New("EncodeParams and DecodeParams of params do not match")
+	}
+
+	return &Message{
+		Version:    msg.Version,
+		To:         msg.To.String(),
+		From:       msg.From.String(),
+		Nonce:      msg.Nonce,
+		Value:      msg.Value.Int64(),
+		GasLimit:   msg.GasLimit,
+		GasFeeCap:  msg.GasFeeCap.Int64(),
+		GasPremium: msg.GasPremium.Int64(),
+		Method:     uint64(msg.Method),
+		Params:     *paramsInfo,
+	}, nil
+}
+
+func DecodeMessage(msg *Message) (*types.Message, error) {
 	from, err := address.NewFromString(msg.From)
 	if err != nil {
 		return nil, err
@@ -174,6 +204,11 @@ func EncodeParams(params interface{}) (*ParamsInfo, error) {
 	}
 
 	switch params.(type) {
+	case nil:
+		return &ParamsInfo{
+			Name:   "",
+			Params: "",
+		}, nil
 	case *power8.CreateMinerParams: // CreateMiner
 		return &ParamsInfo{
 			Name:   "CreateMinerParams",
