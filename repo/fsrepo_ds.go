@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/ipfs/go-datastore"
 	levelds "github.com/ipfs/go-ds-leveldb"
-	"github.com/multiformats/go-multiaddr"
 	ldbopts "github.com/syndtr/goleveldb/leveldb/opt"
 	"golang.org/x/xerrors"
 	"io"
@@ -18,6 +17,9 @@ import (
 type LockedRepo interface {
 	// Close closes repo and removes lock.
 	Close() error
+
+	// CloseRO closes repo
+	CloseRO() error
 
 	// Datastore Returns datastore defined in this repo.
 	// The supplied context must only be used to initialize the datastore.
@@ -32,7 +34,7 @@ type LockedRepo interface {
 	Readonly() bool
 
 	// SetAPIEndpoint sets the endpoint of the current API
-	SetAPIEndpoint(multiaddr.Multiaddr) error
+	SetAPIEndpoint(string2 string) error
 }
 
 type fsLockedRepo struct {
@@ -62,6 +64,16 @@ func (fsr *fsLockedRepo) Close() error {
 	return err
 }
 
+func (fsr *fsLockedRepo) CloseRO() error {
+	if fsr.ds != nil {
+		if err := fsr.ds.Close(); err != nil {
+			return xerrors.Errorf("could not close datastore: %w", err)
+		}
+	}
+
+	return nil
+}
+
 func (fsr *fsLockedRepo) Datastore(_ context.Context) (datastore.Batching, error) {
 	fsr.dsOnce.Do(func() {
 		fsr.ds, fsr.dsErr = fsr.openDatastore(fsr.readonly)
@@ -89,11 +101,11 @@ func (fsr *fsLockedRepo) join(paths ...string) string {
 	return filepath.Join(append([]string{fsr.path}, paths...)...)
 }
 
-func (fsr *fsLockedRepo) SetAPIEndpoint(ma multiaddr.Multiaddr) error {
+func (fsr *fsLockedRepo) SetAPIEndpoint(ma string) error {
 	if err := fsr.stillValid(); err != nil {
 		return err
 	}
-	return ioutil.WriteFile(fsr.join(fsAPI), []byte(ma.String()), 0644)
+	return ioutil.WriteFile(fsr.join(fsAPI), []byte(ma), 0644)
 }
 
 func (fsr *fsLockedRepo) stillValid() error {
