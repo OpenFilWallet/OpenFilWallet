@@ -78,6 +78,61 @@ func GeneratePrivateKey(walletDB datastore.WalletDB, mnemonic string, sigType fi
 	return nk, nil
 }
 
+func GeneratePrivateKeyFromIndex(walletDB datastore.WalletDB, mnemonic string, index uint64, sigType filcrypto.SigType, passwordKey []byte) (*wallet.Key, error) {
+	keyType, err := sigType.Name()
+	if err != nil {
+		return nil, err
+	}
+
+	seed, err := hd.GenerateSeedFromMnemonic(mnemonic, "")
+	if err != nil {
+		return nil, err
+	}
+
+	path := hd.FILPath(index)
+	extendSeed, err := hd.GetExtendSeedFromPath(path, seed)
+	if err != nil {
+		return nil, err
+	}
+
+	pk, err := sigs.Generate(sigType, extendSeed)
+	if err != nil {
+		return nil, err
+	}
+
+	ki := types.KeyInfo{
+		Type:       types.KeyType(keyType),
+		PrivateKey: pk,
+	}
+
+	privateKey, err := json.Marshal(ki)
+	if err != nil {
+		return nil, err
+	}
+
+	encryptedPrivateKey, err := crypto.Encrypt(privateKey, passwordKey)
+	if err != nil {
+		return nil, err
+	}
+
+	nk, err := wallet.NewKey(ki)
+	if err != nil {
+		return nil, err
+	}
+
+	err = walletDB.SetPrivate(&datastore.PrivateWallet{
+		PriKey:  encryptedPrivateKey,
+		Address: nk.Address.String(),
+		KeyHash: crypto.Hash256(encryptedPrivateKey),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nk, nil
+}
+
 func ImportPrivateKey(walletDB datastore.WalletDB, priKey, keyFormat string, passwordKey []byte) error {
 	ki, err := GenerateKeyInfoFromPriKey(priKey, keyFormat)
 	if err != nil {
@@ -106,7 +161,76 @@ func ImportPrivateKey(walletDB datastore.WalletDB, priKey, keyFormat string, pas
 	})
 }
 
-func LoadPrivateKey(walletDB datastore.WalletDB, passwordKey []byte) ([]wallet.Key, error) {
+func UpdatePrivateKey(walletDB datastore.WalletDB, oldPasswordKey, newPasswordKey []byte) error {
+	privateWallets, err := walletDB.WalletList()
+	if err != nil {
+		return err
+	}
+
+	for _, pri := range privateWallets {
+		var ki types.KeyInfo
+
+		decryptKey, err := crypto.Decrypt(pri.PriKey, oldPasswordKey)
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(decryptKey, &ki)
+		if err != nil {
+			return err
+		}
+
+		encryptedPrivateKey, err := crypto.Encrypt(decryptKey, newPasswordKey)
+		if err != nil {
+			return err
+		}
+
+		nk, err := wallet.NewKey(ki)
+		if err != nil {
+			return err
+		}
+
+		err = walletDB.UpdatePrivate(&datastore.PrivateWallet{
+			PriKey:  encryptedPrivateKey,
+			Address: nk.Address.String(),
+			KeyHash: crypto.Hash256(encryptedPrivateKey),
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func GetPrivateKey(walletDB datastore.WalletDB, addr string, passwordKey []byte) (wallet.Key, error) {
+	pri, err := walletDB.GetPrivate(addr)
+	if err != nil {
+		return wallet.Key{}, err
+	}
+
+	var ki types.KeyInfo
+
+	decryptKey, err := crypto.Decrypt(pri.PriKey, passwordKey)
+	if err != nil {
+		return wallet.Key{}, err
+	}
+
+	err = json.Unmarshal(decryptKey, &ki)
+	if err != nil {
+		return wallet.Key{}, err
+	}
+
+	nk, err := wallet.NewKey(ki)
+	if err != nil {
+		return wallet.Key{}, err
+	}
+
+	return *nk, nil
+}
+
+func LoadPrivateKeys(walletDB datastore.WalletDB, passwordKey []byte) ([]wallet.Key, error) {
 	privateWallets, err := walletDB.WalletList()
 	if err != nil {
 		return nil, err

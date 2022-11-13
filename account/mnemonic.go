@@ -48,6 +48,37 @@ func ImportMnemonic(walletDB datastore.WalletDB, mnemonic string, passwordKey []
 	})
 }
 
+func UpdateMnemonic(walletDB datastore.WalletDB, oldPasswordKey, newPasswordKey []byte) error {
+	hdWallet, err := walletDB.GetMnemonic()
+	if err != nil {
+		return err
+	}
+
+	mnemonic, err := crypto.Decrypt(hdWallet.Mnemonic, oldPasswordKey)
+	if err != nil {
+		return err
+	}
+
+	if subtle.ConstantTimeCompare(hdWallet.MnemonicHash, crypto.Hash256(hdWallet.Mnemonic)) != 1 {
+		err = errors.New("warning, abnormal mnemonic check, possible data corruption")
+	}
+
+	encryptMnemonic, err := crypto.Encrypt([]byte(mnemonic), newPasswordKey)
+	if err != nil {
+		return err
+	}
+
+	err = walletDB.UpdateMnemonic(&datastore.HdWallet{
+		Mnemonic:     encryptMnemonic,
+		MnemonicHash: crypto.Hash256(encryptMnemonic),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func LoadMnemonic(walletDB datastore.WalletDB, passwordKey []byte) (string, error) {
 	hdWallet, err := walletDB.GetMnemonic()
 	if err != nil {
