@@ -28,6 +28,8 @@ func ToKey(k interface{}) datastore.Key {
 		return datastore.NewKey(fmt.Sprint(t))
 	case fmt.Stringer:
 		return datastore.NewKey(t.String())
+	case string:
+		return datastore.NewKey(t)
 	default:
 		panic("unexpected key type")
 	}

@@ -23,6 +23,14 @@ func NewWalletDB(ds datastore.Batching) WalletDB {
 
 // ------ scrypt ------
 
+func (db *WalletDB) HasRootPassword() (bool, error) {
+	return db.sStore.has(root)
+}
+
+func (db *WalletDB) HasLoginPassword() (bool, error) {
+	return db.sStore.has(login)
+}
+
 func (db *WalletDB) GetRootPassword() ([]byte, error) {
 	return db.sStore.get(root)
 }
@@ -145,6 +153,10 @@ func (db *WalletDB) HistoryList(addr string) ([]History, error) {
 
 // ------ keystore ------
 
+func (db *WalletDB) HasMnemonic() (bool, error) {
+	return db.kStore.hasM()
+}
+
 func (db *WalletDB) GetMnemonic() (*HdWallet, error) {
 	return db.kStore.getM()
 }
@@ -155,6 +167,10 @@ func (db *WalletDB) SetMnemonic(hdWallet *HdWallet) error {
 
 func (db *WalletDB) UpdateMnemonic(hdWallet *HdWallet) error {
 	return db.kStore.putM(hdWallet, true)
+}
+
+func (db *WalletDB) DeleteMnemonic() error {
+	return db.kStore.deleteM()
 }
 
 func (db *WalletDB) MnemonicIndex() (uint64, error) {
@@ -197,6 +213,10 @@ func (db *WalletDB) WalletList() ([]PrivateWallet, error) {
 	return db.kStore.listP()
 }
 
+func (db *WalletDB) DeletePrivate(addr string) error {
+	return db.kStore.deleteP(addr)
+}
+
 func (db *WalletDB) GetMsig(addr string) (*MsigWallet, error) {
 	return db.kStore.getMsig(addr)
 }
@@ -227,4 +247,8 @@ func (db *WalletDB) UpdateMsig(msigWallet *MsigWallet) error {
 
 func (db *WalletDB) MsigWalletList() ([]MsigWallet, error) {
 	return db.kStore.listMsig()
+}
+
+func (db *WalletDB) DeleteMsig(addr string) error {
+	return db.kStore.deleteMsig(addr)
 }
