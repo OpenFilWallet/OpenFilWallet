@@ -1,9 +1,11 @@
-package chain
+package messagesigner
 
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/account"
+	"github.com/OpenFilWallet/OpenFilWallet/chain"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/chain/actors"
@@ -18,11 +20,16 @@ import (
 
 func TestSignMessage(t *testing.T) {
 	workerAddr, _ := address.NewFromString("f13p72btfd5ielrdibduudppjhrvg2ahuecd6xapy")
+	// Warning: test key, don't use! Anyone can know this key, don't use, don't use, don't use!
 	ownerKey := "7b2254797065223a22736563703235366b31222c22507269766174654b6579223a22384c7331545157743063625574553270636450436d623371596d7959696274714153365a65664f456a4b343d227d"
 	ki, err := account.GenerateKeyInfoFromPriKey(ownerKey, "hex-lotus")
 	require.NoError(t, err)
 	nk, err := wallet.NewKey(*ki)
 	require.NoError(t, err)
+
+	signer := NewSigner()
+	require.NoError(t, signer.RegisterSigner(*nk))
+	require.Error(t, fmt.Errorf("wallet: %s already exist", nk.Address.String()), signer.RegisterSigner(*nk))
 
 	param := power8.CreateMinerParams{
 		Owner:               nk.Address,
@@ -47,7 +54,7 @@ func TestSignMessage(t *testing.T) {
 		Params:     sp,
 	}
 
-	signedMsg, err := SignMessage(*nk, msg)
+	signedMsg, err := signer.Sign(msg)
 	require.NoError(t, err)
 	t.Log(signedMsg)
 
@@ -55,14 +62,14 @@ func TestSignMessage(t *testing.T) {
 	err = signedMsg.MarshalCBOR(&signedMsgBuf)
 	require.NoError(t, err)
 
-	paramsInfo, err := EncodeParams(&param)
+	paramsInfo, err := chain.EncodeParams(&param)
 	require.NoError(t, err)
 
-	sign, err := EncodeSignature(signedMsg.Signature)
+	sign, err := chain.EncodeSignature(signedMsg.Signature)
 	require.NoError(t, err)
 
-	mySignedMsg := SignedMessage{
-		Message: Message{
+	mySignedMsg := chain.SignedMessage{
+		Message: chain.Message{
 			Version:    msg.Version,
 			To:         msg.To.String(),
 			From:       msg.From.String(),
@@ -80,7 +87,7 @@ func TestSignMessage(t *testing.T) {
 	require.NoError(t, err)
 	t.Log(string(b))
 
-	tSignMsg, err := BuildSignedMessage(&mySignedMsg)
+	tSignMsg, err := chain.DecodeSignedMessage(&mySignedMsg)
 	require.NoError(t, err)
 
 	var mySignedMsgBuf bytes.Buffer
