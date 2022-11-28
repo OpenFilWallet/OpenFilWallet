@@ -6,8 +6,10 @@ import (
 	"errors"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
+	init8 "github.com/filecoin-project/go-state-types/builtin/v8/init"
 	multisig8 "github.com/filecoin-project/go-state-types/builtin/v8/multisig"
 	"github.com/filecoin-project/lotus/chain/actors"
+	"github.com/filecoin-project/lotus/chain/actors/builtin"
 	"github.com/filecoin-project/lotus/chain/types"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
 	power8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/power"
@@ -134,7 +136,23 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		cbor = &p
+
+		enc, actErr := actors.SerializeParams(&p)
+		if actErr != nil {
+			return nil, actErr
+		}
+
+		code, err := builtin.GetMultisigActorCodeID(actors.Version8)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to get multisig code ID")
+		}
+
+		ep := &init8.ExecParams{
+			CodeCID:           code,
+			ConstructorParams: enc,
+		}
+
+		cbor = ep
 	case "ProposeParams":
 		var p multisig8.ProposeParams
 		err = json.Unmarshal([]byte(params.Params), &p)
@@ -229,7 +247,7 @@ func EncodeParams(params interface{}) (*ParamsInfo, error) {
 			Name:   "ChangeWorkerAddressParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.ConstructorParams: // Constructor
+	case *multisig8.ConstructorParams: // Msig Constructor
 		return &ParamsInfo{
 			Name:   "ConstructorParams",
 			Params: string(b),

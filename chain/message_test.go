@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
+	init8 "github.com/filecoin-project/go-state-types/builtin/v8/init"
 	multisig8 "github.com/filecoin-project/go-state-types/builtin/v8/multisig"
 	"github.com/filecoin-project/lotus/chain/actors"
+	"github.com/filecoin-project/lotus/chain/actors/builtin"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/power"
 	"github.com/filecoin-project/lotus/chain/types"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
@@ -214,7 +216,18 @@ func TestEncodeMessage(t *testing.T) {
 	}
 	paramsSlice = append(paramsSlice, &constructorParams)
 
-	sp, err = actors.SerializeParams(&constructorParams)
+	enc, actErr := actors.SerializeParams(&constructorParams)
+	require.NoError(t, actErr)
+
+	code, err2 := builtin.GetMultisigActorCodeID(actors.Version8)
+	require.NoError(t, err2)
+	// new actors are created by invoking 'exec' on the init actor with the constructor params
+	execParams := &init8.ExecParams{
+		CodeCID:           code,
+		ConstructorParams: enc,
+	}
+
+	sp, err = actors.SerializeParams(execParams)
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
