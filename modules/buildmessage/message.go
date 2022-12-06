@@ -15,11 +15,11 @@ import (
 )
 
 type BaseParams struct {
-	MaxFee     int64
-	GasFeeCap  string
-	GasPremium string
-	GasLimit   int64
-	Nonce      uint64
+	MaxFee     string `json:"max_fee"`
+	GasFeeCap  string `json:"gas_feecap"`
+	GasPremium string `json:"gas_premium"`
+	GasLimit   int64  `json:"gas_limit"`
+	Nonce      uint64 `json:"nonce"`
 }
 
 func NewTransferMessage(node api.FullNode, baseParams BaseParams, from, to string, amount string) (*types.Message, error) {
@@ -313,8 +313,13 @@ func buildMessage(node api.FullNode, msg *types.Message, baseParams BaseParams) 
 	ctx := context.Background()
 	if msg.GasLimit == 0 || msg.GasPremium == types.EmptyInt || types.BigCmp(msg.GasPremium, types.NewInt(0)) == 0 ||
 		msg.GasFeeCap == types.EmptyInt || types.BigCmp(msg.GasFeeCap, types.NewInt(0)) == 0 {
-		var err error
-		msg, err = node.GasEstimateMessageGas(ctx, msg, &api.MessageSendSpec{MaxFee: abi.NewTokenAmount(baseParams.MaxFee)}, types.EmptyTSK)
+
+		maxFee, err := types.ParseFIL(baseParams.MaxFee)
+		if err != nil {
+			return nil, fmt.Errorf("parsing max-fee: %w", err)
+		}
+
+		msg, err = node.GasEstimateMessageGas(ctx, msg, &api.MessageSendSpec{MaxFee: abi.TokenAmount(maxFee)}, types.EmptyTSK)
 		if err != nil {
 			return nil, err
 		}
