@@ -10,7 +10,6 @@ import (
 	"github.com/OpenFilWallet/OpenFilWallet/crypto"
 	"github.com/OpenFilWallet/OpenFilWallet/modules/app"
 	"github.com/filecoin-project/go-address"
-	filcrypto "github.com/filecoin-project/go-state-types/crypto"
 	"github.com/urfave/cli/v2"
 	"io/ioutil"
 	"os"
@@ -29,9 +28,8 @@ var walletCmd = &cli.Command{
 }
 
 var walletNew = &cli.Command{
-	Name:      "new",
-	Usage:     "Generate a new key of the given type",
-	ArgsUsage: "[bls|secp256k1 (default secp256k1)]",
+	Name:  "new",
+	Usage: "Generate bls and secp256k1 wallets with the same index",
 	Action: func(cctx *cli.Context) error {
 		db, closer, err := getWalletDB(cctx, false)
 		if err != nil {
@@ -53,28 +51,15 @@ var walletNew = &cli.Command{
 			return err
 		}
 
-		t := cctx.Args().First()
-		if t == "" {
-			t = "secp256k1"
-		}
-
-		var sigType filcrypto.SigType
-		switch t {
-		case "secp256k1":
-			sigType = filcrypto.SigTypeSecp256k1
-		case "bls":
-			sigType = filcrypto.SigTypeBLS
-		default:
-			return fmt.Errorf("KeyType: %s, TypeUnknown", t)
-		}
-
-		nk, err := account.GeneratePrivateKey(db, mnemonic, sigType, crypto.GenerateEncryptKey([]byte(rootPassword)))
+		nks, err := account.GeneratePrivateKeyFromMnemonicIndex(db, mnemonic, -1, crypto.GenerateEncryptKey([]byte(rootPassword)))
 		if err != nil {
 			return err
 		}
 
 		afmt := app.NewAppFmt(cctx.App)
-		afmt.Println(nk.Address.String())
+		for _, nk := range nks {
+			afmt.Printf("New Wallet: %s  Address: %s \n", nk.KeyInfo.Type, nk.Address.String())
+		}
 
 		return nil
 	},
