@@ -34,7 +34,9 @@ type LockedRepo interface {
 	Readonly() bool
 
 	// SetAPIEndpoint sets the endpoint of the current API
-	SetAPIEndpoint(string2 string) error
+	SetAPIEndpoint(string) error
+
+	SetAPIToken([]byte) error
 }
 
 type fsLockedRepo struct {
@@ -106,6 +108,13 @@ func (fsr *fsLockedRepo) SetAPIEndpoint(ma string) error {
 		return err
 	}
 	return ioutil.WriteFile(fsr.join(fsAPI), []byte(ma), 0644)
+}
+
+func (fsr *fsLockedRepo) SetAPIToken(token []byte) error {
+	if err := fsr.stillValid(); err != nil {
+		return err
+	}
+	return ioutil.WriteFile(fsr.join(fsAPIToken), token, 0600)
 }
 
 func (fsr *fsLockedRepo) stillValid() error {

@@ -1,21 +1,24 @@
 package repo
 
 import (
+	"bytes"
 	"errors"
 	fslock "github.com/ipfs/go-fs-lock"
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/mitchellh/go-homedir"
-	"github.com/multiformats/go-multiaddr"
 	"golang.org/x/xerrors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
+)
+
+const (
+	FlagWalletRepo = "wallet-repo"
 )
 
 type Repo interface {
 	// APIEndpoint returns multiaddress for communication with Lotus API
-	APIEndpoint() (multiaddr.Multiaddr, error)
+	APIEndpoint() (string, error)
 
 	// Lock locks the repo for exclusive use.
 	Lock() (LockedRepo, error)
@@ -23,6 +26,7 @@ type Repo interface {
 
 const (
 	fsAPI       = "api"
+	fsAPIToken  = "token"
 	fsDatastore = "datastore"
 	fsLock      = "repo.lock"
 )
@@ -80,30 +84,42 @@ func (fsr *FsRepo) Init() error {
 	return nil
 }
 
-func (fsr *FsRepo) APIEndpoint() (multiaddr.Multiaddr, error) {
+func (fsr *FsRepo) APIEndpoint() (string, error) {
 	p := filepath.Join(fsr.path, fsAPI)
 
 	f, err := os.Open(p)
 	if os.IsNotExist(err) {
-		return nil, ErrNoAPIEndpoint
+		return "", ErrNoAPIEndpoint
 	} else if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer f.Close() //nolint: errcheck // Read only op
 
 	data, err := ioutil.ReadAll(f)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to read %q: %w", p, err)
+		return "", xerrors.Errorf("failed to read %q: %w", p, err)
 	}
-	strma := string(data)
-	strma = strings.TrimSpace(strma)
 
-	apima, err := multiaddr.NewMultiaddr(strma)
+	return string(data), nil
+}
+
+func (fsr *FsRepo) APIToken() ([]byte, error) {
+	p := filepath.Join(fsr.path, fsAPIToken)
+	f, err := os.Open(p)
+
+	if os.IsNotExist(err) {
+		return nil, ErrNoAPIEndpoint
+	} else if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	tb, err := ioutil.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}
 
-	return apima, nil
+	return bytes.TrimSpace(tb), nil
 }
 
 func (fsr *FsRepo) Lock() (LockedRepo, error) {
