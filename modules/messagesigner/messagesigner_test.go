@@ -54,7 +54,7 @@ func TestSignMessage(t *testing.T) {
 		Params:     sp,
 	}
 
-	signedMsg, err := signer.Sign(msg)
+	signedMsg, err := signer.SignMsg(msg)
 	require.NoError(t, err)
 	t.Log(signedMsg)
 

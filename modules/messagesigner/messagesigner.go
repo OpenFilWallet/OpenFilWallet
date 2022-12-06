@@ -5,6 +5,7 @@ import (
 	"github.com/OpenFilWallet/OpenFilWallet/lib/sigs"
 	_ "github.com/OpenFilWallet/OpenFilWallet/lib/sigs/bls"
 	_ "github.com/OpenFilWallet/OpenFilWallet/lib/sigs/secp"
+	"github.com/filecoin-project/go-state-types/crypto"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/lotus/chain/wallet"
 	"golang.org/x/xerrors"
@@ -13,7 +14,8 @@ import (
 
 type Signer interface {
 	RegisterSigner(...wallet.Key) error
-	Sign(msg *types.Message) (*types.SignedMessage, error)
+	SignMsg(msg *types.Message) (*types.SignedMessage, error)
+	Sign(from string, data []byte) (*crypto.Signature, error)
 }
 
 type SignerHouse struct {
@@ -42,7 +44,7 @@ func (s *SignerHouse) RegisterSigner(keys ...wallet.Key) error {
 	return nil
 }
 
-func (s *SignerHouse) Sign(msg *types.Message) (*types.SignedMessage, error) {
+func (s *SignerHouse) SignMsg(msg *types.Message) (*types.SignedMessage, error) {
 	s.lk.Lock()
 	defer s.lk.Unlock()
 
@@ -65,4 +67,21 @@ func (s *SignerHouse) Sign(msg *types.Message) (*types.SignedMessage, error) {
 		Message:   *msg,
 		Signature: *sig,
 	}, nil
+}
+
+func (s *SignerHouse) Sign(from string, data []byte) (*crypto.Signature, error) {
+	s.lk.Lock()
+	defer s.lk.Unlock()
+
+	signer, ok := s.signers[from]
+	if !ok {
+		return nil, fmt.Errorf("wallet: %s does not exist", from)
+	}
+
+	sig, err := sigs.Sign(wallet.ActSigType(signer.Type), signer.PrivateKey, data)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to sign message: %w", err)
+	}
+
+	return sig, nil
 }
