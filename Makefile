@@ -21,4 +21,7 @@ build: build
 	go mod tidy -go=1.16 && go mod tidy -go=1.17
 	rm -rf openfild
 	go build $(GOFLAGS) -o openfild ./cmd/openfild
+	go build $(GOFLAGS) -o openfil-cli ./cmd/cli
 
+install: install
+	sudo mv openfild openfil-cli /usr/local/bin/
