@@ -18,79 +18,27 @@ import (
 	"strings"
 )
 
-func GeneratePrivateKey(walletDB datastore.WalletDB, mnemonic string, sigType filcrypto.SigType, passwordKey []byte) (*wallet.Key, error) {
-	keyType, err := sigType.Name()
-	if err != nil {
-		return nil, err
-	}
-
+func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic string, index int64, passwordKey []byte) ([]wallet.Key, error) {
 	seed, err := hd.GenerateSeedFromMnemonic(mnemonic, "")
 	if err != nil {
 		return nil, err
 	}
 
-	index, err := walletDB.NextMnemonicIndex()
-	if err != nil {
-		return nil, err
+	if index == -1 {
+		i, err := walletDB.NextMnemonicIndex()
+		if err != nil {
+			return nil, err
+		}
+		index = int64(i)
 	}
 
-	path := hd.FILPath(index)
+	path := hd.FILPath(uint64(index))
 	extendSeed, err := hd.GetExtendSeedFromPath(path, seed)
 	if err != nil {
 		return nil, err
 	}
 
-	pk, err := sigs.Generate(sigType, extendSeed)
-	if err != nil {
-		return nil, err
-	}
-
-	ki := types.KeyInfo{
-		Type:       types.KeyType(keyType),
-		PrivateKey: pk,
-	}
-
-	privateKey, err := json.Marshal(ki)
-	if err != nil {
-		return nil, err
-	}
-
-	encryptedPrivateKey, err := crypto.Encrypt(privateKey, passwordKey)
-	if err != nil {
-		return nil, err
-	}
-
-	nk, err := wallet.NewKey(ki)
-	if err != nil {
-		return nil, err
-	}
-
-	err = walletDB.SetPrivate(&datastore.PrivateWallet{
-		PriKey:  encryptedPrivateKey,
-		Address: nk.Address.String(),
-		KeyHash: crypto.Hash256(encryptedPrivateKey),
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return nk, nil
-}
-
-func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic string, index uint64, passwordKey []byte) ([]*wallet.Key, error) {
-	seed, err := hd.GenerateSeedFromMnemonic(mnemonic, "")
-	if err != nil {
-		return nil, err
-	}
-
-	path := hd.FILPath(index)
-	extendSeed, err := hd.GetExtendSeedFromPath(path, seed)
-	if err != nil {
-		return nil, err
-	}
-
-	var keys = make([]*wallet.Key, 0)
+	var keys = make([]wallet.Key, 0)
 	for _, sigType := range []filcrypto.SigType{filcrypto.SigTypeSecp256k1, filcrypto.SigTypeBLS} {
 		keyType, err := sigType.Name()
 		if err != nil {
@@ -131,7 +79,7 @@ func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic s
 		if err != nil {
 			return nil, err
 		}
-		keys = append(keys, nk)
+		keys = append(keys, *nk)
 	}
 
 	return keys, nil
