@@ -42,7 +42,7 @@ func (st *StateStore) Begin(i interface{}, state interface{}, force bool) error 
 		return err
 	}
 	if has && !force {
-		return xerrors.Errorf("already tracking state for %v", i)
+		return xerrors.Errorf("already tracking data for %v", i)
 	}
 
 	b, err := json.Marshal(state)
@@ -88,7 +88,7 @@ func (st *StateStore) List(out interface{}) error {
 		elem := reflect.New(outT)
 		err := json.Unmarshal(res.Value, elem.Interface())
 		if err != nil {
-			errs = multierr.Append(errs, xerrors.Errorf("Unmarshal state for key '%s': %w", res.Key, err))
+			errs = multierr.Append(errs, xerrors.Errorf("Unmarshal data for key '%s': %w", res.Key, err))
 			continue
 		}
 
@@ -109,10 +109,10 @@ func (st *StoredState) Delete() error {
 		return err
 	}
 	if !has {
-		return xerrors.Errorf("No state for %s", st.name)
+		return xerrors.Errorf("No data for %s", st.name)
 	}
 	if err := st.ds.Delete(context.TODO(), st.name); err != nil {
-		return xerrors.Errorf("removing state from datastore: %w", err)
+		return xerrors.Errorf("removing data from datastore: %w", err)
 	}
 	st.name = datastore.Key{}
 	st.ds = nil
@@ -124,7 +124,7 @@ func (st *StoredState) Get() ([]byte, error) {
 	val, err := st.ds.Get(context.TODO(), st.name)
 	if err != nil {
 		if xerrors.Is(err, datastore.ErrNotFound) {
-			return nil, xerrors.Errorf("No state for %s: %w", st.name, err)
+			return nil, xerrors.Errorf("No data for %s: %w", st.name, err)
 		}
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func (st *StoredState) mutate(mutator func([]byte) ([]byte, error)) error {
 		return err
 	}
 	if !has {
-		return xerrors.Errorf("No state for %s", st.name)
+		return xerrors.Errorf("No data for %s", st.name)
 	}
 
 	cur, err := st.ds.Get(context.TODO(), st.name)
