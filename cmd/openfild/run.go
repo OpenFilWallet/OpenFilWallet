@@ -7,6 +7,7 @@ import (
 	"github.com/OpenFilWallet/OpenFilWallet/account"
 	"github.com/OpenFilWallet/OpenFilWallet/crypto"
 	"github.com/OpenFilWallet/OpenFilWallet/datastore"
+	"github.com/OpenFilWallet/OpenFilWallet/modules/app"
 	"github.com/OpenFilWallet/OpenFilWallet/repo"
 	"github.com/OpenFilWallet/OpenFilWallet/wallet"
 	"github.com/urfave/cli/v2"
@@ -27,9 +28,14 @@ var runCmd = &cli.Command{
 			Usage: "wallet api port",
 			Value: "6678",
 		},
+		&cli.BoolFlag{
+			Name:  "offline",
+			Usage: "offline wallet",
+			Value: false,
+		},
 	},
 	Action: func(cctx *cli.Context) error {
-		repoPath := cctx.String(flagWalletRepo)
+		repoPath := cctx.String(repo.FlagWalletRepo)
 		r, err := repo.NewFS(repoPath)
 		if err != nil {
 			return err
@@ -40,7 +46,7 @@ var runCmd = &cli.Command{
 			return err
 		}
 		if !ok {
-			return xerrors.Errorf("repo at '%s' is not initialized, run 'openfild init' to set it up", flagWalletRepo)
+			return xerrors.Errorf("repo at '%s' is not initialized, run 'openfild init' to set it up", repo.FlagWalletRepo)
 		}
 
 		lr, err := r.Lock()
@@ -50,7 +56,7 @@ var runCmd = &cli.Command{
 
 		endpoint := "127.0.0.1:" + cctx.String("wallet-api")
 
-		err = lr.SetAPIEndpoint(endpoint)
+		err = lr.SetAPIEndpoint("http://" + endpoint)
 		if err != nil {
 			return err
 		}
@@ -63,6 +69,22 @@ var runCmd = &cli.Command{
 		db := datastore.NewWalletDB(ds)
 
 		if err := requirePassword(db); err != nil {
+			return err
+		}
+
+		loginScrypt, err := db.GetLoginPassword()
+		if err != nil {
+			return err
+		}
+
+		app.SetSecret(loginScrypt)
+		token, err := app.AuthNew([]string{"all"}) // todo Wallet rules can be added
+		if err != nil {
+			return err
+		}
+
+		err = lr.SetAPIToken(token)
+		if err != nil {
 			return err
 		}
 
@@ -85,8 +107,9 @@ var runCmd = &cli.Command{
 			return fmt.Errorf("failed to decrypt mnemonic, err: %s", err.Error())
 		}
 
+		var closeCh = make(chan struct{})
 		// new server
-		walletServer := wallet.NewWallet(rootPassword, db)
+		walletServer := wallet.NewWallet(cctx.Bool("offline"), rootPassword, db, closeCh)
 		router := walletServer.NewRouter()
 
 		s := &http.Server{
@@ -106,6 +129,7 @@ var runCmd = &cli.Command{
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
+		close(closeCh)
 
 		log.Info("shutting down wallet server...")
 
