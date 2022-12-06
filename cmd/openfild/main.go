@@ -15,10 +15,6 @@ import (
 	"os"
 )
 
-const (
-	flagWalletRepo = "wallet-repo"
-)
-
 var log = logging.Logger("openfild")
 
 func main() {
@@ -31,7 +27,7 @@ func main() {
 		EnableBashCompletion: true,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    flagWalletRepo,
+				Name:    repo.FlagWalletRepo,
 				EnvVars: []string{"OPEN_FIL_WALLET_PATH"},
 				Value:   "~/.openfilwallet",
 				Usage:   fmt.Sprintf("Specify openfilwallet repo path. flag(--wallet-repo) or env(OPEN_FIL_WALLET_PATH)"),
@@ -84,7 +80,7 @@ func verifyRootPassword(db datastore.WalletDB) (string, bool) {
 }
 
 func getWalletDB(cctx *cli.Context, readonly bool) (datastore.WalletDB, func(), error) {
-	repoPath := cctx.String(flagWalletRepo)
+	repoPath := cctx.String(repo.FlagWalletRepo)
 	r, err := repo.NewFS(repoPath)
 	if err != nil {
 		return datastore.WalletDB{}, nil, err
@@ -95,7 +91,7 @@ func getWalletDB(cctx *cli.Context, readonly bool) (datastore.WalletDB, func(), 
 		return datastore.WalletDB{}, nil, err
 	}
 	if !ok {
-		return datastore.WalletDB{}, nil, xerrors.Errorf("repo at '%s' is not initialized, run 'openfild init' to set it up", flagWalletRepo)
+		return datastore.WalletDB{}, nil, xerrors.Errorf("repo at '%s' is not initialized, run 'openfild init' to set it up", repo.FlagWalletRepo)
 	}
 
 	var lr repo.LockedRepo

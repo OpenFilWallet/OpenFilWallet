@@ -18,7 +18,7 @@ var initCmd = &cli.Command{
 	Action: func(cctx *cli.Context) error {
 		log.Info("Initializing OpenFilWallet")
 
-		repoPath := cctx.String(flagWalletRepo)
+		repoPath := cctx.String(repo.FlagWalletRepo)
 		r, err := repo.NewFS(repoPath)
 		if err != nil {
 			return err
@@ -29,7 +29,7 @@ var initCmd = &cli.Command{
 			return err
 		}
 		if ok {
-			return xerrors.Errorf("repo at '%s' is already initialized", cctx.String(flagWalletRepo))
+			return xerrors.Errorf("repo at '%s' is already initialized", cctx.String(repo.FlagWalletRepo))
 		}
 
 		log.Info("Initializing repo")
