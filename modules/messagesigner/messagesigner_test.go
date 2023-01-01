@@ -11,7 +11,7 @@ import (
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/power"
 	"github.com/filecoin-project/lotus/chain/types"
-	"github.com/filecoin-project/lotus/chain/wallet"
+	"github.com/filecoin-project/lotus/chain/wallet/key"
 	power8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/power"
 	"github.com/stretchr/testify/require"
 	"reflect"
@@ -24,7 +24,7 @@ func TestSignMessage(t *testing.T) {
 	ownerKey := "7b2254797065223a22736563703235366b31222c22507269766174654b6579223a22384c7331545157743063625574553270636450436d623371596d7959696274714153365a65664f456a4b343d227d"
 	ki, err := account.GenerateKeyInfoFromPriKey(ownerKey, "hex-lotus")
 	require.NoError(t, err)
-	nk, err := wallet.NewKey(*ki)
+	nk, err := key.NewKey(*ki)
 	require.NoError(t, err)
 
 	signer := NewSigner()

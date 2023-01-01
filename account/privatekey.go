@@ -12,13 +12,15 @@ import (
 	_ "github.com/OpenFilWallet/OpenFilWallet/lib/sigs/secp"
 	filcrypto "github.com/filecoin-project/go-state-types/crypto"
 	"github.com/filecoin-project/lotus/chain/types"
-	"github.com/filecoin-project/lotus/chain/wallet"
+	"github.com/filecoin-project/lotus/chain/wallet/key"
+	_ "github.com/filecoin-project/lotus/lib/sigs/bls"
+	_ "github.com/filecoin-project/lotus/lib/sigs/secp"
 
 	"golang.org/x/xerrors"
 	"strings"
 )
 
-func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic string, index int64, passwordKey []byte) ([]wallet.Key, error) {
+func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic string, index int64, passwordKey []byte) ([]key.Key, error) {
 	seed, err := hd.GenerateSeedFromMnemonic(mnemonic, "")
 	if err != nil {
 		return nil, err
@@ -38,7 +40,7 @@ func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic s
 		return nil, err
 	}
 
-	var keys = make([]wallet.Key, 0)
+	var keys = make([]key.Key, 0)
 	for _, sigType := range []filcrypto.SigType{filcrypto.SigTypeSecp256k1, filcrypto.SigTypeBLS} {
 		keyType, err := sigType.Name()
 		if err != nil {
@@ -65,7 +67,7 @@ func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic s
 			return nil, err
 		}
 
-		nk, err := wallet.NewKey(ki)
+		nk, err := key.NewKey(ki)
 		if err != nil {
 			return nil, err
 		}
@@ -101,7 +103,7 @@ func ImportPrivateKey(walletDB datastore.WalletDB, priKey, keyFormat string, pas
 		return err
 	}
 
-	nk, err := wallet.NewKey(*ki)
+	nk, err := key.NewKey(*ki)
 	if err != nil {
 		return err
 	}
@@ -137,7 +139,7 @@ func UpdatePrivateKey(walletDB datastore.WalletDB, oldPasswordKey, newPasswordKe
 			return err
 		}
 
-		nk, err := wallet.NewKey(ki)
+		nk, err := key.NewKey(ki)
 		if err != nil {
 			return err
 		}
@@ -156,39 +158,39 @@ func UpdatePrivateKey(walletDB datastore.WalletDB, oldPasswordKey, newPasswordKe
 	return nil
 }
 
-func GetPrivateKey(walletDB datastore.WalletDB, addr string, passwordKey []byte) (wallet.Key, error) {
+func GetPrivateKey(walletDB datastore.WalletDB, addr string, passwordKey []byte) (key.Key, error) {
 	pri, err := walletDB.GetPrivate(addr)
 	if err != nil {
-		return wallet.Key{}, err
+		return key.Key{}, err
 	}
 
 	var ki types.KeyInfo
 
 	decryptKey, err := crypto.Decrypt(pri.PriKey, passwordKey)
 	if err != nil {
-		return wallet.Key{}, err
+		return key.Key{}, err
 	}
 
 	err = json.Unmarshal(decryptKey, &ki)
 	if err != nil {
-		return wallet.Key{}, err
+		return key.Key{}, err
 	}
 
-	nk, err := wallet.NewKey(ki)
+	nk, err := key.NewKey(ki)
 	if err != nil {
-		return wallet.Key{}, err
+		return key.Key{}, err
 	}
 
 	return *nk, nil
 }
 
-func LoadPrivateKeys(walletDB datastore.WalletDB, passwordKey []byte) ([]wallet.Key, error) {
+func LoadPrivateKeys(walletDB datastore.WalletDB, passwordKey []byte) ([]key.Key, error) {
 	privateWallets, err := walletDB.WalletList()
 	if err != nil {
 		return nil, err
 	}
 
-	var keys = make([]wallet.Key, 0)
+	var keys = make([]key.Key, 0)
 	for _, pri := range privateWallets {
 		var ki types.KeyInfo
 
@@ -202,7 +204,7 @@ func LoadPrivateKeys(walletDB datastore.WalletDB, passwordKey []byte) ([]wallet.
 			return nil, err
 		}
 
-		nk, err := wallet.NewKey(ki)
+		nk, err := key.NewKey(ki)
 		if err != nil {
 			return nil, err
 		}

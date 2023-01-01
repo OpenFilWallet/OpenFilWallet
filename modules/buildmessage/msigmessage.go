@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
+	actorstypes "github.com/filecoin-project/go-state-types/actors"
 	"github.com/filecoin-project/go-state-types/big"
-	multisig8 "github.com/filecoin-project/go-state-types/builtin/v8/multisig"
+	multisig8 "github.com/filecoin-project/go-state-types/builtin/v9/multisig"
 	"github.com/filecoin-project/go-state-types/network"
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors"
@@ -1295,7 +1296,7 @@ func (m *Msiger) NewMsigSetControlApproveMessage(baseParams BaseParams, msigAddr
 // --------------------
 
 func (m *Msiger) messageBuilder(from address.Address) (multisig.MessageBuilder, error) {
-	av, err := actors.VersionForNetwork(network.Version16)
+	av, err := actorstypes.VersionForNetwork(network.Version17)
 	if err != nil {
 		return nil, err
 	}

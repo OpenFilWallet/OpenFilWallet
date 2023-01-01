@@ -7,29 +7,31 @@ import (
 	_ "github.com/OpenFilWallet/OpenFilWallet/lib/sigs/secp"
 	"github.com/filecoin-project/go-state-types/crypto"
 	"github.com/filecoin-project/lotus/chain/types"
-	"github.com/filecoin-project/lotus/chain/wallet"
+	"github.com/filecoin-project/lotus/chain/wallet/key"
+	_ "github.com/filecoin-project/lotus/lib/sigs/bls"
+	_ "github.com/filecoin-project/lotus/lib/sigs/secp"
 	"golang.org/x/xerrors"
 	"sync"
 )
 
 type Signer interface {
-	RegisterSigner(...wallet.Key) error
+	RegisterSigner(...key.Key) error
 	SignMsg(msg *types.Message) (*types.SignedMessage, error)
 	Sign(from string, data []byte) (*crypto.Signature, error)
 }
 
 type SignerHouse struct {
-	signers map[string]wallet.Key // key is address
+	signers map[string]key.Key // key is address
 	lk      sync.Mutex
 }
 
 func NewSigner() Signer {
 	return &SignerHouse{
-		signers: map[string]wallet.Key{},
+		signers: map[string]key.Key{},
 	}
 }
 
-func (s *SignerHouse) RegisterSigner(keys ...wallet.Key) error {
+func (s *SignerHouse) RegisterSigner(keys ...key.Key) error {
 	s.lk.Lock()
 	defer s.lk.Unlock()
 
@@ -58,7 +60,7 @@ func (s *SignerHouse) SignMsg(msg *types.Message) (*types.SignedMessage, error) 
 		return nil, xerrors.Errorf("serializing message: %w", err)
 	}
 
-	sig, err := sigs.Sign(wallet.ActSigType(signer.Type), signer.PrivateKey, mb.Cid().Bytes())
+	sig, err := sigs.Sign(key.ActSigType(signer.Type), signer.PrivateKey, mb.Cid().Bytes())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to sign message: %w", err)
 	}
@@ -78,7 +80,7 @@ func (s *SignerHouse) Sign(from string, data []byte) (*crypto.Signature, error) 
 		return nil, fmt.Errorf("wallet: %s does not exist", from)
 	}
 
-	sig, err := sigs.Sign(wallet.ActSigType(signer.Type), signer.PrivateKey, data)
+	sig, err := sigs.Sign(key.ActSigType(signer.Type), signer.PrivateKey, data)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to sign message: %w", err)
 	}

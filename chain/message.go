@@ -6,10 +6,10 @@ import (
 	"errors"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
-	init8 "github.com/filecoin-project/go-state-types/builtin/v8/init"
-	multisig8 "github.com/filecoin-project/go-state-types/builtin/v8/multisig"
+	actorstypes "github.com/filecoin-project/go-state-types/actors"
+	init8 "github.com/filecoin-project/go-state-types/builtin/v9/init"
+	multisig8 "github.com/filecoin-project/go-state-types/builtin/v9/multisig"
 	"github.com/filecoin-project/lotus/chain/actors"
-	"github.com/filecoin-project/lotus/chain/actors/builtin"
 	"github.com/filecoin-project/lotus/chain/types"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
 	power8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/power"
@@ -142,8 +142,8 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 			return nil, actErr
 		}
 
-		code, err := builtin.GetMultisigActorCodeID(actors.Version8)
-		if err != nil {
+		code, ok := actors.GetActorCodeID(actorstypes.Version8, actors.MultisigKey)
+		if !ok {
 			return nil, xerrors.Errorf("failed to get multisig code ID")
 		}
 

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
-	init8 "github.com/filecoin-project/go-state-types/builtin/v8/init"
-	multisig8 "github.com/filecoin-project/go-state-types/builtin/v8/multisig"
+	actorstypes "github.com/filecoin-project/go-state-types/actors"
+	init8 "github.com/filecoin-project/go-state-types/builtin/v9/init"
+	multisig8 "github.com/filecoin-project/go-state-types/builtin/v9/multisig"
 	"github.com/filecoin-project/lotus/chain/actors"
-	"github.com/filecoin-project/lotus/chain/actors/builtin"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/power"
 	"github.com/filecoin-project/lotus/chain/types"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
@@ -219,8 +219,11 @@ func TestEncodeMessage(t *testing.T) {
 	enc, actErr := actors.SerializeParams(&constructorParams)
 	require.NoError(t, actErr)
 
-	code, err2 := builtin.GetMultisigActorCodeID(actors.Version8)
-	require.NoError(t, err2)
+	code, ok := actors.GetActorCodeID(actorstypes.Version8, actors.MultisigKey)
+	if !ok {
+		t.Fatalf("failed to get multisig code ID")
+	}
+
 	// new actors are created by invoking 'exec' on the init actor with the constructor params
 	execParams := &init8.ExecParams{
 		CodeCID:           code,
