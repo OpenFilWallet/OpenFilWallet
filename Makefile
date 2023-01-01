@@ -18,7 +18,7 @@ ffi:
 
 .PHONY: build
 build: build
-	go mod tidy -go=1.16 && go mod tidy -go=1.17
+	go mod tidy
 	rm -rf openfild
 	go build $(GOFLAGS) -o openfild ./cmd/openfild
 	go build $(GOFLAGS) -o openfil-cli ./cmd/cli
