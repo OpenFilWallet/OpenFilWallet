@@ -409,3 +409,103 @@ var actorConfirmChangeWorker = &cli.Command{
 		return printMessage(cctx, msg)
 	},
 }
+
+var actorProposeChangeBeneficiary = &cli.Command{
+	Name:      "propose-change-beneficiary",
+	Usage:     "Propose a beneficiary address change",
+	ArgsUsage: "[beneficiaryAddress quota expiration]",
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:  "overwrite-pending-change",
+			Usage: "Overwrite the current beneficiary change proposal",
+			Value: false,
+		},
+		&cli.StringFlag{
+			Name:     "actor",
+			Usage:    "specify the address of miner actor",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:  "output",
+			Usage: "save message to file",
+			Value: "",
+		},
+	},
+	Action: func(cctx *cli.Context) error {
+		if cctx.NArg() != 3 {
+			return fmt.Errorf("must have [beneficiaryAddress quota expiration]")
+		}
+
+		act := cctx.String("actor")
+		maddr, err := address.NewFromString(act)
+		if err != nil {
+			return fmt.Errorf("parsing address %s: %w", act, err)
+		}
+
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		baseParams, err := getBaseParams(cctx)
+		if err != nil {
+			return err
+		}
+
+		msg, err := walletAPI.ChangeBeneficiary(baseParams, maddr.String(), cctx.Args().Get(0), cctx.Args().Get(1), cctx.Args().Get(2), cctx.Bool("overwrite-pending-change"))
+		if err != nil {
+			return err
+		}
+
+		return printMessage(cctx, msg)
+	},
+}
+
+var actorConfirmChangeBeneficiary = &cli.Command{
+	Name:      "confirm-change-beneficiary",
+	Usage:     "Confirm a beneficiary address change",
+	ArgsUsage: "[minerAddress]",
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:  "existing-beneficiary",
+			Usage: "send confirmation from the existing beneficiary address",
+		},
+		&cli.BoolFlag{
+			Name:  "new-beneficiary",
+			Usage: "send confirmation from the new beneficiary address",
+		},
+		&cli.StringFlag{
+			Name:  "output",
+			Usage: "save message to file",
+			Value: "",
+		},
+	},
+	Action: func(cctx *cli.Context) error {
+		if cctx.NArg() != 1 {
+			return fmt.Errorf("must have [minerAddress]")
+		}
+
+		act := cctx.Args().Get(0)
+		maddr, err := address.NewFromString(act)
+		if err != nil {
+			return fmt.Errorf("parsing address %s: %w", act, err)
+		}
+
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		baseParams, err := getBaseParams(cctx)
+		if err != nil {
+			return err
+		}
+
+		msg, err := walletAPI.ConfirmChangeBeneficiary(baseParams, maddr.String(), cctx.Bool("existing-beneficiary"), cctx.Bool("new-beneficiary"))
+		if err != nil {
+			return err
+		}
+
+		return printMessage(cctx, msg)
+	},
+}

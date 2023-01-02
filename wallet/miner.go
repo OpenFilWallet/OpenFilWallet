@@ -160,3 +160,50 @@ func (w *Wallet) ControlList(c *gin.Context) {
 		ControlAddresses: addr2Str(mi.ControlAddresses),
 	})
 }
+
+// ChangeBeneficiary Post
+func (w *Wallet) ChangeBeneficiary(c *gin.Context) {
+	param := client.ChangeBeneficiaryRequest{}
+	err := c.BindJSON(&param)
+	if err != nil {
+		ReturnError(c, ParamErr)
+		return
+	}
+
+	msg, msgParams, err := buildmessage.NewChangeBeneficiaryProposeMessage(w.Api, param.BaseParams, param.MinerId, param.BeneficiaryAddress, param.Quota, param.Expiration, param.OverwritePendingChange)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	myMsg, err := chain.EncodeMessage(msg, msgParams)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	ReturnOk(c, myMsg)
+}
+
+// ConfirmChangeBeneficiary Post
+func (w *Wallet) ConfirmChangeBeneficiary(c *gin.Context) {
+	param := client.ConfirmChangeBeneficiaryRequest{}
+	err := c.BindJSON(&param)
+	if err != nil {
+		ReturnError(c, ParamErr)
+		return
+	}
+	msg, msgParams, err := buildmessage.NewConfirmChangeBeneficiary(w.Api, param.BaseParams, param.MinerId, param.ExistingBeneficiary, param.NewBeneficiary)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	myMsg, err := chain.EncodeMessage(msg, msgParams)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	ReturnOk(c, myMsg)
+}

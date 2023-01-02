@@ -72,6 +72,10 @@ var multisigCmd = &cli.Command{
 		msigConfirmChangeWorkerApproveCmd,
 		msigSetControlProposeCmd,
 		msigSetControlApproveCmd,
+		msigChangeBeneficiaryProposeCmd,
+		msigChangeBeneficiaryApproveCmd,
+		msigConfirmChangeBeneficiaryProposeCmd,
+		msigConfirmChangeBeneficiaryApproveCmd,
 	},
 }
 
@@ -1921,6 +1925,262 @@ var msigSetControlApproveCmd = &cli.Command{
 		}
 
 		msg, err := walletAPI.MsigSetControlApprove(baseParams, sender.String(), multisigAddr.String(), proposer.String(), txid, minerAddr.String(), cctx.Args().Slice())
+		if err != nil {
+			return err
+		}
+
+		return printMessage(cctx, msg)
+	},
+}
+
+var msigChangeBeneficiaryProposeCmd = &cli.Command{
+	Name:  "change-beneficiary-propose",
+	Usage: "change beneficiary propose",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "from",
+			Usage:    "specify address to send message from",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "multisig",
+			Usage:    "specify multisig that will receive the message",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "miner",
+			Usage:    "specify miner being acted upon",
+			Required: true,
+		},
+		&cli.BoolFlag{
+			Name:  "overwrite-pending-change",
+			Usage: "Overwrite the current beneficiary change proposal",
+			Value: false,
+		},
+		&cli.StringFlag{
+			Name:  "output",
+			Usage: "save message to file",
+			Value: "",
+		},
+	},
+	ArgsUsage: "[beneficiaryAddress quota expiration]",
+	Action: func(cctx *cli.Context) error {
+		if !cctx.Args().Present() {
+			return fmt.Errorf("must beneficiaryAddress quota expiration")
+		}
+
+		multisigAddr, sender, minerAddr, err := getInputs(cctx)
+		if err != nil {
+			return err
+		}
+
+		overwritePendingChange := cctx.Bool("overwrite-pending-change")
+		beneficiaryAddress := cctx.Args().Get(0)
+		quota := cctx.Args().Get(1)
+		expiration := cctx.Args().Get(2)
+
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		baseParams, err := getBaseParams(cctx)
+		if err != nil {
+			return err
+		}
+
+		msg, err := walletAPI.MsigChangeBeneficiaryPropose(baseParams, sender.String(), multisigAddr.String(), minerAddr.String(), beneficiaryAddress, quota, expiration, overwritePendingChange)
+		if err != nil {
+			return err
+		}
+
+		return printMessage(cctx, msg)
+	},
+}
+
+var msigChangeBeneficiaryApproveCmd = &cli.Command{
+	Name:  "change-beneficiary-approve",
+	Usage: "change beneficiary approve",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "from",
+			Usage:    "specify address to send message from",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "multisig",
+			Usage:    "specify multisig that will receive the message",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "miner",
+			Usage:    "specify miner being acted upon",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:  "output",
+			Usage: "save message to file",
+			Value: "",
+		},
+	},
+	ArgsUsage: "[txnId proposer beneficiaryAddress quota expiration]",
+	Action: func(cctx *cli.Context) error {
+		if cctx.NArg() == 0 {
+			return fmt.Errorf("must have txn Id, and proposer address and beneficiaryAddress quota expiration")
+		}
+
+		txid := cctx.Args().Get(0)
+
+		_, err := strconv.ParseUint(txid, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		proposer, err := address.NewFromString(cctx.Args().Get(1))
+		if err != nil {
+			return err
+		}
+
+		beneficiaryAddress := cctx.Args().Get(2)
+		quota := cctx.Args().Get(3)
+		expiration := cctx.Args().Get(4)
+
+		multisigAddr, sender, minerAddr, err := getInputs(cctx)
+		if err != nil {
+			return err
+		}
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		baseParams, err := getBaseParams(cctx)
+		if err != nil {
+			return err
+		}
+
+		msg, err := walletAPI.MsigChangeBeneficiaryApprove(baseParams, sender.String(), multisigAddr.String(), proposer.String(), txid, minerAddr.String(), beneficiaryAddress, quota, expiration)
+		if err != nil {
+			return err
+		}
+
+		return printMessage(cctx, msg)
+	},
+}
+
+var msigConfirmChangeBeneficiaryProposeCmd = &cli.Command{
+	Name:  "confirm-change-beneficiary-propose",
+	Usage: "confirm change beneficiary propose",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "from",
+			Usage:    "specify address to send message from",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "multisig",
+			Usage:    "specify multisig that will receive the message",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "miner",
+			Usage:    "specify miner being acted upon",
+			Required: true,
+		},
+		&cli.BoolFlag{
+			Name:  "overwrite-pending-change",
+			Usage: "Overwrite the current beneficiary change proposal",
+			Value: false,
+		},
+		&cli.StringFlag{
+			Name:  "output",
+			Usage: "save message to file",
+			Value: "",
+		},
+	},
+	Action: func(cctx *cli.Context) error {
+		multisigAddr, sender, minerAddr, err := getInputs(cctx)
+		if err != nil {
+			return err
+		}
+
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		baseParams, err := getBaseParams(cctx)
+		if err != nil {
+			return err
+		}
+
+		msg, err := walletAPI.MsigConfirmChangeBeneficiaryPropose(baseParams, sender.String(), multisigAddr.String(), minerAddr.String())
+		if err != nil {
+			return err
+		}
+
+		return printMessage(cctx, msg)
+	},
+}
+
+var msigConfirmChangeBeneficiaryApproveCmd = &cli.Command{
+	Name:  "confirm-change-beneficiary-approve",
+	Usage: "confirm change beneficiary approve",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "from",
+			Usage:    "specify address to send message from",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "multisig",
+			Usage:    "specify multisig that will receive the message",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:     "miner",
+			Usage:    "specify miner being acted upon",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:  "output",
+			Usage: "save message to file",
+			Value: "",
+		},
+	},
+	ArgsUsage: "[txnId proposer]",
+	Action: func(cctx *cli.Context) error {
+		if cctx.NArg() == 0 {
+			return fmt.Errorf("must have txn Id, and proposer address")
+		}
+
+		txid := cctx.Args().Get(0)
+
+		_, err := strconv.ParseUint(txid, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		proposer, err := address.NewFromString(cctx.Args().Get(1))
+		if err != nil {
+			return err
+		}
+
+		multisigAddr, sender, minerAddr, err := getInputs(cctx)
+		if err != nil {
+			return err
+		}
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		baseParams, err := getBaseParams(cctx)
+		if err != nil {
+			return err
+		}
+
+		msg, err := walletAPI.MsigConfirmChangeBeneficiaryApprove(baseParams, sender.String(), multisigAddr.String(), proposer.String(), txid, minerAddr.String())
 		if err != nil {
 			return err
 		}

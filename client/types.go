@@ -79,6 +79,22 @@ type ConfirmChangeWorkerRequest struct {
 	NewWorker  string                  `json:"new_worker"`
 }
 
+type ChangeBeneficiaryRequest struct {
+	BaseParams             buildmessage.BaseParams `json:"base_params"`
+	MinerId                string                  `json:"miner_id"`
+	BeneficiaryAddress     string                  `json:"beneficiary_address"`
+	Quota                  string                  `json:"quota"`
+	Expiration             string                  `json:"expiration"`
+	OverwritePendingChange bool                    `json:"overwrite_pending_change"`
+}
+
+type ConfirmChangeBeneficiaryRequest struct {
+	BaseParams          buildmessage.BaseParams `json:"base_params"`
+	MinerId             string                  `json:"miner_id"`
+	ExistingBeneficiary bool                    `json:"existing_beneficiary"`
+	NewBeneficiary      bool                    `json:"new_beneficiary"`
+}
+
 type SingRequest struct {
 	From       string `json:"from"`
 	HexMessage string `json:"hex_message"`
@@ -332,6 +348,45 @@ type MsigSetControlApproveRequest struct {
 	TxId            string                  `json:"tx_id"`
 	MinerId         string                  `json:"miner_id"`
 	ControlAddrs    []string                `json:"control_addrs"`
+}
+
+type MsigChangeBeneficiaryProposeRequest struct {
+	BaseParams             buildmessage.BaseParams `json:"base_params"`
+	From                   string                  `json:"from"`
+	MsigAddress            string                  `json:"msig_address"`
+	MinerId                string                  `json:"miner_id"`
+	BeneficiaryAddress     string                  `json:"beneficiary_address"`
+	Quota                  string                  `json:"quota"`
+	Expiration             string                  `json:"expiration"`
+	OverwritePendingChange bool                    `json:"overwrite_pending_change"`
+}
+
+type MsigChangeBeneficiaryApproveRequest struct {
+	BaseParams         buildmessage.BaseParams `json:"base_params"`
+	From               string                  `json:"from"`
+	MsigAddress        string                  `json:"msig_address"`
+	ProposerAddress    string                  `json:"proposer_address"`
+	TxId               string                  `json:"tx_id"`
+	MinerId            string                  `json:"miner_id"`
+	BeneficiaryAddress string                  `json:"beneficiary_address"`
+	Quota              string                  `json:"quota"`
+	Expiration         string                  `json:"expiration"`
+}
+
+type MsigConfirmChangeBeneficiaryProposeRequest struct {
+	BaseParams  buildmessage.BaseParams `json:"base_params"`
+	From        string                  `json:"from"`
+	MsigAddress string                  `json:"msig_address"`
+	MinerId     string                  `json:"miner_id"`
+}
+
+type MsigConfirmChangeBeneficiaryApproveRequest struct {
+	BaseParams      buildmessage.BaseParams `json:"base_params"`
+	From            string                  `json:"from"`
+	MsigAddress     string                  `json:"msig_address"`
+	ProposerAddress string                  `json:"proposer_address"`
+	TxId            string                  `json:"tx_id"`
+	MinerId         string                  `json:"miner_id"`
 }
 
 type MsigInspect struct {

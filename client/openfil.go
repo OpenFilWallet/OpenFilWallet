@@ -555,6 +555,58 @@ func (api *OpenFilAPI) ConfirmChangeWorker(baseParams buildmessage.BaseParams, m
 	return &r, nil
 }
 
+func (api *OpenFilAPI) ChangeBeneficiary(baseParams buildmessage.BaseParams, minerId, beneficiaryAddress, quota, expiration string, OverwritePendingChange bool) (*chain.Message, error) {
+	req := ChangeBeneficiaryRequest{
+		BaseParams:             baseParams,
+		MinerId:                minerId,
+		BeneficiaryAddress:     beneficiaryAddress,
+		Quota:                  quota,
+		Expiration:             expiration,
+		OverwritePendingChange: OverwritePendingChange,
+	}
+
+	res, err := PostRequest(api.endpoint, "/miner/change_beneficiary", api.token, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var r chain.Message
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		if err := isServerErr(res); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+func (api *OpenFilAPI) ConfirmChangeBeneficiary(baseParams buildmessage.BaseParams, minerId string, existingBeneficiary, newBeneficiary bool) (*chain.Message, error) {
+	req := ConfirmChangeBeneficiaryRequest{
+		BaseParams:          baseParams,
+		MinerId:             minerId,
+		ExistingBeneficiary: existingBeneficiary,
+		NewBeneficiary:      newBeneficiary,
+	}
+
+	res, err := PostRequest(api.endpoint, "/miner/confirm_change_beneficiary", api.token, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var r chain.Message
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		if err := isServerErr(res); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return &r, nil
+}
+
 func (api *OpenFilAPI) ChangeControl(baseParams buildmessage.BaseParams, minerId string, controlAddrs []string) (*chain.Message, error) {
 	req := ChangeWorkerRequest{
 		BaseParams:      baseParams,
@@ -1292,6 +1344,117 @@ func (api *OpenFilAPI) MsigConfirmChangeWorkerApprove(baseParams buildmessage.Ba
 	}
 
 	res, err := PostRequest(api.endpoint, "/msig/confirm_change_worker_approve", api.token, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var r chain.Message
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		if err := isServerErr(res); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+func (api *OpenFilAPI) MsigChangeBeneficiaryPropose(baseParams buildmessage.BaseParams, from string, msigAddress, minerId string, beneficiaryAddress, quota, expiration string, OverwritePendingChange bool) (*chain.Message, error) {
+	req := MsigChangeBeneficiaryProposeRequest{
+		BaseParams:             baseParams,
+		From:                   from,
+		MsigAddress:            msigAddress,
+		MinerId:                minerId,
+		BeneficiaryAddress:     beneficiaryAddress,
+		Quota:                  quota,
+		Expiration:             expiration,
+		OverwritePendingChange: OverwritePendingChange,
+	}
+
+	res, err := PostRequest(api.endpoint, "/msig/change_beneficiary_propose", api.token, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var r chain.Message
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		if err := isServerErr(res); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+func (api *OpenFilAPI) MsigChangeBeneficiaryApprove(baseParams buildmessage.BaseParams, from string, msigAddress, proposerAddress, txId, minerId string, beneficiaryAddress, quota, expiration string) (*chain.Message, error) {
+	req := MsigChangeBeneficiaryApproveRequest{
+		BaseParams:         baseParams,
+		From:               from,
+		ProposerAddress:    proposerAddress,
+		TxId:               txId,
+		MsigAddress:        msigAddress,
+		MinerId:            minerId,
+		BeneficiaryAddress: beneficiaryAddress,
+		Quota:              quota,
+		Expiration:         expiration,
+	}
+
+	res, err := PostRequest(api.endpoint, "/msig/change_beneficiary_approve", api.token, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var r chain.Message
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		if err := isServerErr(res); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+func (api *OpenFilAPI) MsigConfirmChangeBeneficiaryPropose(baseParams buildmessage.BaseParams, from string, msigAddress, minerId string) (*chain.Message, error) {
+	req := MsigConfirmChangeBeneficiaryProposeRequest{
+		BaseParams:  baseParams,
+		From:        from,
+		MsigAddress: msigAddress,
+		MinerId:     minerId,
+	}
+
+	res, err := PostRequest(api.endpoint, "/msig/confirm_change_beneficiary_propose", api.token, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var r chain.Message
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		if err := isServerErr(res); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+func (api *OpenFilAPI) MsigConfirmChangeBeneficiaryApprove(baseParams buildmessage.BaseParams, from string, msigAddress, proposerAddress, txId, minerId string) (*chain.Message, error) {
+	req := MsigConfirmChangeBeneficiaryApproveRequest{
+		BaseParams:      baseParams,
+		From:            from,
+		ProposerAddress: proposerAddress,
+		TxId:            txId,
+		MsigAddress:     msigAddress,
+		MinerId:         minerId,
+	}
+
+	res, err := PostRequest(api.endpoint, "/msig/confirm_change_beneficiary_approve", api.token, req)
 	if err != nil {
 		return nil, err
 	}

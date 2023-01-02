@@ -8,6 +8,7 @@ import (
 	"github.com/filecoin-project/go-state-types/abi"
 	actorstypes "github.com/filecoin-project/go-state-types/actors"
 	init8 "github.com/filecoin-project/go-state-types/builtin/v9/init"
+	"github.com/filecoin-project/go-state-types/builtin/v9/miner"
 	multisig8 "github.com/filecoin-project/go-state-types/builtin/v9/multisig"
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/types"
@@ -202,7 +203,13 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 			return nil, err
 		}
 		cbor = &p
-
+	case "ChangeBeneficiaryParams":
+		var p miner.ChangeBeneficiaryParams
+		err = json.Unmarshal([]byte(params.Params), &p)
+		if err != nil {
+			return nil, err
+		}
+		cbor = &p
 	default:
 		return nil, ErrNotSupported
 	}
@@ -285,6 +292,11 @@ func EncodeParams(params interface{}) (*ParamsInfo, error) {
 	case *multisig8.LockBalanceParams: // LockBalance
 		return &ParamsInfo{
 			Name:   "LockBalanceParams",
+			Params: string(b),
+		}, nil
+	case *miner.ChangeBeneficiaryParams:
+		return &ParamsInfo{
+			Name:   "ChangeBeneficiaryParams",
 			Params: string(b),
 		}, nil
 	default:

@@ -878,3 +878,103 @@ func (w *Wallet) MsigSetControlApprove(c *gin.Context) {
 
 	ReturnOk(c, myMsg)
 }
+
+// MsigChangeBeneficiaryPropose Post
+func (w *Wallet) MsigChangeBeneficiaryPropose(c *gin.Context) {
+	param := client.MsigChangeBeneficiaryProposeRequest{}
+	err := c.BindJSON(&param)
+	if err != nil {
+		ReturnError(c, ParamErr)
+		return
+	}
+
+	msig := buildmessage.NewMsiger(w.Api)
+	msg, msgParams, err := msig.NewMsigChangeBeneficiaryProposeMessage(param.BaseParams, param.MsigAddress, param.MinerId, param.From, param.BeneficiaryAddress, param.Quota, param.Expiration, param.OverwritePendingChange)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	myMsg, err := chain.EncodeMessage(msg, msgParams)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	ReturnOk(c, myMsg)
+}
+
+// MsigChangeBeneficiaryApprove Post
+func (w *Wallet) MsigChangeBeneficiaryApprove(c *gin.Context) {
+	param := client.MsigChangeBeneficiaryApproveRequest{}
+	err := c.BindJSON(&param)
+	if err != nil {
+		ReturnError(c, ParamErr)
+		return
+	}
+
+	msig := buildmessage.NewMsiger(w.Api)
+	msg, msgParams, err := msig.NewMsigChangeBeneficiaryApproveMessage(param.BaseParams, param.MsigAddress, param.ProposerAddress, param.TxId, param.MinerId, param.From, param.BeneficiaryAddress, param.Quota, param.Expiration)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	myMsg, err := chain.EncodeMessage(msg, msgParams)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	ReturnOk(c, myMsg)
+}
+
+// MsigConfirmChangeBeneficiaryPropose Post
+func (w *Wallet) MsigConfirmChangeBeneficiaryPropose(c *gin.Context) {
+	param := client.MsigConfirmChangeBeneficiaryProposeRequest{}
+	err := c.BindJSON(&param)
+	if err != nil {
+		ReturnError(c, ParamErr)
+		return
+	}
+
+	msig := buildmessage.NewMsiger(w.Api)
+	msg, msgParams, err := msig.NewMsigConfirmChangeBeneficiaryProposeMessage(param.BaseParams, param.MsigAddress, param.MinerId, param.From)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	myMsg, err := chain.EncodeMessage(msg, msgParams)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	ReturnOk(c, myMsg)
+}
+
+// MsigConfirmChangeBeneficiaryApprove Post
+func (w *Wallet) MsigConfirmChangeBeneficiaryApprove(c *gin.Context) {
+	param := client.MsigConfirmChangeBeneficiaryApproveRequest{}
+	err := c.BindJSON(&param)
+	if err != nil {
+		ReturnError(c, ParamErr)
+		return
+	}
+
+	msig := buildmessage.NewMsiger(w.Api)
+	msg, msgParams, err := msig.NewMsigConfirmChangeBeneficiaryApproveMessage(param.BaseParams, param.MsigAddress, param.ProposerAddress, param.TxId, param.MinerId, param.From)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	myMsg, err := chain.EncodeMessage(msg, msgParams)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	ReturnOk(c, myMsg)
+}

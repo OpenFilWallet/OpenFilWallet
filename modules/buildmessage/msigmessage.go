@@ -7,6 +7,8 @@ import (
 	"github.com/filecoin-project/go-state-types/abi"
 	actorstypes "github.com/filecoin-project/go-state-types/actors"
 	"github.com/filecoin-project/go-state-types/big"
+	"github.com/filecoin-project/go-state-types/builtin"
+	"github.com/filecoin-project/go-state-types/builtin/v9/miner"
 	multisig8 "github.com/filecoin-project/go-state-types/builtin/v9/multisig"
 	"github.com/filecoin-project/go-state-types/network"
 	"github.com/filecoin-project/lotus/api"
@@ -14,7 +16,6 @@ import (
 	lotusbuiltin "github.com/filecoin-project/lotus/chain/actors/builtin"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/multisig"
 	"github.com/filecoin-project/lotus/chain/types"
-	"github.com/filecoin-project/specs-actors/v8/actors/builtin"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
 	msig8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/multisig"
 	"github.com/minio/blake2b-simd"
@@ -1291,7 +1292,248 @@ func (m *Msiger) NewMsigSetControlApproveMessage(baseParams BaseParams, msigAddr
 	return msg, approveParams, nil
 }
 
-// todo v17 ChangeBeneficiary
+func (m *Msiger) NewMsigChangeBeneficiaryProposeMessage(baseParams BaseParams, msigAddress, minerId string, from string, beneficiaryAddress, quota, expiration string, overwritePendingChange bool) (*types.Message, *multisig8.ProposeParams, error) {
+	msig, err := address.NewFromString(msigAddress)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	sendAddr, err := address.NewFromString(from)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ctx := context.Background()
+
+	na, err := address.NewFromString(beneficiaryAddress)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing beneficiary address: %w", err)
+	}
+
+	newAddr, err := m.node.StateLookupID(ctx, na, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, fmt.Errorf("looking up new beneficiary address: %w", err)
+	}
+
+	quotaParam, err := types.ParseFIL(quota)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing quota: %w", err)
+	}
+
+	expirationParam, err := strconv.ParseInt(expiration, 10, 64)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing expiration: %w", err)
+	}
+
+	minerAddr, err := address.NewFromString(minerId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	mi, err := m.node.StateMinerInfo(ctx, minerAddr, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if mi.PendingBeneficiaryTerm != nil && !overwritePendingChange {
+		return nil, nil, fmt.Errorf("WARNING: replacing Pending Beneficiary Term of: Beneficiary: %s, Quota: %s, Expiration Epoch:%d", mi.PendingBeneficiaryTerm.NewBeneficiary.String(), mi.PendingBeneficiaryTerm.NewQuota.String(), mi.PendingBeneficiaryTerm.NewExpiration)
+	}
+
+	params := &miner.ChangeBeneficiaryParams{
+		NewBeneficiary: newAddr,
+		NewQuota:       abi.TokenAmount(quotaParam),
+		NewExpiration:  abi.ChainEpoch(expirationParam),
+	}
+
+	sp, err := actors.SerializeParams(params)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("serializing params: %w", err)
+	}
+
+	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeBeneficiary), sp)
+
+	msg, err = buildMessage(m.node, msg, baseParams)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return msg, proposeParams, nil
+}
+
+func (m *Msiger) NewMsigChangeBeneficiaryApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, minerId string, from string, beneficiaryAddress, quota, expiration string) (*types.Message, *msig8.TxnIDParams, error) {
+	msig, err := address.NewFromString(msigAddress)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	sendAddr, err := address.NewFromString(from)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	prop, err := address.NewFromString(proposerAddress)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	txid, err := strconv.ParseUint(txId, 10, 64)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ctx := context.Background()
+
+	na, err := address.NewFromString(beneficiaryAddress)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing beneficiary address: %w", err)
+	}
+
+	newAddr, err := m.node.StateLookupID(ctx, na, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, fmt.Errorf("looking up new beneficiary address: %w", err)
+	}
+
+	quotaParam, err := types.ParseFIL(quota)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing quota: %w", err)
+	}
+
+	expirationParam, err := strconv.ParseInt(expiration, 10, 64)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing expiration: %w", err)
+	}
+
+	minerAddr, err := address.NewFromString(minerId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	params := &miner.ChangeBeneficiaryParams{
+		NewBeneficiary: newAddr,
+		NewQuota:       abi.TokenAmount(quotaParam),
+		NewExpiration:  abi.ChainEpoch(expirationParam),
+	}
+
+	sp, err := actors.SerializeParams(params)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("serializing params: %w", err)
+	}
+
+	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeBeneficiary), sp)
+
+	msg, err = buildMessage(m.node, msg, baseParams)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return msg, approveParams, nil
+}
+
+func (m *Msiger) NewMsigConfirmChangeBeneficiaryProposeMessage(baseParams BaseParams, msigAddress, minerId string, from string) (*types.Message, *multisig8.ProposeParams, error) {
+	msig, err := address.NewFromString(msigAddress)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	sendAddr, err := address.NewFromString(from)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	minerAddr, err := address.NewFromString(minerId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ctx := context.Background()
+
+	mi, err := m.node.StateMinerInfo(ctx, minerAddr, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if mi.PendingBeneficiaryTerm == nil {
+		return nil, nil, fmt.Errorf("no pending beneficiary term found for miner %s", minerAddr)
+	}
+
+	params := &miner.ChangeBeneficiaryParams{
+		NewBeneficiary: mi.PendingBeneficiaryTerm.NewBeneficiary,
+		NewQuota:       mi.PendingBeneficiaryTerm.NewQuota,
+		NewExpiration:  mi.PendingBeneficiaryTerm.NewExpiration,
+	}
+
+	sp, err := actors.SerializeParams(params)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("serializing params: %w", err)
+	}
+
+	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeBeneficiary), sp)
+
+	msg, err = buildMessage(m.node, msg, baseParams)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return msg, proposeParams, nil
+}
+
+func (m *Msiger) NewMsigConfirmChangeBeneficiaryApproveMessage(baseParams BaseParams, msigAddress, minerId, proposerAddress, txId, from string) (*types.Message, *msig8.TxnIDParams, error) {
+	msig, err := address.NewFromString(msigAddress)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	sendAddr, err := address.NewFromString(from)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	prop, err := address.NewFromString(proposerAddress)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	txid, err := strconv.ParseUint(txId, 10, 64)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	minerAddr, err := address.NewFromString(minerId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ctx := context.Background()
+
+	mi, err := m.node.StateMinerInfo(ctx, minerAddr, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if mi.PendingBeneficiaryTerm == nil {
+		return nil, nil, fmt.Errorf("no pending beneficiary term found for miner %s", minerAddr)
+	}
+
+	params := &miner.ChangeBeneficiaryParams{
+		NewBeneficiary: mi.PendingBeneficiaryTerm.NewBeneficiary,
+		NewQuota:       mi.PendingBeneficiaryTerm.NewQuota,
+		NewExpiration:  mi.PendingBeneficiaryTerm.NewExpiration,
+	}
+
+	sp, err := actors.SerializeParams(params)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("serializing params: %w", err)
+	}
+
+	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeBeneficiary), sp)
+
+	msg, err = buildMessage(m.node, msg, baseParams)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return msg, approveParams, nil
+}
 
 // --------------------
 

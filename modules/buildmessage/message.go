@@ -6,12 +6,14 @@ import (
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/go-state-types/big"
+	"github.com/filecoin-project/go-state-types/builtin"
+	"github.com/filecoin-project/go-state-types/builtin/v9/miner"
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/types"
-	"github.com/filecoin-project/specs-actors/v8/actors/builtin"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
 	"golang.org/x/xerrors"
+	"strconv"
 )
 
 type BaseParams struct {
@@ -302,6 +304,135 @@ func NewConfirmUpdateWorkerMessage(node api.FullNode, baseParams BaseParams, min
 	}
 
 	return msg, nil
+}
+
+func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams, minerId string, beneficiaryAddress, quota, expiration string, overwritePendingChange bool) (*types.Message, *miner.ChangeBeneficiaryParams, error) {
+	ctx := context.Background()
+
+	na, err := address.NewFromString(beneficiaryAddress)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing beneficiary address: %w", err)
+	}
+
+	newAddr, err := node.StateLookupID(ctx, na, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, fmt.Errorf("looking up new beneficiary address: %w", err)
+	}
+
+	quotaParam, err := types.ParseFIL(quota)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing quota: %w", err)
+	}
+
+	expirationParam, err := strconv.ParseInt(expiration, 10, 64)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing expiration: %w", err)
+	}
+
+	minerAddr, err := address.NewFromString(minerId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	mi, err := node.StateMinerInfo(ctx, minerAddr, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("getting miner info: %w", err)
+	}
+
+	if mi.Beneficiary == mi.Owner && newAddr == mi.Owner {
+		return nil, nil, fmt.Errorf("beneficiary %s already set to owner address", mi.Beneficiary)
+	}
+
+	if mi.PendingBeneficiaryTerm != nil && !overwritePendingChange {
+		return nil, nil, fmt.Errorf("WARNING: replacing Pending Beneficiary Term of: Beneficiary: %s, Quota: %s, Expiration Epoch:%d", mi.PendingBeneficiaryTerm.NewBeneficiary.String(), mi.PendingBeneficiaryTerm.NewQuota.String(), mi.PendingBeneficiaryTerm.NewExpiration)
+	}
+
+	params := &miner.ChangeBeneficiaryParams{
+		NewBeneficiary: newAddr,
+		NewQuota:       abi.TokenAmount(quotaParam),
+		NewExpiration:  abi.ChainEpoch(expirationParam),
+	}
+
+	sp, err := actors.SerializeParams(params)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("serializing params: %w", err)
+	}
+
+	msg := &types.Message{
+		From:   mi.Owner,
+		To:     minerAddr,
+		Method: builtin.MethodsMiner.ChangeBeneficiary,
+		Value:  big.Zero(),
+		Params: sp,
+	}
+
+	msg, err = buildMessage(node, msg, baseParams)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return msg, params, nil
+}
+
+func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, minerId string, existingBeneficiary, newBeneficiary bool) (*types.Message, *miner.ChangeBeneficiaryParams, error) {
+	ctx := context.Background()
+
+	minerAddr, err := address.NewFromString(minerId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	mi, err := node.StateMinerInfo(ctx, minerAddr, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("getting miner info: %w", err)
+	}
+
+	if mi.PendingBeneficiaryTerm == nil {
+		return nil, nil, fmt.Errorf("no pending beneficiary term found for miner %s", minerAddr)
+	}
+
+	if (existingBeneficiary && newBeneficiary) || (!existingBeneficiary && !newBeneficiary) {
+		return nil, nil, fmt.Errorf("must pass exactly one of --existing-beneficiary or --new-beneficiary")
+	}
+
+	var fromAddr address.Address
+	if existingBeneficiary {
+		if mi.PendingBeneficiaryTerm.ApprovedByBeneficiary {
+			return nil, nil, fmt.Errorf("beneficiary change already approved by current beneficiary")
+		}
+		fromAddr = mi.Beneficiary
+	} else {
+		if mi.PendingBeneficiaryTerm.ApprovedByNominee {
+			return nil, nil, fmt.Errorf("beneficiary change already approved by new beneficiary")
+		}
+		fromAddr = mi.PendingBeneficiaryTerm.NewBeneficiary
+	}
+
+	params := &miner.ChangeBeneficiaryParams{
+		NewBeneficiary: mi.PendingBeneficiaryTerm.NewBeneficiary,
+		NewQuota:       mi.PendingBeneficiaryTerm.NewQuota,
+		NewExpiration:  mi.PendingBeneficiaryTerm.NewExpiration,
+	}
+
+	sp, err := actors.SerializeParams(params)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("serializing params: %w", err)
+	}
+
+	msg := &types.Message{
+		From:   fromAddr,
+		To:     minerAddr,
+		Method: builtin.MethodsMiner.ChangeBeneficiary,
+		Value:  big.Zero(),
+		Params: sp,
+	}
+
+	msg, err = buildMessage(node, msg, baseParams)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return msg, params, nil
 }
 
 func buildMessage(node api.FullNode, msg *types.Message, baseParams BaseParams) (*types.Message, error) {

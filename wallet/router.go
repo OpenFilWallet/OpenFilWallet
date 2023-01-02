@@ -46,6 +46,8 @@ func (w *Wallet) NewRouter() *gin.Engine {
 	r.POST("/miner/confirm_change_worker", w.ConfirmChangeWorker)
 	r.POST("/miner/change_control", w.ChangeControl)
 	r.GET("/miner/control_list", w.ControlList)
+	r.POST("/miner/change_beneficiary", w.ChangeBeneficiary)
+	r.POST("/miner/confirm_change_beneficiary", w.ConfirmChangeBeneficiary)
 
 	r.GET("/msig/inspect", w.MsigInspect)
 	r.POST("/msig/create", w.MsigCreate)
@@ -76,6 +78,10 @@ func (w *Wallet) NewRouter() *gin.Engine {
 	r.POST("/msig/confirm_change_worker_approve", w.MsigConfirmChangeWorkerApprove)
 	r.POST("/msig/set_control_propose", w.MsigSetControlPropose)
 	r.POST("/msig/set_control_approve", w.MsigSetControlApprove)
+	r.POST("/msig/change_beneficiary_propose", w.MsigChangeBeneficiaryPropose)
+	r.POST("/msig/change_beneficiary_approve", w.MsigChangeBeneficiaryApprove)
+	r.POST("/msig/confirm_change_beneficiary_propose", w.MsigConfirmChangeBeneficiaryPropose)
+	r.POST("/msig/confirm_change_beneficiary_approve", w.MsigConfirmChangeBeneficiaryApprove)
 
 	return r
 }
