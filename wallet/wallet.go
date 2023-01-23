@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"github.com/OpenFilWallet/OpenFilWallet/account"
+	"github.com/OpenFilWallet/OpenFilWallet/crypto"
 	"github.com/OpenFilWallet/OpenFilWallet/datastore"
 	"github.com/OpenFilWallet/OpenFilWallet/modules/messagesigner"
 	logging "github.com/ipfs/go-log/v2"
@@ -23,7 +25,7 @@ type Wallet struct {
 	lk sync.Mutex
 }
 
-func NewWallet(offline bool, rootPassword string, db datastore.WalletDB, close <-chan struct{}) *Wallet {
+func NewWallet(offline bool, rootPassword string, db datastore.WalletDB, close <-chan struct{}) (*Wallet, error) {
 	login := newLogin(close)
 
 	w := &Wallet{
@@ -35,14 +37,26 @@ func NewWallet(offline bool, rootPassword string, db datastore.WalletDB, close <
 	}
 
 	nodeInfo, err := w.getBestNode()
-	if err == nil {
-		node, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
-		if err == nil {
-			w.node = node
-		} else {
-			log.Warn("no lotus daemon node available")
-		}
+	if err != nil {
+		return nil, err
 	}
 
-	return w
+	node, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
+	if err == nil {
+		w.node = node
+	} else {
+		log.Warn("no nodes available")
+	}
+
+	keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
+	if err != nil {
+		return nil, err
+	}
+
+	err = w.signer.RegisterSigner(keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	return w, nil
 }
