@@ -4,6 +4,7 @@ import (
 	"github.com/OpenFilWallet/OpenFilWallet/account"
 	"github.com/OpenFilWallet/OpenFilWallet/client"
 	"github.com/OpenFilWallet/OpenFilWallet/crypto"
+	"github.com/OpenFilWallet/OpenFilWallet/datastore"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,13 +17,15 @@ func (w *Wallet) WalletCreate(c *gin.Context) {
 		return
 	}
 
-	var index = uint64(param.Index)
-	if param.Index == -1 {
-		index, err = w.db.MnemonicIndex()
+	var index = uint64(0)
+	if param.Index <= 0 {
+		index, err = w.db.NextMnemonicIndex()
 		if err != nil {
 			ReturnError(c, NewError(500, err.Error()))
 			return
 		}
+	} else {
+		index = uint64(param.Index)
 	}
 
 	mnemonic, err := account.LoadMnemonic(w.db, crypto.GenerateEncryptKey([]byte(w.rootPassword)))
@@ -67,21 +70,35 @@ func (w *Wallet) WalletList(c *gin.Context) {
 		return
 	}
 
-	data := make(map[string]interface{})
-
-	walletListMap := make(map[string][]string)
+	walletListMap := make(map[string][]datastore.PrivateWallet)
 	for _, wallet := range walletList {
 		if _, ok := walletListMap[walletType(wallet.Address)]; !ok {
-			walletListMap[walletType(wallet.Address)] = []string{wallet.Address}
+			walletListMap[walletType(wallet.Address)] = []datastore.PrivateWallet{wallet}
 			continue
 		}
 
-		walletListMap[walletType(wallet.Address)] = append(walletListMap[walletType(wallet.Address)], wallet.Address)
+		walletListMap[walletType(wallet.Address)] = append(walletListMap[walletType(wallet.Address)], wallet)
 	}
 
-	data["msig"] = msigList
-	for key, value := range walletListMap {
-		data[key] = value
+	data := make([]client.WalletListInfo, 0)
+	for _, ms := range msigList {
+		data = append(data, client.WalletListInfo{
+			WalletType:    "msig",
+			WalletAddress: ms.MsigAddr,
+			WalletPath:    "",
+		})
+	}
+
+	for _, key := range []string{"secp256k1", "bls"} {
+		if wallets, ok := walletListMap[key]; ok {
+			for _, wallet := range wallets {
+				data = append(data, client.WalletListInfo{
+					WalletType:    key,
+					WalletAddress: wallet.Address,
+					WalletPath:    wallet.Path,
+				})
+			}
+		}
 	}
 
 	ReturnOk(c, data)
