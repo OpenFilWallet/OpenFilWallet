@@ -23,8 +23,15 @@ func Recovery() gin.HandlerFunc {
 
 func (w *Wallet) MustUnlock() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if strings.Contains(c.Request.URL.String(), "status") ||
+			strings.Contains(c.Request.URL.String(), "login") {
+			c.Next()
+			return
+		}
+
 		if w.lock {
 			ReturnError(c, NewError(500, "wallet is locked"))
+			c.Abort()
 			return
 		}
 
