@@ -147,7 +147,14 @@ func (w *Wallet) NodeList(c *gin.Context) {
 		return
 	}
 
-	var nis []client.NodeInfo
+	// Add a default node
+	nodeInfos = append(nodeInfos, datastore.NodeInfo{
+		Name:     "glif",
+		Endpoint: "https://api.node.glif.io/rpc/v0",
+		Token:    "",
+	})
+	var nis = []client.NodeInfo{}
+
 	for _, ni := range nodeInfos {
 		nis = append(nis, client.NodeInfo{
 			Name:     ni.Name,
@@ -168,6 +175,13 @@ func (w *Wallet) NodeBest(c *gin.Context) {
 		return
 	}
 
+	node, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+	w.node = node
+
 	ReturnOk(c, client.NodeInfo{
 		Name:     nodeInfo.Name,
 		Endpoint: nodeInfo.Endpoint,
@@ -180,6 +194,13 @@ func (w *Wallet) getBestNode() (*datastore.NodeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Add a default node
+	nodeInfos = append(nodeInfos, datastore.NodeInfo{
+		Name:     "glif",
+		Endpoint: "https://api.node.glif.io/rpc/v0",
+		Token:    "",
+	})
 
 	bestIndex := -1
 	bestElapsed := time.Duration(0)
