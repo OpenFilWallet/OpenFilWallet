@@ -30,6 +30,7 @@ func getBaseParams(cctx *cli.Context) (buildmessage.BaseParams, error) {
 
 	baseParams.GasLimit = cctx.Int64("gas-limit")
 	baseParams.MaxFee = cctx.String("max-fee")
+	baseParams.Nonce = cctx.Uint64("nonce")
 
 	return baseParams, nil
 }
@@ -42,7 +43,7 @@ func printMessage(cctx *cli.Context, msg interface{}) error {
 
 	if cctx.IsSet("output") {
 		output := cctx.String("output")
-		fi, err := os.Open(output)
+		fi, err := os.Create(output)
 		if err != nil {
 			log.Warnf("open file (path: %s): %s \n", output, err)
 
