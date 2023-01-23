@@ -64,9 +64,6 @@ func (api *OpenFilAPI) Status() (*StatusInfo, error) {
 	var si StatusInfo
 	err = json.Unmarshal(res, &si)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -86,10 +83,6 @@ func (api *OpenFilAPI) Login(loginPassword string) error {
 	var li LoginInfo
 	err = json.Unmarshal(res, &li)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return err
-		}
-
 		return err
 	}
 
@@ -116,10 +109,6 @@ func (api *OpenFilAPI) Decode(to string, method uint64, params string, encoding 
 	var dr DecodeResponse
 	err = json.Unmarshal(res, &dr)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return "", err
-		}
-
 		return "", err
 	}
 
@@ -142,10 +131,6 @@ func (api *OpenFilAPI) Encode(dest string, method uint64, params string, encodin
 	var er EncodeResponse
 	err = json.Unmarshal(res, &er)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return "", err
-		}
-
 		return "", err
 	}
 
@@ -256,9 +241,6 @@ func (api *OpenFilAPI) NodeList() ([]NodeInfo, error) {
 	var nis []NodeInfo
 	err = json.Unmarshal(res, &nis)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -273,9 +255,6 @@ func (api *OpenFilAPI) NodeBest() (*NodeInfo, error) {
 	var ni NodeInfo
 	err = json.Unmarshal(res, &ni)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -295,9 +274,6 @@ func (api *OpenFilAPI) WalletCreate(index int) (*CreateWalletResponse, error) {
 	var r CreateWalletResponse
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -313,9 +289,6 @@ func (api *OpenFilAPI) WalletList() ([]WalletListInfo, error) {
 	var r = make([]WalletListInfo, 0)
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -331,9 +304,6 @@ func (api *OpenFilAPI) MsigWalletList() ([]MsigWalletListInfo, error) {
 	var r = make([]MsigWalletListInfo, 0)
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -349,9 +319,6 @@ func (api *OpenFilAPI) Balance(addr string) (*BalanceInfo, error) {
 	var r BalanceInfo
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -374,9 +341,6 @@ func (api *OpenFilAPI) Transfer(baseParams buildmessage.BaseParams, from, to, am
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -411,9 +375,6 @@ func (api *OpenFilAPI) TxHistory(addr string) ([]HistoryResponse, error) {
 	var r []HistoryResponse
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -429,9 +390,6 @@ func (api *OpenFilAPI) Sign(req chain.Message) (*chain.SignedMessage, error) {
 	var r chain.SignedMessage
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -451,9 +409,6 @@ func (api *OpenFilAPI) SignMsg(from string, msg string) (string, error) {
 	var r Response
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return "", err
-		}
 		return "", err
 	}
 
@@ -469,9 +424,6 @@ func (api *OpenFilAPI) SignAndSend(req chain.Message) (string, error) {
 	var r Response
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return "", err
-		}
 		return "", err
 	}
 
@@ -492,9 +444,6 @@ func (api *OpenFilAPI) Withdraw(baseParams buildmessage.BaseParams, minerId, amo
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -516,9 +465,6 @@ func (api *OpenFilAPI) ChangeOwner(baseParams buildmessage.BaseParams, minerId s
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -540,9 +486,6 @@ func (api *OpenFilAPI) ChangeWorker(baseParams buildmessage.BaseParams, minerId,
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -564,9 +507,6 @@ func (api *OpenFilAPI) ConfirmChangeWorker(baseParams buildmessage.BaseParams, m
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -591,9 +531,6 @@ func (api *OpenFilAPI) ChangeBeneficiary(baseParams buildmessage.BaseParams, min
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -616,9 +553,6 @@ func (api *OpenFilAPI) ConfirmChangeBeneficiary(baseParams buildmessage.BasePara
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -640,9 +574,6 @@ func (api *OpenFilAPI) ChangeControl(baseParams buildmessage.BaseParams, minerId
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -658,9 +589,6 @@ func (api *OpenFilAPI) ControlList(minerId string) (*MinerControl, error) {
 	var r MinerControl
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -676,9 +604,6 @@ func (api *OpenFilAPI) MsigInspect(msigAddress string) (*MsigInspect, error) {
 	var r MsigInspect
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -703,9 +628,6 @@ func (api *OpenFilAPI) MsigCreate(baseParams buildmessage.BaseParams, from strin
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -728,9 +650,6 @@ func (api *OpenFilAPI) MsigApprove(baseParams buildmessage.BaseParams, from stri
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -753,9 +672,6 @@ func (api *OpenFilAPI) MsigCancel(baseParams buildmessage.BaseParams, from strin
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -779,9 +695,6 @@ func (api *OpenFilAPI) MsigTransferPropose(baseParams buildmessage.BaseParams, f
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -804,9 +717,6 @@ func (api *OpenFilAPI) MsigTransferApprove(baseParams buildmessage.BaseParams, f
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -829,9 +739,6 @@ func (api *OpenFilAPI) MsigTransferCancel(baseParams buildmessage.BaseParams, fr
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -855,9 +762,6 @@ func (api *OpenFilAPI) MsigAddPropose(baseParams buildmessage.BaseParams, from s
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -883,9 +787,6 @@ func (api *OpenFilAPI) MsigAddApprove(baseParams buildmessage.BaseParams, from s
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -910,9 +811,6 @@ func (api *OpenFilAPI) MsigAddCancel(baseParams buildmessage.BaseParams, from st
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -936,9 +834,6 @@ func (api *OpenFilAPI) MsigSwapPropose(baseParams buildmessage.BaseParams, from 
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -964,9 +859,6 @@ func (api *OpenFilAPI) MsigSwapApprove(baseParams buildmessage.BaseParams, from 
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -991,9 +883,6 @@ func (api *OpenFilAPI) MsigSwapCancel(baseParams buildmessage.BaseParams, from s
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1018,9 +907,6 @@ func (api *OpenFilAPI) MsigLockPropose(baseParams buildmessage.BaseParams, from 
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1047,9 +933,6 @@ func (api *OpenFilAPI) MsigLockApprove(baseParams buildmessage.BaseParams, from 
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1075,9 +958,6 @@ func (api *OpenFilAPI) MsigLockCancel(baseParams buildmessage.BaseParams, from s
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1100,9 +980,6 @@ func (api *OpenFilAPI) MsigThresholdPropose(baseParams buildmessage.BaseParams, 
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1127,9 +1004,6 @@ func (api *OpenFilAPI) MsigThresholdApprove(baseParams buildmessage.BaseParams, 
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1153,9 +1027,6 @@ func (api *OpenFilAPI) MsigThresholdCancel(baseParams buildmessage.BaseParams, f
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1179,9 +1050,6 @@ func (api *OpenFilAPI) MsigChangeOwnerPropose(baseParams buildmessage.BaseParams
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1207,9 +1075,6 @@ func (api *OpenFilAPI) MsigChangeOwnerApprove(baseParams buildmessage.BaseParams
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1233,9 +1098,6 @@ func (api *OpenFilAPI) MsigWithdrawPropose(baseParams buildmessage.BaseParams, f
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1261,9 +1123,6 @@ func (api *OpenFilAPI) MsigWithdrawApprove(baseParams buildmessage.BaseParams, f
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1287,9 +1146,6 @@ func (api *OpenFilAPI) MsigChangeWorkerPropose(baseParams buildmessage.BaseParam
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1315,9 +1171,6 @@ func (api *OpenFilAPI) MsigChangeWorkerApprove(baseParams buildmessage.BaseParam
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1341,9 +1194,6 @@ func (api *OpenFilAPI) MsigConfirmChangeWorkerPropose(baseParams buildmessage.Ba
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1369,9 +1219,6 @@ func (api *OpenFilAPI) MsigConfirmChangeWorkerApprove(baseParams buildmessage.Ba
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1398,9 +1245,6 @@ func (api *OpenFilAPI) MsigChangeBeneficiaryPropose(baseParams buildmessage.Base
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1428,9 +1272,6 @@ func (api *OpenFilAPI) MsigChangeBeneficiaryApprove(baseParams buildmessage.Base
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1453,9 +1294,6 @@ func (api *OpenFilAPI) MsigConfirmChangeBeneficiaryPropose(baseParams buildmessa
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1480,9 +1318,6 @@ func (api *OpenFilAPI) MsigConfirmChangeBeneficiaryApprove(baseParams buildmessa
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1506,9 +1341,6 @@ func (api *OpenFilAPI) MsigSetControlPropose(baseParams buildmessage.BaseParams,
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
@@ -1534,19 +1366,20 @@ func (api *OpenFilAPI) MsigSetControlApprove(baseParams buildmessage.BaseParams,
 	var r chain.Message
 	err = json.Unmarshal(res, &r)
 	if err != nil {
-		if err := isServerErr(res); err != nil {
-			return nil, err
-		}
 		return nil, err
 	}
 
 	return &r, nil
 }
 
-func isServerErr(res []byte) error {
+func ifServerErr(res []byte) error {
 	var r Response
 	err := json.Unmarshal(res, &r)
 	if err != nil {
+		return nil
+	}
+
+	if r.Code == 0 || r.Code == 200 {
 		return nil
 	}
 
@@ -1614,6 +1447,10 @@ func Call(req *http.Request, token string) ([]byte, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := ifServerErr(body); err != nil {
 		return nil, err
 	}
 
