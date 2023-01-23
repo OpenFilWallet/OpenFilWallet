@@ -93,6 +93,15 @@ func (api *OpenFilAPI) Login(loginPassword string) error {
 	return nil
 }
 
+func (api *OpenFilAPI) SignOut() error {
+	_, err := PostRequest(api.endpoint, "/signout", api.token, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (api *OpenFilAPI) Decode(to string, method uint64, params string, encoding string) (string, error) {
 	req := DecodeRequest{
 		ToAddr:   to,

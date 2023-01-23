@@ -30,7 +30,7 @@ func (w *Wallet) MustUnlock() gin.HandlerFunc {
 		}
 
 		if w.lock {
-			ReturnError(c, NewError(500, "wallet is locked"))
+			ReturnError(c, NewError(500, "wallet is locked, please login"))
 			c.Abort()
 			return
 		}

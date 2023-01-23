@@ -63,6 +63,11 @@ func (w *Wallet) Login(c *gin.Context) {
 	})
 }
 
+// SignOut Post
+func (w *Wallet) SignOut(c *gin.Context) {
+	w.lock = true
+}
+
 func (l *login) unlock() {
 	l.lock = false
 	l.lockTicker.Reset(lockDuration)

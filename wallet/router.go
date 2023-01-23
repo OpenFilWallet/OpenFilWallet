@@ -14,6 +14,7 @@ func (w *Wallet) NewRouter() *gin.Engine {
 	r.GET("/status", w.Status)
 
 	r.POST("/login", w.Login)
+	r.POST("/signout", w.SignOut)
 
 	r.POST("/chain/decode", w.Decode)
 	r.POST("/chain/encode", w.Encode)

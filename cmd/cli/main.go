@@ -30,6 +30,7 @@ func main() {
 		Commands: []*cli.Command{
 			statusCmd,
 			loginCmd,
+			signOutCmd,
 			nodeCmd,
 			chainCmd,
 			sendCmd,

@@ -32,6 +32,25 @@ var loginCmd = &cli.Command{
 	},
 }
 
+var signOutCmd = &cli.Command{
+	Name:  "signout",
+	Usage: "sign out openfil wallet",
+	Action: func(cctx *cli.Context) error {
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		err = walletAPI.SignOut()
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("sign out successful")
+		return nil
+	},
+}
+
 func loginPassword() (string, error) {
 	fmt.Println("Please enter login password")
 	for i := 0; i < 3; i++ {
