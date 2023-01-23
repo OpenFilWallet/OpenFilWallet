@@ -14,7 +14,7 @@ const historyBasePrefix = "/transaction/history"
 type HistoryStore struct {
 	ds       datastore.Batching
 	recorder map[string]*StateStore
-	lk       *sync.Mutex
+	lk       sync.Mutex
 }
 
 func newHistoryStore(ds datastore.Batching) *HistoryStore {
