@@ -109,7 +109,11 @@ var runCmd = &cli.Command{
 
 		var closeCh = make(chan struct{})
 		// new server
-		walletServer := wallet.NewWallet(cctx.Bool("offline"), rootPassword, db, closeCh)
+		walletServer, err := wallet.NewWallet(cctx.Bool("offline"), rootPassword, db, closeCh)
+		if err != nil {
+			return fmt.Errorf("new Wallet fail: %s", err.Error())
+		}
+
 		router := walletServer.NewRouter()
 
 		s := &http.Server{
