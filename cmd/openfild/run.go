@@ -78,7 +78,7 @@ var runCmd = &cli.Command{
 		}
 
 		app.SetSecret(loginScrypt)
-		token, err := app.AuthNew([]string{"all"}) // todo Wallet rules can be added
+		token, err := app.AuthNew(app.AllPermissions)
 		if err != nil {
 			return err
 		}

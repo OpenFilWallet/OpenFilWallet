@@ -86,10 +86,6 @@ func (api *OpenFilAPI) Login(loginPassword string) error {
 		return err
 	}
 
-	if api.token != li.Token {
-		return errors.New("token does not match")
-	}
-
 	return nil
 }
 

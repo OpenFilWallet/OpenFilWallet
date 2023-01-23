@@ -35,6 +35,7 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			initCmd,
+			authCmd,
 			runCmd,
 			mnemonicCmd,
 			walletCmd,

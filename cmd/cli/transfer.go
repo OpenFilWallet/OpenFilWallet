@@ -81,7 +81,7 @@ var transferCmd = &cli.Command{
 
 		msg, err := walletAPI.Transfer(baseParams, from.String(), to.String(), amount)
 		if err != nil {
-			return err // todo 错误提示
+			return err
 		}
 
 		return printMessage(cctx, msg)

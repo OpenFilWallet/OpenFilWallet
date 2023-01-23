@@ -49,7 +49,7 @@ func (w *Wallet) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := app.AuthNew([]string{"all"})
+	token, err := app.AuthNew(app.SignPermissions)
 	if err != nil {
 		ReturnError(c, NewError(500, err.Error()))
 		return
