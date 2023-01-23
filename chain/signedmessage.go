@@ -2,6 +2,7 @@ package chain
 
 import (
 	"bytes"
+	"encoding/hex"
 	"github.com/filecoin-project/go-state-types/crypto"
 	"github.com/filecoin-project/lotus/chain/types"
 )
@@ -52,8 +53,11 @@ func DecodeSignedMessage(signedMsg *SignedMessage) (*types.SignedMessage, error)
 
 func DecodeSignature(signature string) (crypto.Signature, error) {
 	var sign crypto.Signature
-	buf := bytes.NewBufferString(signature)
-	err := sign.UnmarshalCBOR(buf)
+	signByte, err := hex.DecodeString(signature)
+	if err != nil {
+		return crypto.Signature{}, err
+	}
+	err = sign.UnmarshalCBOR(bytes.NewReader(signByte))
 	if err != nil {
 		return crypto.Signature{}, err
 	}
@@ -68,5 +72,5 @@ func EncodeSignature(signature crypto.Signature) (string, error) {
 		return "", err
 	}
 
-	return buf.String(), nil
+	return hex.EncodeToString(buf.Bytes()), nil
 }
