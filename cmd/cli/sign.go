@@ -31,9 +31,10 @@ var signTxCmd = &cli.Command{
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {

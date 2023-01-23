@@ -16,6 +16,7 @@ var sendCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "tx-path",
+			Aliases:  []string{"tp"},
 			Usage:    "path to file containing transaction information",
 			Value:    "",
 			Required: true,

@@ -76,17 +76,20 @@ var updateNodeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "name",
+			Aliases:  []string{"nm"},
 			Usage:    "node name",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "endpoint",
+			Aliases:  []string{"ep"},
 			Usage:    "node endpoint",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "token",
-			Usage: "node token",
+			Name:    "token",
+			Aliases: []string{"t"},
+			Usage:   "node token",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -115,6 +118,7 @@ var deleteNodeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "name",
+			Aliases:  []string{"nm"},
 			Usage:    "node name",
 			Required: true,
 		},
@@ -143,6 +147,7 @@ var useNodeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "name",
+			Aliases:  []string{"nm"},
 			Usage:    "node name",
 			Required: true,
 		},

@@ -23,9 +23,10 @@ var walletNewCmd = &cli.Command{
 	Usage: "Generate bls and secp256k1 wallets with the same index",
 	Flags: []cli.Flag{
 		&cli.IntFlag{
-			Name:  "index",
-			Usage: "hd wallet index",
-			Value: -1,
+			Name:    "index",
+			Aliases: []string{"i"},
+			Usage:   "hd wallet index",
+			Value:   -1,
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -55,6 +56,7 @@ var walletBalanceCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "address",
+			Aliases:  []string{"addr"},
 			Usage:    "wallet address",
 			Required: true,
 		},
@@ -81,9 +83,10 @@ var walletListCmd = &cli.Command{
 	Usage: "wallet list",
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
-			Name:  "balance",
-			Usage: "request wallet balance",
-			Value: false,
+			Name:    "balance",
+			Aliases: []string{"b"},
+			Usage:   "request wallet balance",
+			Value:   false,
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -134,6 +137,7 @@ var walletHistoryCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "address",
+			Aliases:  []string{"addr"},
 			Usage:    "request wallet tx history",
 			Value:    "",
 			Required: true,

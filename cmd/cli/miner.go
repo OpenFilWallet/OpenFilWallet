@@ -21,29 +21,34 @@ var minerCmd = &cli.Command{
 	Usage: "miner control",
 	Flags: []cli.Flag{
 		&cli.Uint64Flag{
-			Name:  "nonce",
-			Usage: "specify the nonce to use",
-			Value: 0,
+			Name:    "nonce",
+			Aliases: []string{"n"},
+			Usage:   "specify the nonce to use",
+			Value:   0,
 		},
 		&cli.StringFlag{
-			Name:  "gas-premium",
-			Usage: "specify gas price to use in AttoFIL",
-			Value: "0",
+			Name:    "gas-premium",
+			Aliases: []string{"gp"},
+			Usage:   "specify gas price to use in AttoFIL",
+			Value:   "0",
 		},
 		&cli.StringFlag{
-			Name:  "gas-feecap",
-			Usage: "specify gas fee cap to use in AttoFIL",
-			Value: "0",
+			Name:    "gas-feecap",
+			Aliases: []string{"gf"},
+			Usage:   "specify gas fee cap to use in AttoFIL",
+			Value:   "0",
 		},
 		&cli.Int64Flag{
-			Name:  "gas-limit",
-			Usage: "specify gas limit",
-			Value: 0,
+			Name:    "gas-limit",
+			Aliases: []string{"gl"},
+			Usage:   "specify gas limit",
+			Value:   0,
 		},
 		&cli.StringFlag{
-			Name:  "max-fee",
-			Usage: "the max tx fee allowed for this transaction",
-			Value: "1 FIL",
+			Name:    "max-fee",
+			Aliases: []string{"mf"},
+			Usage:   "the max tx fee allowed for this transaction",
+			Value:   "1 FIL",
 		},
 	},
 	Subcommands: []*cli.Command{
@@ -62,13 +67,15 @@ var actorWithdrawCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "actor",
+			Aliases:  []string{"a"},
 			Usage:    "specify the address of miner actor",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -111,13 +118,15 @@ var actorSetOwnerCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "actor",
+			Aliases:  []string{"a"},
 			Usage:    "specify the address of miner actor",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -175,11 +184,13 @@ var actorControlList = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "actor",
+			Aliases:  []string{"a"},
 			Usage:    "specify the address of miner actor",
 			Required: true,
 		},
 		&cli.BoolFlag{
 			Name:        "color",
+			Aliases:     []string{"c"},
 			Usage:       "use color in display output",
 			DefaultText: "depends on output being a TTY",
 		},
@@ -277,13 +288,15 @@ var actorControlSet = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "actor",
+			Aliases:  []string{"a"},
 			Usage:    "specify the address of miner actor",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -319,13 +332,15 @@ var actorProposeChangeWorker = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "actor",
+			Aliases:  []string{"a"},
 			Usage:    "specify the address of miner actor",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -370,13 +385,15 @@ var actorConfirmChangeWorker = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "actor",
+			Aliases:  []string{"a"},
 			Usage:    "specify the address of miner actor",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -419,19 +436,22 @@ var actorProposeChangeBeneficiary = &cli.Command{
 	ArgsUsage: "[beneficiaryAddress quota expiration]",
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
-			Name:  "overwrite-pending-change",
-			Usage: "Overwrite the current beneficiary change proposal",
-			Value: false,
+			Name:    "overwrite-pending-change",
+			Aliases: []string{"opc"},
+			Usage:   "Overwrite the current beneficiary change proposal",
+			Value:   false,
 		},
 		&cli.StringFlag{
 			Name:     "actor",
+			Aliases:  []string{"a"},
 			Usage:    "specify the address of miner actor",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -470,17 +490,20 @@ var actorConfirmChangeBeneficiary = &cli.Command{
 	ArgsUsage: "[minerAddress]",
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
-			Name:  "existing-beneficiary",
-			Usage: "send confirmation from the existing beneficiary address",
+			Name:    "existing-beneficiary",
+			Aliases: []string{"eb"},
+			Usage:   "send confirmation from the existing beneficiary address",
 		},
 		&cli.BoolFlag{
-			Name:  "new-beneficiary",
-			Usage: "send confirmation from the new beneficiary address",
+			Name:    "new-beneficiary",
+			Aliases: []string{"nb"},
+			Usage:   "send confirmation from the new beneficiary address",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {

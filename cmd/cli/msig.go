@@ -17,29 +17,34 @@ var multisigCmd = &cli.Command{
 	Usage: "Interact with a multisig wallet",
 	Flags: []cli.Flag{
 		&cli.Uint64Flag{
-			Name:  "nonce",
-			Usage: "specify the nonce to use",
-			Value: 0,
+			Name:    "nonce",
+			Aliases: []string{"n"},
+			Usage:   "specify the nonce to use",
+			Value:   0,
 		},
 		&cli.StringFlag{
-			Name:  "gas-premium",
-			Usage: "specify gas price to use in AttoFIL",
-			Value: "0",
+			Name:    "gas-premium",
+			Aliases: []string{"gp"},
+			Usage:   "specify gas price to use in AttoFIL",
+			Value:   "0",
 		},
 		&cli.StringFlag{
-			Name:  "gas-feecap",
-			Usage: "specify gas fee cap to use in AttoFIL",
-			Value: "0",
+			Name:    "gas-feecap",
+			Aliases: []string{"gf"},
+			Usage:   "specify gas fee cap to use in AttoFIL",
+			Value:   "0",
 		},
 		&cli.Int64Flag{
-			Name:  "gas-limit",
-			Usage: "specify gas limit",
-			Value: 0,
+			Name:    "gas-limit",
+			Aliases: []string{"gl"},
+			Usage:   "specify gas limit",
+			Value:   0,
 		},
 		&cli.StringFlag{
-			Name:  "max-fee",
-			Usage: "the max tx fee allowed for this transaction",
-			Value: "1 FIL",
+			Name:    "max-fee",
+			Aliases: []string{"mf"},
+			Usage:   "the max tx fee allowed for this transaction",
+			Value:   "1 FIL",
 		},
 	},
 	Subcommands: []*cli.Command{
@@ -86,27 +91,32 @@ var msigCreateCmd = &cli.Command{
 	ArgsUsage: "[address1 address2 ...]",
 	Flags: []cli.Flag{
 		&cli.Int64Flag{
-			Name:  "required",
-			Usage: "number of required approvals (uses number of signers provided if omitted)",
+			Name:    "required",
+			Aliases: []string{"r"},
+			Usage:   "number of required approvals (uses number of signers provided if omitted)",
 		},
 		&cli.StringFlag{
-			Name:  "value",
-			Usage: "initial funds to give to multisig",
-			Value: "0",
+			Name:    "value",
+			Aliases: []string{"v"},
+			Usage:   "initial funds to give to multisig",
+			Value:   "0",
 		},
 		&cli.StringFlag{
-			Name:  "duration",
-			Usage: "length of the period over which funds unlock",
-			Value: "0",
+			Name:    "duration",
+			Aliases: []string{"d"},
+			Usage:   "length of the period over which funds unlock",
+			Value:   "0",
 		},
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the create message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the create message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -218,8 +228,9 @@ var msigInspectCmd = &cli.Command{
 	ArgsUsage: "[address]",
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
-			Name:  "vesting",
-			Usage: "Include vesting details",
+			Name:    "vesting",
+			Aliases: []string{"v"},
+			Usage:   "Include vesting details",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -301,13 +312,15 @@ var msigApproveCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress txId]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -355,13 +368,15 @@ var msigCancelCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress txId]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the cancel message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the cancel message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -409,13 +424,15 @@ var msigTransferProposeCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress destinationAddress value]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the propose message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the propose message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -468,13 +485,15 @@ var msigTransferApproveCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress txId]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -522,13 +541,15 @@ var msigTransferCancelCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress txId]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the cancel message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the cancel message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -576,17 +597,20 @@ var msigAddProposeCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress signer]",
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
-			Name:  "increase-threshold",
-			Usage: "whether the number of required signers should be increased",
+			Name:    "increase-threshold",
+			Aliases: []string{"it"},
+			Usage:   "whether the number of required signers should be increased",
 		},
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the propose message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the propose message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -634,13 +658,15 @@ var msigAddApproveCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress proposerAddress txId newAddress increaseThreshold]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -703,13 +729,15 @@ var msigAddCancelCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress txId newAddress increaseThreshold]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -767,13 +795,15 @@ var msigSwapProposeCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress oldAddress newAddress]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -826,13 +856,15 @@ var msigSwapApproveCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress proposerAddress txId oldAddress newAddress]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -895,13 +927,15 @@ var msigSwapCancelCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress txId oldAddress newAddress]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -959,13 +993,15 @@ var msigLockProposeCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress startEpoch unlockDuration amount]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the propose message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the propose message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -1026,13 +1062,15 @@ var msigLockApproveCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress proposerAddress txId startEpoch unlockDuration amount]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -1104,13 +1142,15 @@ var msigLockCancelCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress txId startEpoch unlockDuration amount]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the cancel message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the cancel message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -1177,13 +1217,15 @@ var msigThresholdProposeCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress newThreshold]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the proposal from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the proposal from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -1232,13 +1274,15 @@ var msigThresholdApproveCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress proposerAddress txId newThreshold]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -1298,13 +1342,15 @@ var msigThresholdCancelCmd = &cli.Command{
 	ArgsUsage: "[multisigAddress txId newThreshold]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "account to send the approve message from",
+			Name:    "from",
+			Aliases: []string{"f"},
+			Usage:   "account to send the approve message from",
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -1359,23 +1405,27 @@ var msigWithdrawBalanceProposeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[amount]",
@@ -1419,23 +1469,27 @@ var msigWithdrawBalanceApproveCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[amount txnId proposer]",
@@ -1490,23 +1544,27 @@ var msigChangeOwnerProposeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[newOwner]",
@@ -1550,23 +1608,27 @@ var msigChangeOwnerApproveCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[newOwner txnId proposer]",
@@ -1621,23 +1683,27 @@ var msigChangeWorkerProposeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[newWorker]",
@@ -1681,23 +1747,27 @@ var msigChangeWorkerApproveCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[newWorker txnId proposer]",
@@ -1751,9 +1821,10 @@ var msigConfirmChangeWorkerProposeCmd = &cli.Command{
 	Usage: "Confirm an worker address change",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[newWorker]",
@@ -1797,23 +1868,27 @@ var msigConfirmChangeWorkerApproveCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[newWorker txnId proposer]",
@@ -1868,23 +1943,27 @@ var msigSetControlProposeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[...address]",
@@ -1930,23 +2009,27 @@ var msigSetControlApproveCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[txnId proposer ...address]",
@@ -1996,28 +2079,33 @@ var msigChangeBeneficiaryProposeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.BoolFlag{
-			Name:  "overwrite-pending-change",
-			Usage: "Overwrite the current beneficiary change proposal",
-			Value: false,
+			Name:    "overwrite-pending-change",
+			Aliases: []string{"opc"},
+			Usage:   "Overwrite the current beneficiary change proposal",
+			Value:   false,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[beneficiaryAddress quota expiration]",
@@ -2061,23 +2149,27 @@ var msigChangeBeneficiaryApproveCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[txnId proposer beneficiaryAddress quota expiration]",
@@ -2131,28 +2223,33 @@ var msigConfirmChangeBeneficiaryProposeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.BoolFlag{
-			Name:  "overwrite-pending-change",
-			Usage: "Overwrite the current beneficiary change proposal",
-			Value: false,
+			Name:    "overwrite-pending-change",
+			Aliases: []string{"opc"},
+			Usage:   "Overwrite the current beneficiary change proposal",
+			Value:   false,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	Action: func(cctx *cli.Context) error {
@@ -2186,23 +2283,27 @@ var msigConfirmChangeBeneficiaryApproveCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:     "from",
+			Aliases:  []string{"f"},
 			Usage:    "specify address to send message from",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "multisig",
+			Aliases:  []string{"msig"},
 			Usage:    "specify multisig that will receive the message",
 			Required: true,
 		},
 		&cli.StringFlag{
 			Name:     "miner",
+			Aliases:  []string{"m"},
 			Usage:    "specify miner being acted upon",
 			Required: true,
 		},
 		&cli.StringFlag{
-			Name:  "output",
-			Usage: "save message to file",
-			Value: "",
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "a path to output tx message",
+			Value:   "",
 		},
 	},
 	ArgsUsage: "[txnId proposer]",
