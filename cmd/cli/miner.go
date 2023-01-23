@@ -191,6 +191,9 @@ var actorControlList = &cli.Command{
 
 		act := cctx.String("actor")
 		lotusAPI, err := getLotusAPI(cctx)
+		if err != nil {
+			return err
+		}
 		defer lotusAPI.Closer()
 		walletAPI, err := client.GetOpenFilAPI(cctx)
 		if err != nil {

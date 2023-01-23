@@ -95,6 +95,10 @@ var walletListCmd = &cli.Command{
 
 		export := cctx.Bool("export")
 		keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
+		if err != nil {
+			return err
+		}
+
 		for _, key := range keys {
 			afmt.Println("Address: ", key.Address)
 
