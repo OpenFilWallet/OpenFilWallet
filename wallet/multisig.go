@@ -21,6 +21,26 @@ import (
 	"sort"
 )
 
+// MsigWalletList Get
+func (w *Wallet) MsigWalletList(c *gin.Context) {
+	msigList, err := w.db.MsigWalletList()
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	data := []client.MsigWalletListInfo{}
+	for _, ms := range msigList {
+		data = append(data, client.MsigWalletListInfo{
+			MsigAddr:              ms.MsigAddr,
+			Signers:               ms.Signers,
+			NumApprovalsThreshold: ms.NumApprovalsThreshold,
+		})
+	}
+
+	ReturnOk(c, data)
+}
+
 // MsigCreate Post
 func (w *Wallet) MsigCreate(c *gin.Context) {
 	param := client.MsigCreateRequest{}

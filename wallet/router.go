@@ -49,6 +49,7 @@ func (w *Wallet) NewRouter() *gin.Engine {
 	r.POST("/miner/change_beneficiary", w.ChangeBeneficiary)
 	r.POST("/miner/confirm_change_beneficiary", w.ConfirmChangeBeneficiary)
 
+	r.GET("/msig/list", w.MsigWalletList)
 	r.GET("/msig/inspect", w.MsigInspect)
 	r.POST("/msig/create", w.MsigCreate)
 	r.POST("/msig/approve", w.MsigApprove)

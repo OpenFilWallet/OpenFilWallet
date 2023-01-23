@@ -44,6 +44,7 @@ var multisigCmd = &cli.Command{
 	},
 	Subcommands: []*cli.Command{
 		msigCreateCmd,
+		msigWalletListCmd,
 		msigInspectCmd,
 		msigApproveCmd,
 		msigCancelCmd,
@@ -158,6 +159,59 @@ var msigCreateCmd = &cli.Command{
 	},
 }
 
+var msigWalletListCmd = &cli.Command{
+	Name:  "list",
+	Usage: "msig wallet list",
+	Action: func(cctx *cli.Context) error {
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		lotusAPI, err := getLotusAPI(cctx)
+		if err != nil {
+			return err
+		}
+		defer lotusAPI.Closer()
+
+		walletInfo, err := walletAPI.MsigWalletList()
+		if err != nil {
+			return err
+		}
+
+		ctx := context.Background()
+		for _, wallet := range walletInfo {
+			bi, err := walletAPI.Balance(wallet.MsigAddr)
+			if err != nil {
+				log.Warnw("request wallet balance fail", "addr", wallet.MsigAddr)
+				continue
+			}
+			fmt.Fprintf(cctx.App.Writer, "Msig address: %s \n", wallet.MsigAddr)
+			fmt.Fprintf(cctx.App.Writer, "Balance: %s\n", bi.Amount)
+			fmt.Fprintf(cctx.App.Writer, "Threshold: %d / %d\n", wallet.NumApprovalsThreshold, len(wallet.Signers))
+			fmt.Fprintln(cctx.App.Writer, "Signers:")
+
+			signerTable := tabwriter.NewWriter(cctx.App.Writer, 8, 4, 2, ' ', 0)
+			fmt.Fprintf(signerTable, "ID\tAddress\n")
+			for _, s := range wallet.Signers {
+				addr, _ := address.NewFromString(s)
+				signerActor, err := lotusAPI.Api.StateAccountKey(ctx, addr, types.EmptyTSK)
+				if err != nil {
+					fmt.Fprintf(signerTable, "%s\t%s\n", s, "N/A")
+				} else {
+					fmt.Fprintf(signerTable, "%s\t%s\n", s, signerActor)
+				}
+			}
+			if err := signerTable.Flush(); err != nil {
+				return xerrors.Errorf("flushing output: %+v", err)
+			}
+			fmt.Fprintln(cctx.App.Writer, "")
+		}
+
+		return nil
+	},
+}
+
 var msigInspectCmd = &cli.Command{
 	Name:      "inspect",
 	Usage:     "Inspect a multisig wallet",
@@ -174,6 +228,9 @@ var msigInspectCmd = &cli.Command{
 		}
 
 		lotusAPI, err := getLotusAPI(cctx)
+		if err != nil {
+			return err
+		}
 		defer lotusAPI.Closer()
 
 		walletAPI, err := client.GetOpenFilAPI(cctx)
