@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/client"
-	"github.com/OpenFilWallet/OpenFilWallet/lib/hd"
 	"github.com/urfave/cli/v2"
 	"text/tabwriter"
 )
@@ -36,8 +35,6 @@ var walletNewCmd = &cli.Command{
 		}
 
 		index := cctx.Int("index")
-		path := hd.FILPath(uint64(index))
-		fmt.Printf("bls and secp256k1 wallets with path: %s will be generated\n", path)
 
 		r, err := walletAPI.WalletCreate(index)
 		if err != nil {
@@ -103,28 +100,25 @@ var walletListCmd = &cli.Command{
 		balance := cctx.Bool("balance")
 		w := tabwriter.NewWriter(cctx.App.Writer, 8, 4, 2, ' ', 0)
 		if balance {
-			fmt.Fprintf(w, "ID\tWallet Type\tAddress\tBalance\n")
+			fmt.Fprintf(w, "ID\tWallet Type\tAddress\tPath\tBalance\n")
 		} else {
-			fmt.Fprintf(w, "ID\tWallet Type\tAddress\n")
+			fmt.Fprintf(w, "ID\tWallet Type\tAddress\tPath\n")
 		}
 
 		i := 0
-		for _, key := range []string{"msig", "secp256k1", "bls"} {
-			wallets := walletInfo[key].([]string)
-			for _, addr := range wallets {
-				if balance {
-					bi, err := walletAPI.Balance(addr)
-					if err != nil {
-						log.Warnw("request wallet balance fail", "addr", addr)
-						continue
-					}
-					fmt.Fprintf(w, "%d\t%s\t%s\t%s\n", i, key, addr, bi.Amount)
+		for _, wallet := range walletInfo {
+			if balance {
+				bi, err := walletAPI.Balance(wallet.WalletAddress)
+				if err != nil {
+					log.Warnw("request wallet balance fail", "addr", wallet.WalletAddress)
 					continue
 				}
-
-				fmt.Fprintf(w, "%d\t%s\t%s\n", i, key, addr)
-				i++
+				fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n", i, wallet.WalletType, wallet.WalletAddress, wallet.WalletPath, bi.Amount)
+				continue
 			}
+
+			fmt.Fprintf(w, "%d\t%s\t%s\t%s\n", i, wallet.WalletType, wallet.WalletAddress, wallet.WalletPath)
+			i++
 		}
 
 		if err := w.Flush(); err != nil {

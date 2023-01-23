@@ -76,6 +76,7 @@ func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic s
 			PriKey:  encryptedPrivateKey,
 			Address: nk.Address.String(),
 			KeyHash: crypto.Hash256(encryptedPrivateKey),
+			Path:    path,
 		})
 
 		if err != nil {
@@ -112,6 +113,7 @@ func ImportPrivateKey(walletDB datastore.WalletDB, priKey, keyFormat string, pas
 		PriKey:  encryptedPrivateKey,
 		Address: nk.Address.String(),
 		KeyHash: crypto.Hash256(encryptedPrivateKey),
+		Path:    "Import",
 	})
 }
 

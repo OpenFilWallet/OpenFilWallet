@@ -9,6 +9,7 @@ type PrivateWallet struct {
 	PriKey  []byte `json:"pri_key"`
 	Address string `json:"address"`
 	KeyHash []byte `json:"key_hash"`
+	Path    string `json:"path"`
 }
 
 type MsigWallet struct {

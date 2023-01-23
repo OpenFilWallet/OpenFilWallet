@@ -304,13 +304,31 @@ func (api *OpenFilAPI) WalletCreate(index int) (*CreateWalletResponse, error) {
 	return &r, nil
 }
 
-func (api *OpenFilAPI) WalletList() (map[string]interface{}, error) {
+func (api *OpenFilAPI) WalletList() ([]WalletListInfo, error) {
 	res, err := GetRequest(api.endpoint, "/wallet/list", api.token, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var r = make(map[string]interface{})
+	var r = make([]WalletListInfo, 0)
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		if err := isServerErr(res); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return r, nil
+}
+
+func (api *OpenFilAPI) MsigWalletList() ([]MsigWalletListInfo, error) {
+	res, err := GetRequest(api.endpoint, "/msig/list", api.token, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var r = make([]MsigWalletListInfo, 0)
 	err = json.Unmarshal(res, &r)
 	if err != nil {
 		if err := isServerErr(res); err != nil {

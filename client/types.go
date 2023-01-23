@@ -25,6 +25,18 @@ type NodeInfo struct {
 	Token    string `json:"token"`
 }
 
+type WalletListInfo struct {
+	WalletType    string
+	WalletAddress string
+	WalletPath    string
+}
+
+type MsigWalletListInfo struct {
+	MsigAddr              string   `json:"msig_addr"`
+	Signers               []string `json:"signers"`
+	NumApprovalsThreshold uint64   `json:"num_approvals_threshold"`
+}
+
 type CreateWalletRequest struct {
 	Index int `json:"index"`
 }
