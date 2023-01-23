@@ -35,6 +35,7 @@ func main() {
 			sendCmd,
 			signCmd,
 			walletCmd,
+			transferCmd,
 			minerCmd,
 			multisigCmd,
 		},
