@@ -11,6 +11,7 @@ func (w *Wallet) NewRouter() *gin.Engine {
 	r.Use(Recovery())
 	r.Use(w.MustUnlock())
 	r.Use(w.MustHaveNode())
+	r.Use(w.IfOfflineWallet())
 	r.Use(w.JWT())
 
 	r.GET("/status", w.Status)

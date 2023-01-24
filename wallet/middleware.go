@@ -59,6 +59,18 @@ func (w *Wallet) MustHaveNode() gin.HandlerFunc {
 	}
 }
 
+func (w *Wallet) IfOfflineWallet() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if w.offline && strings.Contains(c.Request.URL.String(), "send") {
+			ReturnError(c, NewError(504, "Offline wallet, does not support sending transactions"))
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func (w *Wallet) JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
