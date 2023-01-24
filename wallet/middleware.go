@@ -61,16 +61,19 @@ func (w *Wallet) MustHaveNode() gin.HandlerFunc {
 
 func (w *Wallet) JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if !strings.Contains(c.Request.URL.String(), "login") {
-			token := c.GetHeader("Authorization")
+		token := c.GetHeader("Authorization")
 
-			allow, err := app.AuthVerify(token)
-			if err != nil {
-				ReturnError(c, NewError(505, err.Error()))
-				c.Abort()
-				return
-			}
-			_ = allow
+		allow, err := app.AuthVerify(token)
+		if err != nil {
+			ReturnError(c, NewError(505, err.Error()))
+			c.Abort()
+			return
+		}
+
+		if !VerifyPermission(c.Request.URL.String(), allow) {
+			ReturnError(c, NewError(505, "Insufficient Permission"))
+			c.Abort()
+			return
 		}
 
 		c.Next()

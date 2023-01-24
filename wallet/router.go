@@ -1,7 +1,9 @@
 package wallet
 
 import (
+	"github.com/OpenFilWallet/OpenFilWallet/modules/app"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 func (w *Wallet) NewRouter() *gin.Engine {
@@ -86,4 +88,82 @@ func (w *Wallet) NewRouter() *gin.Engine {
 	r.POST("/msig/confirm_change_beneficiary_approve", w.MsigConfirmChangeBeneficiaryApprove)
 
 	return r
+}
+
+var HandlePermMap = map[string]app.Permission{
+	"/status":                                  app.PermRead,
+	"/login":                                   app.PermWrite,
+	"/signout":                                 app.PermWrite,
+	"/chain/decode":                            app.PermRead,
+	"/chain/encode":                            app.PermRead,
+	"/node/add":                                app.PermWrite,
+	"/node/update":                             app.PermWrite,
+	"/node/delete":                             app.PermWrite,
+	"/node/use_node":                           app.PermWrite,
+	"/node/list":                               app.PermRead,
+	"/node/best":                               app.PermRead,
+	"/wallet/create":                           app.PermWrite,
+	"/wallet/list":                             app.PermRead,
+	"/balance":                                 app.PermRead,
+	"/transfer":                                app.PermWrite,
+	"/tx_history":                              app.PermRead,
+	"/send":                                    app.PermWrite,
+	"/sign_msg":                                app.PermSign,
+	"/sign":                                    app.PermSign,
+	"/sign_send":                               app.PermSign,
+	"/miner/withdraw":                          app.PermWrite,
+	"/miner/change_owner":                      app.PermWrite,
+	"/miner/change_worker":                     app.PermWrite,
+	"/miner/confirm_change_worker":             app.PermWrite,
+	"/miner/change_control":                    app.PermWrite,
+	"/miner/control_list":                      app.PermRead,
+	"/miner/change_beneficiary":                app.PermWrite,
+	"/miner/confirm_change_beneficiary":        app.PermWrite,
+	"/msig/list":                               app.PermRead,
+	"/msig/inspect":                            app.PermRead,
+	"/msig/create":                             app.PermWrite,
+	"/msig/approve":                            app.PermWrite,
+	"/msig/cancel":                             app.PermWrite,
+	"/msig/transfer_propose":                   app.PermWrite,
+	"/msig/transfer_approve":                   app.PermWrite,
+	"/msig/transfer_cancel":                    app.PermWrite,
+	"/msig/add_signer_propose":                 app.PermWrite,
+	"/msig/add_signer_approve":                 app.PermWrite,
+	"/msig/add_signer_cancel":                  app.PermWrite,
+	"/msig/swap_propose":                       app.PermWrite,
+	"/msig/swap_approve":                       app.PermWrite,
+	"/msig/swap_cancel":                        app.PermWrite,
+	"/msig/lock_propose":                       app.PermWrite,
+	"/msig/lock_approve":                       app.PermWrite,
+	"/msig/lock_cancel":                        app.PermWrite,
+	"/msig/threshold_propose":                  app.PermWrite,
+	"/msig/threshold_approve":                  app.PermWrite,
+	"/msig/threshold_cancel":                   app.PermWrite,
+	"/msig/change_owner_propose":               app.PermWrite,
+	"/msig/change_owner_approve":               app.PermWrite,
+	"/msig/withdraw_propose":                   app.PermWrite,
+	"/msig/withdraw_approve":                   app.PermWrite,
+	"/msig/change_worker_propose":              app.PermWrite,
+	"/msig/change_worker_approve":              app.PermWrite,
+	"/msig/confirm_change_worker_propose":      app.PermWrite,
+	"/msig/confirm_change_worker_approve":      app.PermWrite,
+	"/msig/set_control_propose":                app.PermWrite,
+	"/msig/set_control_approve":                app.PermWrite,
+	"/msig/change_beneficiary_propose":         app.PermWrite,
+	"/msig/change_beneficiary_approve":         app.PermWrite,
+	"/msig/confirm_change_beneficiary_propose": app.PermWrite,
+	"/msig/confirm_change_beneficiary_approve": app.PermWrite,
+}
+
+func VerifyPermission(requestUrl string, allows []app.Permission) bool {
+	for key, perm := range HandlePermMap {
+		if strings.Contains(requestUrl, key) {
+			for _, allow := range allows {
+				if allow == perm {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
