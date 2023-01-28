@@ -57,6 +57,8 @@ var minerCmd = &cli.Command{
 		actorControl,
 		actorProposeChangeWorker,
 		actorConfirmChangeWorker,
+		actorProposeChangeBeneficiary,
+		actorConfirmChangeBeneficiary,
 	},
 }
 
