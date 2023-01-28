@@ -11,7 +11,7 @@ import (
 	"github.com/filecoin-project/go-state-types/cbor"
 	"github.com/filecoin-project/lotus/chain/consensus/filcns"
 	"github.com/filecoin-project/lotus/chain/vm"
-	exported8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/exported"
+	exported7 "github.com/filecoin-project/specs-actors/v7/actors/builtin/exported"
 	"github.com/gin-gonic/gin"
 	cbg "github.com/whyrusleeping/cbor-gen"
 	"golang.org/x/xerrors"
@@ -81,7 +81,7 @@ func (w *Wallet) Encode(c *gin.Context) {
 
 func EncodeParams(method abi.MethodNum, params string) ([]byte, error) {
 	var paramType cbg.CBORUnmarshaler
-	for _, actor := range exported8.BuiltinActors() {
+	for _, actor := range exported7.BuiltinActors() {
 		if MethodMetaMap, ok := filcns.NewActorRegistry().Methods[actor.Code()]; ok {
 			var m vm.MethodMeta
 			var found bool
@@ -109,7 +109,7 @@ func EncodeParams(method abi.MethodNum, params string) ([]byte, error) {
 
 func DecodeParams(method abi.MethodNum, params []byte) ([]byte, error) {
 	var paramType cbg.CBORUnmarshaler
-	for _, actor := range exported8.BuiltinActors() {
+	for _, actor := range exported7.BuiltinActors() {
 		if MethodMetaMap, ok := filcns.NewActorRegistry().Methods[actor.Code()]; ok {
 			var m vm.MethodMeta
 			var found bool

@@ -111,13 +111,7 @@ func (api *OpenFilAPI) Decode(to string, method uint64, params string, encoding 
 		return "", err
 	}
 
-	var dr DecodeResponse
-	err = json.Unmarshal(res, &dr)
-	if err != nil {
-		return "", err
-	}
-
-	return dr.DecodeMsg, nil
+	return string(res), nil
 }
 
 func (api *OpenFilAPI) Encode(dest string, method uint64, params string, encoding string) (string, error) {
@@ -133,13 +127,7 @@ func (api *OpenFilAPI) Encode(dest string, method uint64, params string, encodin
 		return "", err
 	}
 
-	var er EncodeResponse
-	err = json.Unmarshal(res, &er)
-	if err != nil {
-		return "", err
-	}
-
-	return er.EncodeMsg, nil
+	return string(res), nil
 }
 
 func (api *OpenFilAPI) NodeAdd(name, endpoint, token string) error {
