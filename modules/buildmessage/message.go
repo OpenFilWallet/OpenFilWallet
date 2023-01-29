@@ -461,7 +461,7 @@ func buildMessage(node api.FullNode, msg *types.Message, baseParams BaseParams) 
 		if err != nil {
 			return nil, err
 		}
-		msg.Nonce = mpoolNonce + 1
+		msg.Nonce = mpoolNonce
 	}
 
 	return msg, nil
