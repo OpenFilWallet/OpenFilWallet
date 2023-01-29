@@ -91,9 +91,14 @@ func NewWithdrawMessage(node api.FullNode, baseParams BaseParams, minerId string
 		return nil, nil, err
 	}
 
+	from, err := node.StateAccountKey(ctx, mi.Owner, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	msg := &types.Message{
 		To:     minerAddr,
-		From:   mi.Owner,
+		From:   from,
 		Value:  types.NewInt(0),
 		Method: builtin.MethodsMiner.WithdrawBalance,
 		Params: sp,
@@ -150,8 +155,13 @@ func NewChangeOwnerMessage(node api.FullNode, baseParams BaseParams, minerId, ne
 		return nil, nil, xerrors.Errorf("serializing params: %w", err)
 	}
 
+	from, err := node.StateAccountKey(ctx, fromAddrId, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	msg := &types.Message{
-		From:   fromAddrId,
+		From:   from,
 		To:     minerAddr,
 		Method: builtin.MethodsMiner.ChangeOwnerAddress,
 		Value:  big.Zero(),
@@ -240,8 +250,13 @@ func NewChangeWorkerMessage(node api.FullNode, baseParams BaseParams, minerId st
 		return nil, nil, fmt.Errorf("serializing params: %w", err)
 	}
 
+	from, err := node.StateAccountKey(ctx, mi.Owner, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	msg := &types.Message{
-		From:   mi.Owner,
+		From:   from,
 		To:     minerAddr,
 		Method: builtin.MethodsMiner.ChangeWorkerAddress,
 		Value:  big.Zero(),
@@ -291,8 +306,13 @@ func NewConfirmUpdateWorkerMessage(node api.FullNode, baseParams BaseParams, min
 		return nil, fmt.Errorf("worker key change cannot be confirmed until %d, current height is %d", mi.WorkerChangeEpoch, head.Height())
 	}
 
+	from, err := node.StateAccountKey(ctx, mi.Owner, types.EmptyTSK)
+	if err != nil {
+		return nil, err
+	}
+
 	msg := &types.Message{
-		From:   mi.Owner,
+		From:   from,
 		To:     minerAddr,
 		Method: builtin.MethodsMiner.ConfirmUpdateWorkerKey,
 		Value:  big.Zero(),
@@ -358,8 +378,12 @@ func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams
 		return nil, nil, xerrors.Errorf("serializing params: %w", err)
 	}
 
+	from, err := node.StateAccountKey(ctx, mi.Owner, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, err
+	}
 	msg := &types.Message{
-		From:   mi.Owner,
+		From:   from,
 		To:     minerAddr,
 		Method: builtin.MethodsMiner.ChangeBeneficiary,
 		Value:  big.Zero(),
@@ -419,8 +443,13 @@ func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, miner
 		return nil, nil, xerrors.Errorf("serializing params: %w", err)
 	}
 
+	from, err := node.StateAccountKey(ctx, fromAddr, types.EmptyTSK)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	msg := &types.Message{
-		From:   fromAddr,
+		From:   from,
 		To:     minerAddr,
 		Method: builtin.MethodsMiner.ChangeBeneficiary,
 		Value:  big.Zero(),
