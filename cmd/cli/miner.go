@@ -6,8 +6,6 @@ import (
 	"github.com/OpenFilWallet/OpenFilWallet/client"
 	"github.com/fatih/color"
 	"github.com/filecoin-project/go-address"
-	"github.com/filecoin-project/go-state-types/abi"
-	"github.com/filecoin-project/go-state-types/big"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/lotus/lib/tablewriter"
 	"github.com/urfave/cli/v2"
@@ -87,12 +85,10 @@ var actorWithdrawCmd = &cli.Command{
 			return fmt.Errorf("parsing address %s: %w", act, err)
 		}
 
-		f, err := types.ParseFIL(cctx.Args().First())
+		_, err = types.ParseFIL(cctx.Args().First())
 		if err != nil {
 			return xerrors.Errorf("parsing 'amount' argument: %w", err)
 		}
-
-		amount := abi.TokenAmount(f)
 
 		walletAPI, err := client.GetOpenFilAPI(cctx)
 		if err != nil {
@@ -104,7 +100,7 @@ var actorWithdrawCmd = &cli.Command{
 			return err
 		}
 
-		msg, err := walletAPI.Withdraw(baseParams, maddr.String(), amount.String())
+		msg, err := walletAPI.Withdraw(baseParams, maddr.String(), cctx.Args().First())
 		if err != nil {
 			return err
 		}
@@ -232,7 +228,7 @@ var actorControlList = &cli.Command{
 				return
 			}
 
-			b, err := big.FromString(balance.Amount)
+			b, err := types.ParseFIL(balance.Amount)
 			if err != nil {
 				fmt.Printf("%s\t%s: error parsing balance: %s\n", name, a, err)
 				return
@@ -255,11 +251,11 @@ var actorControlList = &cli.Command{
 				return
 			}
 
-			bstr := types.FIL(b).String()
+			bstr := b.String()
 			switch {
-			case b.LessThan(types.FromFil(10)):
+			case types.BigInt(b).LessThan(types.FromFil(10)):
 				bstr = color.RedString(bstr)
-			case b.LessThan(types.FromFil(50)):
+			case types.BigInt(b).LessThan(types.FromFil(50)):
 				bstr = color.YellowString(bstr)
 			default:
 				bstr = color.GreenString(bstr)
