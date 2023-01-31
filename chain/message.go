@@ -9,7 +9,7 @@ import (
 	actorstypes "github.com/filecoin-project/go-state-types/actors"
 	init8 "github.com/filecoin-project/go-state-types/builtin/v9/init"
 	"github.com/filecoin-project/go-state-types/builtin/v9/miner"
-	multisig8 "github.com/filecoin-project/go-state-types/builtin/v9/multisig"
+	multisig9 "github.com/filecoin-project/go-state-types/builtin/v9/multisig"
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/types"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
@@ -132,7 +132,7 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 		}
 		cbor = &p
 	case "ConstructorParams":
-		var p multisig8.ConstructorParams
+		var p multisig9.ConstructorParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
@@ -143,7 +143,7 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 			return nil, actErr
 		}
 
-		code, ok := actors.GetActorCodeID(actorstypes.Version8, actors.MultisigKey)
+		code, ok := actors.GetActorCodeID(actorstypes.Version9, actors.MultisigKey)
 		if !ok {
 			return nil, xerrors.Errorf("failed to get multisig code ID")
 		}
@@ -155,49 +155,49 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 
 		cbor = ep
 	case "ProposeParams":
-		var p multisig8.ProposeParams
+		var p multisig9.ProposeParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "TxnIDParams":
-		var p multisig8.TxnIDParams
+		var p multisig9.TxnIDParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "AddSignerParams":
-		var p multisig8.AddSignerParams
+		var p multisig9.AddSignerParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "RemoveSignerParams":
-		var p multisig8.RemoveSignerParams
+		var p multisig9.RemoveSignerParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "SwapSignerParams":
-		var p multisig8.SwapSignerParams
+		var p multisig9.SwapSignerParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "ChangeNumApprovalsThresholdParams":
-		var p multisig8.ChangeNumApprovalsThresholdParams
+		var p multisig9.ChangeNumApprovalsThresholdParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "LockBalanceParams":
-		var p multisig8.LockBalanceParams
+		var p multisig9.LockBalanceParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
@@ -254,42 +254,42 @@ func EncodeParams(params interface{}) (*ParamsInfo, error) {
 			Name:   "ChangeWorkerAddressParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.ConstructorParams: // Msig Constructor
+	case *multisig9.ConstructorParams: // Msig Constructor
 		return &ParamsInfo{
 			Name:   "ConstructorParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.ProposeParams: // Propose
+	case *multisig9.ProposeParams: // Propose
 		return &ParamsInfo{
 			Name:   "ProposeParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.TxnIDParams: // Cancel & Approve
+	case *multisig9.TxnIDParams: // Cancel & Approve
 		return &ParamsInfo{
 			Name:   "TxnIDParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.AddSignerParams: // AddSigner
+	case *multisig9.AddSignerParams: // AddSigner
 		return &ParamsInfo{
 			Name:   "AddSignerParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.RemoveSignerParams: // RemoveSigner
+	case *multisig9.RemoveSignerParams: // RemoveSigner
 		return &ParamsInfo{
 			Name:   "RemoveSignerParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.SwapSignerParams: // SwapSigner
+	case *multisig9.SwapSignerParams: // SwapSigner
 		return &ParamsInfo{
 			Name:   "SwapSignerParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.ChangeNumApprovalsThresholdParams: // ChangeNumApprovalsThreshold
+	case *multisig9.ChangeNumApprovalsThresholdParams: // ChangeNumApprovalsThreshold
 		return &ParamsInfo{
 			Name:   "ChangeNumApprovalsThresholdParams",
 			Params: string(b),
 		}, nil
-	case *multisig8.LockBalanceParams: // LockBalance
+	case *multisig9.LockBalanceParams: // LockBalance
 		return &ParamsInfo{
 			Name:   "LockBalanceParams",
 			Params: string(b),
