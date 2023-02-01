@@ -63,6 +63,7 @@ type HistoryResponse struct {
 	GasPremium int64  `json:"gas_premium"`
 	Method     uint64 `json:"method"`
 	Params     string `json:"params"`
+	TxCid      string `json:"tx_cid"`
 }
 
 type WithdrawRequest struct {

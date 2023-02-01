@@ -142,6 +142,12 @@ var walletHistoryCmd = &cli.Command{
 			Value:    "",
 			Required: true,
 		},
+		&cli.BoolFlag{
+			Name:    "display-params",
+			Usage:   "display tx params",
+			Aliases: []string{"dp"},
+			Value:   false,
+		},
 	},
 	Action: func(cctx *cli.Context) error {
 		addr := cctx.String("address")
@@ -155,10 +161,19 @@ var walletHistoryCmd = &cli.Command{
 			return err
 		}
 		w := tabwriter.NewWriter(cctx.App.Writer, 8, 4, 2, ' ', 0)
-		fmt.Fprintf(w, "ID\tVersion\tTo\tFrom\tNonce\tValue\tGasLimit\tGasFeeCap\tGasPremium\tMethod\tParams\n")
+		isDisplayParams := cctx.Bool("display-params")
+		if isDisplayParams {
+			fmt.Fprintf(w, "ID\tVersion\tTo\tFrom\tNonce\tValue\tGasLimit\tGasFeeCap\tGasPremium\tMethod\tParams\tMsgCid\n")
+		} else {
+			fmt.Fprintf(w, "ID\tVersion\tTo\tFrom\tNonce\tValue\tGasLimit\tGasFeeCap\tGasPremium\tMethod\tCid\n")
+		}
 
 		for i, tx := range txs {
-			fmt.Fprintf(w, "%d\t%d\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\n", i, tx.Version, tx.To, tx.From, tx.Nonce, tx.Value, tx.GasLimit, tx.GasFeeCap, tx.GasPremium, tx.Method, tx.Params)
+			if isDisplayParams {
+				fmt.Fprintf(w, "%d\t%d\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\n", i, tx.Version, tx.To, tx.From, tx.Nonce, tx.Value, tx.GasLimit, tx.GasFeeCap, tx.GasPremium, tx.Method, tx.Params, tx.TxCid)
+			} else {
+				fmt.Fprintf(w, "%d\t%d\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\n", i, tx.Version, tx.To, tx.From, tx.Nonce, tx.Value, tx.GasLimit, tx.GasFeeCap, tx.GasPremium, tx.Method, tx.TxCid)
+			}
 		}
 
 		if err := w.Flush(); err != nil {

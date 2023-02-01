@@ -1,7 +1,5 @@
 package datastore
 
-import "github.com/ipfs/go-cid"
-
 type HdWallet struct {
 	Mnemonic     []byte `json:"mnemonic"`
 	MnemonicHash []byte `json:"mnemonic_hash"`
@@ -48,7 +46,7 @@ type History struct {
 	Method     uint64   `json:"method"`
 	Params     string   `json:"params"`
 	ParamName  string   `json:"param_name"`
-	TxCid      cid.Cid  `json:"tx_cid"`
+	TxCid      string   `json:"tx_cid"`
 	TxState    MsgState `json:"tx_state"`
 	Detail     string   `json:"detail"`
 }

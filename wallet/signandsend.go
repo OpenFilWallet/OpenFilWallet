@@ -110,7 +110,7 @@ func (w *Wallet) SignAndSend(c *gin.Context) {
 		Method:     uint64(signedMsg.Message.Method),
 		Params:     param.Params.Params,
 		ParamName:  param.Params.Name,
-		TxCid:      cid,
+		TxCid:      cid.String(),
 		TxState:    datastore.Pending,
 	})
 
@@ -155,7 +155,7 @@ func (w *Wallet) Send(c *gin.Context) {
 		Method:     uint64(signedMsg.Message.Method),
 		Params:     param.Message.Params.Params,
 		ParamName:  param.Message.Params.Name,
-		TxCid:      cid,
+		TxCid:      cid.String(),
 		TxState:    datastore.Pending,
 	})
 
