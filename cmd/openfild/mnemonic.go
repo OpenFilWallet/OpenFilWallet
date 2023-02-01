@@ -11,6 +11,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 var mnemonicCmd = &cli.Command{
@@ -117,7 +118,7 @@ var mnemonicImportCmd = &cli.Command{
 			mnemonic = fdata
 		}
 
-		err = account.ImportMnemonic(db, string(mnemonic), crypto.GenerateEncryptKey([]byte(rootPassword)))
+		err = account.ImportMnemonic(db, strings.Replace(string(mnemonic), "\n", "", -1), crypto.GenerateEncryptKey([]byte(rootPassword)))
 		if err != nil {
 			return err
 		}
