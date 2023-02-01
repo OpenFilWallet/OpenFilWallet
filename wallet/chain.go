@@ -31,13 +31,13 @@ func (w *Wallet) Decode(c *gin.Context) {
 	case "base64":
 		params, err = base64.StdEncoding.DecodeString(param.Params)
 		if err != nil {
-			ReturnError(c, NewError(500, fmt.Sprintf("decoding base64 value: %w", err)))
+			ReturnError(c, NewError(500, fmt.Sprintf("decoding base64 value: %s", err)))
 			return
 		}
 	case "hex":
 		params, err = hex.DecodeString(param.Params)
 		if err != nil {
-			ReturnError(c, NewError(500, fmt.Sprintf("decoding hex value: %w", err)))
+			ReturnError(c, NewError(500, fmt.Sprintf("decoding hex value: %s", err)))
 			return
 		}
 	default:
