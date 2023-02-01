@@ -11,7 +11,9 @@ import (
 )
 
 type node struct {
-	name string
+	name         string
+	nodeEndpoint string
+	token        string
 	*client.LotusClient
 }
 
@@ -28,6 +30,8 @@ func newNode(name, nodeEndpoint, nodeToken string) (*node, error) {
 
 	return &node{
 		name,
+		nodeEndpoint,
+		nodeToken,
 		lotusClient,
 	}, nil
 }
@@ -135,6 +139,7 @@ func (w *Wallet) UseNode(c *gin.Context) {
 		return
 	}
 	w.node = node
+	w.txTracker.node = node
 
 	ReturnOk(c, nil)
 }

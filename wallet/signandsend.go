@@ -3,7 +3,6 @@ package wallet
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/chain"
 	"github.com/OpenFilWallet/OpenFilWallet/client"
 	"github.com/OpenFilWallet/OpenFilWallet/datastore"
@@ -99,7 +98,7 @@ func (w *Wallet) SignAndSend(c *gin.Context) {
 		return
 	}
 
-	w.RecordTx(&datastore.History{
+	w.txTracker.trackTx(&datastore.History{
 		Version:    signedMsg.Message.Version,
 		To:         signedMsg.Message.To.String(),
 		From:       signedMsg.Message.From.String(),
@@ -110,6 +109,9 @@ func (w *Wallet) SignAndSend(c *gin.Context) {
 		GasPremium: signedMsg.Message.GasPremium.Int64(),
 		Method:     uint64(signedMsg.Message.Method),
 		Params:     param.Params.Params,
+		ParamName:  param.Params.Name,
+		TxCid:      cid,
+		TxState:    datastore.Pending,
 	})
 
 	ReturnOk(c, client.Response{
@@ -141,7 +143,7 @@ func (w *Wallet) Send(c *gin.Context) {
 		return
 	}
 
-	w.RecordTx(&datastore.History{
+	w.txTracker.trackTx(&datastore.History{
 		Version:    signedMsg.Message.Version,
 		To:         signedMsg.Message.To.String(),
 		From:       signedMsg.Message.From.String(),
@@ -152,17 +154,13 @@ func (w *Wallet) Send(c *gin.Context) {
 		GasPremium: signedMsg.Message.GasPremium.Int64(),
 		Method:     uint64(signedMsg.Message.Method),
 		Params:     param.Message.Params.Params,
+		ParamName:  param.Message.Params.Name,
+		TxCid:      cid,
+		TxState:    datastore.Pending,
 	})
 
 	ReturnOk(c, client.Response{
 		Code:    200,
 		Message: cid.String(),
 	})
-}
-
-func (w *Wallet) RecordTx(msg *datastore.History) {
-	err := w.db.SetHistory(msg)
-	if err != nil {
-		log.Warnw("RecordTx fail", "msg", fmt.Sprintf("From: %s To: %s Method: %d", msg.From, msg.To, msg.Method), "err", err)
-	}
 }

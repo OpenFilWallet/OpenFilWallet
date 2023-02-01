@@ -1,5 +1,7 @@
 package datastore
 
+import "github.com/ipfs/go-cid"
+
 type HdWallet struct {
 	Mnemonic     []byte `json:"mnemonic"`
 	MnemonicHash []byte `json:"mnemonic_hash"`
@@ -26,15 +28,27 @@ type NodeInfo struct {
 	Token    string `json:"token"`
 }
 
+type MsgState string
+
+const (
+	Pending MsgState = "pending"
+	Success MsgState = "success"
+	Failed  MsgState = "failed"
+)
+
 type History struct {
-	Version    uint64 `json:"version"`
-	To         string `json:"to"`
-	From       string `json:"from"`
-	Nonce      uint64 `json:"nonce"`
-	Value      int64  `json:"value"`
-	GasLimit   int64  `json:"gas_limit"`
-	GasFeeCap  int64  `json:"gas_feecap"`
-	GasPremium int64  `json:"gas_premium"`
-	Method     uint64 `json:"method"`
-	Params     string `json:"params"`
+	Version    uint64   `json:"version"`
+	To         string   `json:"to"`
+	From       string   `json:"from"`
+	Nonce      uint64   `json:"nonce"`
+	Value      int64    `json:"value"`
+	GasLimit   int64    `json:"gas_limit"`
+	GasFeeCap  int64    `json:"gas_feecap"`
+	GasPremium int64    `json:"gas_premium"`
+	Method     uint64   `json:"method"`
+	Params     string   `json:"params"`
+	ParamName  string   `json:"param_name"`
+	TxCid      cid.Cid  `json:"tx_cid"`
+	TxState    MsgState `json:"tx_state"`
+	Detail     string   `json:"detail"`
 }

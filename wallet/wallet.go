@@ -12,10 +12,11 @@ import (
 var log = logging.Logger("wallet-server")
 
 type Wallet struct {
-	offline bool
-
 	*login
 	*node
+	*txTracker
+
+	offline bool
 
 	signer messagesigner.Signer
 
@@ -47,6 +48,9 @@ func NewWallet(offline bool, rootPassword string, db datastore.WalletDB, close <
 	} else {
 		log.Warn("no nodes available")
 	}
+
+	txTracker := newTxTracker(node, db, close)
+	w.txTracker = txTracker
 
 	keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
 	if err != nil {
