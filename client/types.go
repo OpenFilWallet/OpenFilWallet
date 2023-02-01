@@ -64,6 +64,7 @@ type HistoryResponse struct {
 	Method     uint64 `json:"method"`
 	Params     string `json:"params"`
 	TxCid      string `json:"tx_cid"`
+	TxState    string `json:"tx_state"`
 }
 
 type WithdrawRequest struct {

@@ -35,6 +35,7 @@ func (w *Wallet) TxHistory(c *gin.Context) {
 			Method:     h.Method,
 			Params:     h.Params,
 			TxCid:      h.TxCid,
+			TxState:    string(h.TxState),
 		})
 	}
 

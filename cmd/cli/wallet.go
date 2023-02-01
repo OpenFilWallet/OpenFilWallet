@@ -163,16 +163,16 @@ var walletHistoryCmd = &cli.Command{
 		w := tabwriter.NewWriter(cctx.App.Writer, 8, 4, 2, ' ', 0)
 		isDisplayParams := cctx.Bool("display-params")
 		if isDisplayParams {
-			fmt.Fprintf(w, "ID\tVersion\tTo\tFrom\tNonce\tValue\tGasLimit\tGasFeeCap\tGasPremium\tMethod\tParams\tMsgCid\n")
+			fmt.Fprintf(w, "ID\tVersion\tTo\tFrom\tNonce\tValue\tGasLimit\tGasFeeCap\tGasPremium\tMethod\tParams\tMsgCid\tMsgState\n")
 		} else {
-			fmt.Fprintf(w, "ID\tVersion\tTo\tFrom\tNonce\tValue\tGasLimit\tGasFeeCap\tGasPremium\tMethod\tCid\n")
+			fmt.Fprintf(w, "ID\tVersion\tTo\tFrom\tNonce\tValue\tGasLimit\tGasFeeCap\tGasPremium\tMethod\tMsgCid\tMsgState\n")
 		}
 
 		for i, tx := range txs {
 			if isDisplayParams {
-				fmt.Fprintf(w, "%d\t%d\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\n", i, tx.Version, tx.To, tx.From, tx.Nonce, tx.Value, tx.GasLimit, tx.GasFeeCap, tx.GasPremium, tx.Method, tx.Params, tx.TxCid)
+				fmt.Fprintf(w, "%d\t%d\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%s\n", i, tx.Version, tx.To, tx.From, tx.Nonce, tx.Value, tx.GasLimit, tx.GasFeeCap, tx.GasPremium, tx.Method, tx.Params, tx.TxCid, tx.TxState)
 			} else {
-				fmt.Fprintf(w, "%d\t%d\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\n", i, tx.Version, tx.To, tx.From, tx.Nonce, tx.Value, tx.GasLimit, tx.GasFeeCap, tx.GasPremium, tx.Method, tx.TxCid)
+				fmt.Fprintf(w, "%d\t%d\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\n", i, tx.Version, tx.To, tx.From, tx.Nonce, tx.Value, tx.GasLimit, tx.GasFeeCap, tx.GasPremium, tx.Method, tx.TxCid, tx.TxState)
 			}
 		}
 
