@@ -24,6 +24,10 @@ func newHistoryStore(ds datastore.Batching) *HistoryStore {
 	}
 }
 
+func (db *HistoryStore) setupRecorder(addr string) {
+	db.recorder[addr] = NewStateStore(namespace.Wrap(db.ds, txHistoryKey(addr)))
+}
+
 func (db *HistoryStore) put(msg *History, force bool) error {
 	var store *StateStore
 	db.lk.Lock()

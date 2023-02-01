@@ -13,12 +13,21 @@ type WalletDB struct {
 }
 
 func NewWalletDB(ds datastore.Batching) WalletDB {
-	return WalletDB{
+	walletDB := WalletDB{
 		hStore: newHistoryStore(ds),
 		kStore: newKeyStore(ds),
 		nStore: newNodeStore(ds),
 		sStore: newScryptStore(ds),
 	}
+
+	walletLists, _ := walletDB.WalletList()
+	if len(walletLists) != 0 {
+		for _, wallet := range walletLists {
+			walletDB.hStore.setupRecorder(wallet.Address)
+		}
+	}
+
+	return walletDB
 }
 
 // ------ scrypt ------
