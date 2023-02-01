@@ -12,6 +12,7 @@ import (
 	"github.com/filecoin-project/lotus/chain/stmgr"
 	"github.com/filecoin-project/lotus/chain/types"
 	init2 "github.com/filecoin-project/specs-actors/v2/actors/builtin/init"
+	"github.com/ipfs/go-cid"
 	"time"
 )
 
@@ -69,14 +70,20 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 			tt.recordTx(msg)
 		}
 
-		searchRes, err := tt.node.Api.StateSearchMsg(context.Background(), types.EmptyTSK, msg.TxCid, stmgr.LookbackNoLimit, true)
+		msgCid, _ := cid.Parse(msg.TxCid)
+		searchRes, err := tt.node.Api.StateSearchMsg(context.Background(), types.EmptyTSK, msgCid, stmgr.LookbackNoLimit, true)
 		if err != nil {
 			// For some public node services, StateSearchMsg request parameters are optimized: only one msg cid parameter is required
-			r, err := client.LotusStateSearchMsg(tt.node.nodeEndpoint, tt.node.token, msg.TxCid.String())
+			r, err := client.LotusStateSearchMsg(tt.node.nodeEndpoint, tt.node.token, msg.TxCid)
 			if err != nil {
 				recordFailedTx(err)
 				return
 			}
+
+			if r == nil {
+				continue
+			}
+
 			searchRes = &api.MsgLookup{
 				Message:   r.Message,
 				Receipt:   r.Receipt,
