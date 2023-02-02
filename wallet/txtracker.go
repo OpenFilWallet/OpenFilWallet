@@ -118,7 +118,15 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 				signers := make([]string, 0)
 				for _, signer := range p.Signers {
 					signers = append(signers, signer.String())
+					actorId, err := tt.node.Api.StateLookupID(context.Background(), signer, types.EmptyTSK)
+					if err != nil {
+						log.Warnw("txTracker: StateLookupID fail", "err", err.Error())
+						recordFailedTx(err)
+						return
+					}
+					signers = append(signers, actorId.String())
 				}
+
 				if err = tt.addMsig(&datastore.MsigWallet{
 					MsigAddr:              msig,
 					Signers:               signers,
