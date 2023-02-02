@@ -1566,12 +1566,12 @@ var msigWithdrawBalanceApproveCmd = &cli.Command{
 			return err
 		}
 
-		prop, err := address.NewFromString(cctx.Args().Get(1))
+		prop, err := address.NewFromString(cctx.Args().Get(2))
 		if err != nil {
 			return err
 		}
 
-		txid := cctx.Args().Get(2)
+		txid := cctx.Args().Get(1)
 		_, err = strconv.ParseUint(txid, 10, 64)
 		if err != nil {
 			return err
