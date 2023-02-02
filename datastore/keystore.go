@@ -93,7 +93,7 @@ func (db *KeyStore) putP(priWallet *PrivateWallet, force bool) error {
 		}
 	}
 
-	return db.privateStore.Begin(priWallet.Address, priWallet, false)
+	return db.privateStore.Begin(priWallet.Address, priWallet, force)
 }
 
 func (db *KeyStore) getP(addr string) (*PrivateWallet, error) {
@@ -140,7 +140,7 @@ func (db *KeyStore) putMsig(msigWallet *MsigWallet, force bool) error {
 		}
 	}
 
-	return db.msigStore.Begin(msigWallet.MsigAddr, msigWallet, false)
+	return db.msigStore.Begin(msigWallet.MsigAddr, msigWallet, force)
 }
 
 func (db *KeyStore) getMsig(addr string) (*MsigWallet, error) {
