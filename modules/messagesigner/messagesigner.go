@@ -18,6 +18,7 @@ type Signer interface {
 	RegisterSigner(...key.Key) error
 	SignMsg(msg *types.Message) (*types.SignedMessage, error)
 	Sign(from string, data []byte) (*crypto.Signature, error)
+	HasSigner(addr string) bool
 }
 
 type SignerHouse struct {
@@ -86,4 +87,13 @@ func (s *SignerHouse) Sign(from string, data []byte) (*crypto.Signature, error) 
 	}
 
 	return sig, nil
+}
+
+func (s *SignerHouse) HasSigner(addr string) bool {
+	s.lk.Lock()
+	defer s.lk.Unlock()
+
+	_, ok := s.signers[addr]
+
+	return ok
 }
