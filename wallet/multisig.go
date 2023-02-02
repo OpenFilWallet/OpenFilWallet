@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/chain"
 	"github.com/OpenFilWallet/OpenFilWallet/client"
+	"github.com/OpenFilWallet/OpenFilWallet/datastore"
 	"github.com/OpenFilWallet/OpenFilWallet/modules/buildmessage"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/lotus/blockstore"
@@ -64,6 +65,139 @@ func (w *Wallet) MsigCreate(c *gin.Context) {
 	}
 
 	ReturnOk(c, myMsg)
+}
+
+// MsigAdd Post
+func (w *Wallet) MsigAdd(c *gin.Context) {
+	param := client.MsigAddRequest{}
+	err := c.BindJSON(&param)
+	if err != nil {
+		ReturnError(c, ParamErr)
+		return
+	}
+
+	_, err = w.db.GetMsig(param.MsigAddress)
+	if err == nil {
+		ReturnError(c, NewError(500, "msig wallet already exists"))
+		return
+	}
+
+	msigWallet, errResponse := w.inquireMsigInfo(param.MsigAddress)
+	if errResponse != nil {
+		ReturnError(c, errResponse)
+		return
+	}
+
+	isExist := false
+	for _, addr := range msigWallet.Signers {
+		msigSignerAddr, err := address.NewFromString(addr)
+		if err != nil {
+			continue
+		}
+		signerActor, err := w.Api.StateAccountKey(context.Background(), msigSignerAddr, types.EmptyTSK)
+		if err != nil {
+			continue
+		}
+		if ok := w.signer.HasSigner(signerActor.String()); ok {
+			isExist = true
+			break
+		}
+	}
+
+	if !isExist {
+		ReturnError(c, NewError(500, "signers are not included in the wallet"))
+		return
+	}
+
+	err = w.db.SetMsig(msigWallet)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	ReturnOk(c, nil)
+}
+
+// MsigUpdate Post
+func (w *Wallet) MsigUpdate(c *gin.Context) {
+	param := client.MsigUpdateRequest{}
+	err := c.BindJSON(&param)
+	if err != nil {
+		ReturnError(c, ParamErr)
+		return
+	}
+
+	_, err = w.db.GetMsig(param.MsigAddress)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	msigWallet, errResponse := w.inquireMsigInfo(param.MsigAddress)
+	if errResponse != nil {
+		ReturnError(c, errResponse)
+		return
+	}
+
+	err = w.db.UpdateMsig(msigWallet)
+	if err != nil {
+		ReturnError(c, NewError(500, err.Error()))
+		return
+	}
+
+	ReturnOk(c, nil)
+}
+
+func (w *Wallet) inquireMsigInfo(msigAddress string) (*datastore.MsigWallet, *client.Response) {
+	msigAddr, err := address.NewFromString(msigAddress)
+	if err != nil {
+		return nil, NewError(500, err.Error())
+	}
+
+	ctx := context.Background()
+	head, err := w.Api.ChainHead(ctx)
+	if err != nil {
+		return nil, NewError(500, err.Error())
+	}
+
+	store := adt.WrapStore(ctx, cbor.NewCborStore(blockstore.NewAPIBlockstore(w.Api)))
+	act, err := w.Api.StateGetActor(ctx, msigAddr, head.Key())
+	if err != nil {
+		return nil, NewError(500, err.Error())
+	}
+
+	mstate, err := multisig.Load(store, act)
+	if err != nil {
+		return nil, NewError(500, err.Error())
+	}
+
+	se, err := mstate.StartEpoch()
+	if err != nil {
+		return nil, NewError(500, err.Error())
+	}
+
+	ud, err := mstate.UnlockDuration()
+	if err != nil {
+		return nil, NewError(500, err.Error())
+	}
+
+	signers, err := mstate.Signers()
+	if err != nil {
+		return nil, NewError(500, err.Error())
+	}
+
+	threshold, err := mstate.Threshold()
+	if err != nil {
+		return nil, NewError(500, err.Error())
+	}
+
+	return &datastore.MsigWallet{
+		MsigAddr:              msigAddress,
+		Signers:               addr2Str(signers),
+		NumApprovalsThreshold: threshold,
+		UnlockDuration:        int64(ud),
+		StartEpoch:            int64(se),
+	}, nil
 }
 
 // MsigInspect Get

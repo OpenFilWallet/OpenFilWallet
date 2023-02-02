@@ -56,6 +56,8 @@ func (w *Wallet) NewRouter() *gin.Engine {
 	r.GET("/msig/list", w.MsigWalletList)
 	r.GET("/msig/inspect", w.MsigInspect)
 	r.POST("/msig/create", w.MsigCreate)
+	r.POST("/msig/add", w.MsigAdd)
+	r.POST("/msig/update", w.MsigUpdate)
 	r.POST("/msig/approve", w.MsigApprove)
 	r.POST("/msig/cancel", w.MsigCancel)
 	r.POST("/msig/transfer_propose", w.MsigTransferPropose)
@@ -121,6 +123,8 @@ var HandlePermMap = map[string]app.Permission{
 	"/miner/change_beneficiary":                app.PermWrite,
 	"/miner/confirm_change_beneficiary":        app.PermWrite,
 	"/msig/list":                               app.PermRead,
+	"/msig/add":                                app.PermWrite,
+	"/msig/update":                             app.PermWrite,
 	"/msig/inspect":                            app.PermRead,
 	"/msig/create":                             app.PermWrite,
 	"/msig/approve":                            app.PermWrite,

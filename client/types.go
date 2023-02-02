@@ -160,6 +160,14 @@ type EncodeResponse struct {
 	EncodeMsg string `json:"encode_msg"`
 }
 
+type MsigAddRequest struct {
+	MsigAddress string `json:"msig_address"`
+}
+
+type MsigUpdateRequest struct {
+	MsigAddress string `json:"msig_address"`
+}
+
 type MsigCreateRequest struct {
 	BaseParams buildmessage.BaseParams `json:"base_params"`
 	From       string                  `json:"from"`

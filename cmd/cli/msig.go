@@ -49,6 +49,8 @@ var multisigCmd = &cli.Command{
 	},
 	Subcommands: []*cli.Command{
 		msigCreateCmd,
+		msigAddCmd,
+		msigUpdateCmd,
 		msigWalletListCmd,
 		msigInspectCmd,
 		msigApproveCmd,
@@ -166,6 +168,62 @@ var msigCreateCmd = &cli.Command{
 		}
 
 		return printMessage(cctx, msg)
+	},
+}
+
+var msigAddCmd = &cli.Command{
+	Name:  "add",
+	Usage: "Add a multisig wallet",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "msig-address",
+			Usage:    "msig wallet address",
+			Required: true,
+		},
+	},
+	Action: func(cctx *cli.Context) error {
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		msigAddress := cctx.String("msig-address")
+
+		err = walletAPI.MsigAdd(msigAddress)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Multi-signature wallet added successfully")
+		return nil
+	},
+}
+
+var msigUpdateCmd = &cli.Command{
+	Name:  "update",
+	Usage: "Update the multi-signature wallet, according to the chain",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "msig-address",
+			Usage:    "msig wallet address",
+			Required: true,
+		},
+	},
+	Action: func(cctx *cli.Context) error {
+		walletAPI, err := client.GetOpenFilAPI(cctx)
+		if err != nil {
+			return err
+		}
+
+		msigAddress := cctx.String("msig-address")
+
+		err = walletAPI.MsigUpdate(msigAddress)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Multi-signature wallet updated successfully")
+		return nil
 	},
 }
 

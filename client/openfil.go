@@ -627,6 +627,52 @@ func (api *OpenFilAPI) MsigCreate(baseParams buildmessage.BaseParams, from strin
 	return &r, nil
 }
 
+func (api *OpenFilAPI) MsigAdd(msigAddress string) error {
+	req := MsigAddRequest{
+		MsigAddress: msigAddress,
+	}
+
+	res, err := PostRequest(api.endpoint, "/msig/add", api.token, req)
+	if err != nil {
+		return err
+	}
+
+	var r Response
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		return err
+	}
+
+	if r.Code != 200 {
+		return errors.New(r.Message)
+	}
+
+	return nil
+}
+
+func (api *OpenFilAPI) MsigUpdate(msigAddress string) error {
+	req := MsigUpdateRequest{
+		MsigAddress: msigAddress,
+	}
+
+	res, err := PostRequest(api.endpoint, "/msig/update", api.token, req)
+	if err != nil {
+		return err
+	}
+
+	var r Response
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		return err
+	}
+
+	if r.Code != 200 {
+		return errors.New(r.Message)
+	}
+
+	return nil
+}
+
 func (api *OpenFilAPI) MsigApprove(baseParams buildmessage.BaseParams, from string, msigAddress string, txId string) (*chain.Message, error) {
 	req := MsigBaseRequest{
 		BaseParams:  baseParams,
