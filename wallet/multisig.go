@@ -307,6 +307,7 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 			if err != nil {
 				if tx.Method == 0 {
 					transactions = append(transactions, client.MsigTransaction{
+						Txid:     txid,
 						To:       tx.To.String(),
 						Value:    tx.Value.String(),
 						Method:   fmt.Sprintf("Send(%d)", tx.Method),
@@ -315,9 +316,10 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 					})
 				} else {
 					transactions = append(transactions, client.MsigTransaction{
+						Txid:     txid,
 						To:       tx.To.String(),
 						Value:    tx.Value.String(),
-						Method:   fmt.Sprintf("new account, unknown method(%d)", tx.Method),
+						Method:   fmt.Sprintf("%d", tx.Method),
 						Params:   paramStr,
 						Approved: addr2Str(tx.Approved),
 					})
@@ -341,9 +343,10 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 					paramStr = string(b)
 				}
 				transactions = append(transactions, client.MsigTransaction{
+					Txid:     txid,
 					To:       tx.To.String(),
 					Value:    tx.Value.String(),
-					Method:   fmt.Sprintf("new account, unknown method(%d)", tx.Method),
+					Method:   fmt.Sprintf("%d", tx.Method),
 					Params:   paramStr,
 					Approved: addr2Str(tx.Approved),
 				})

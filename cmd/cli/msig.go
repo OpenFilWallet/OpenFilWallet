@@ -352,8 +352,8 @@ var msigInspectCmd = &cli.Command{
 		if len(pending) > 0 {
 			w := tabwriter.NewWriter(cctx.App.Writer, 8, 4, 2, ' ', 0)
 			fmt.Fprintf(w, "ID\tState\tApprovals\tTo\tValue\tMethod\tParams\n")
-			for i, tx := range pending {
-				fmt.Fprintf(w, "%d\t%s\t%d\t%s\t%s\t%s\t%s\n", i, "pending", len(tx.Approved), tx.To, tx.Value, tx.Method, tx.Params)
+			for _, tx := range pending {
+				fmt.Fprintf(w, "%d\t%s\t%d\t%s\t%s\t%s\t%s\n", tx.Txid, "pending", len(tx.Approved), tx.To, tx.Value, tx.Method, tx.Params)
 			}
 			if err := w.Flush(); err != nil {
 				return xerrors.Errorf("flushing output: %+v", err)

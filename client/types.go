@@ -429,6 +429,7 @@ type MsigLockInfo struct {
 }
 
 type MsigTransaction struct {
+	Txid     int64    `json:"txid"`
 	To       string   `json:"to"`
 	Value    string   `json:"value"`
 	Method   string   `json:"method"`
