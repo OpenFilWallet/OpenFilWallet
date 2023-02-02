@@ -17,7 +17,6 @@ import (
 	"github.com/filecoin-project/lotus/chain/actors/builtin/multisig"
 	"github.com/filecoin-project/lotus/chain/types"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
-	msig8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/multisig"
 	"github.com/minio/blake2b-simd"
 	"golang.org/x/xerrors"
 	"strconv"
@@ -72,7 +71,7 @@ func (m *Msiger) NewMsigCreateMessage(baseParams BaseParams, required, duration 
 	return msg, params, nil
 }
 
-func (m *Msiger) NewMsigApproveMessage(baseParams BaseParams, msigAddress, txId string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigApproveMessage(baseParams BaseParams, msigAddress, txId string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -112,7 +111,7 @@ func (m *Msiger) NewMsigApproveMessage(baseParams BaseParams, msigAddress, txId 
 	return msg, approveParams, nil
 }
 
-func (m *Msiger) NewMsigCancelMessage(baseParams BaseParams, msigAddress, txId string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigCancelMessage(baseParams BaseParams, msigAddress, txId string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -183,7 +182,7 @@ func (m *Msiger) NewMsigTransferProposeMessage(baseParams BaseParams, msigAddres
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigTransferApproveMessage(baseParams BaseParams, msigAddress, txId string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigTransferApproveMessage(baseParams BaseParams, msigAddress, txId string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -209,7 +208,7 @@ func (m *Msiger) NewMsigTransferApproveMessage(baseParams BaseParams, msigAddres
 	return msg, approveParams, nil
 }
 
-func (m *Msiger) NewMsigTransferCancelMessage(baseParams BaseParams, msigAddress, txId string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigTransferCancelMessage(baseParams BaseParams, msigAddress, txId string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -261,7 +260,7 @@ func (m *Msiger) NewMsigAddSignerProposeMessage(baseParams BaseParams, msigAddre
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigAddSignerApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, signerAddress string, increaseThreshold bool, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigAddSignerApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, signerAddress string, increaseThreshold bool, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -297,7 +296,7 @@ func (m *Msiger) NewMsigAddSignerApproveMessage(baseParams BaseParams, msigAddre
 	return msg, approveParams, nil
 }
 
-func (m *Msiger) NewMsigAddSignerCancelMessage(baseParams BaseParams, msigAddress, txId, signerAddress string, increaseThreshold bool, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigAddSignerCancelMessage(baseParams BaseParams, msigAddress, txId, signerAddress string, increaseThreshold bool, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -359,7 +358,7 @@ func (m *Msiger) NewMsigSwapProposeMessage(baseParams BaseParams, msigAddress, o
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigSwapApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, oldAddress, newAddress string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigSwapApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, oldAddress, newAddress string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -400,7 +399,7 @@ func (m *Msiger) NewMsigSwapApproveMessage(baseParams BaseParams, msigAddress, p
 	return msg, approveParams, nil
 }
 
-func (m *Msiger) NewMsigSwapCancelMessage(baseParams BaseParams, msigAddress, txId, oldAddress, newAddress string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigSwapCancelMessage(baseParams BaseParams, msigAddress, txId, oldAddress, newAddress string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -462,7 +461,7 @@ func (m *Msiger) NewMsigLockProposeMessage(baseParams BaseParams, msigAddress, s
 		return nil, nil, err
 	}
 
-	params, actErr := actors.SerializeParams(&msig8.LockBalanceParams{
+	params, actErr := actors.SerializeParams(&multisig9.LockBalanceParams{
 		StartEpoch:     abi.ChainEpoch(start),
 		UnlockDuration: abi.ChainEpoch(duration),
 		Amount:         big.Int(value),
@@ -482,7 +481,7 @@ func (m *Msiger) NewMsigLockProposeMessage(baseParams BaseParams, msigAddress, s
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigLockApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, startEpoch, unlockDuration, amount string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigLockApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, startEpoch, unlockDuration, amount string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -518,7 +517,7 @@ func (m *Msiger) NewMsigLockApproveMessage(baseParams BaseParams, msigAddress, p
 		return nil, nil, err
 	}
 
-	params, actErr := actors.SerializeParams(&msig8.LockBalanceParams{
+	params, actErr := actors.SerializeParams(&multisig9.LockBalanceParams{
 		StartEpoch:     abi.ChainEpoch(start),
 		UnlockDuration: abi.ChainEpoch(duration),
 		Amount:         big.Int(value),
@@ -538,7 +537,7 @@ func (m *Msiger) NewMsigLockApproveMessage(baseParams BaseParams, msigAddress, p
 	return msg, approveParams, nil
 }
 
-func (m *Msiger) NewMsigLockCancelMessage(baseParams BaseParams, msigAddress, txId, startEpoch, unlockDuration, amount string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigLockCancelMessage(baseParams BaseParams, msigAddress, txId, startEpoch, unlockDuration, amount string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -569,7 +568,7 @@ func (m *Msiger) NewMsigLockCancelMessage(baseParams BaseParams, msigAddress, tx
 		return nil, nil, err
 	}
 
-	params, actErr := actors.SerializeParams(&msig8.LockBalanceParams{
+	params, actErr := actors.SerializeParams(&multisig9.LockBalanceParams{
 		StartEpoch:     abi.ChainEpoch(start),
 		UnlockDuration: abi.ChainEpoch(duration),
 		Amount:         big.Int(value),
@@ -605,7 +604,7 @@ func (m *Msiger) NewMsigThresholdProposeMessage(baseParams BaseParams, msigAddre
 		return nil, nil, err
 	}
 
-	params, actErr := actors.SerializeParams(&msig8.ChangeNumApprovalsThresholdParams{
+	params, actErr := actors.SerializeParams(&multisig9.ChangeNumApprovalsThresholdParams{
 		NewThreshold: newT,
 	})
 
@@ -623,7 +622,7 @@ func (m *Msiger) NewMsigThresholdProposeMessage(baseParams BaseParams, msigAddre
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigThresholdApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, newThreshold string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigThresholdApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, newThreshold string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -649,7 +648,7 @@ func (m *Msiger) NewMsigThresholdApproveMessage(baseParams BaseParams, msigAddre
 		return nil, nil, err
 	}
 
-	params, actErr := actors.SerializeParams(&msig8.ChangeNumApprovalsThresholdParams{
+	params, actErr := actors.SerializeParams(&multisig9.ChangeNumApprovalsThresholdParams{
 		NewThreshold: newT,
 	})
 
@@ -667,7 +666,7 @@ func (m *Msiger) NewMsigThresholdApproveMessage(baseParams BaseParams, msigAddre
 	return msg, approveParams, nil
 }
 
-func (m *Msiger) NewMsigThresholdCancelMessage(baseParams BaseParams, msigAddress, txId, newThreshold string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigThresholdCancelMessage(baseParams BaseParams, msigAddress, txId, newThreshold string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -688,7 +687,7 @@ func (m *Msiger) NewMsigThresholdCancelMessage(baseParams BaseParams, msigAddres
 		return nil, nil, err
 	}
 
-	params, actErr := actors.SerializeParams(&msig8.ChangeNumApprovalsThresholdParams{
+	params, actErr := actors.SerializeParams(&multisig9.ChangeNumApprovalsThresholdParams{
 		NewThreshold: newT,
 	})
 
@@ -758,7 +757,7 @@ func (m *Msiger) NewMsigChangeOwnerProposeMessage(baseParams BaseParams, msigAdd
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigChangeOwnerApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner, newOwner string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigChangeOwnerApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner, newOwner string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -855,7 +854,7 @@ func (m *Msiger) NewMsigWithdrawProposeMessage(baseParams BaseParams, msigAddres
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigWithdrawApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner, amount string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigWithdrawApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner, amount string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -963,7 +962,7 @@ func (m *Msiger) NewMsigChangeWorkerProposeMessage(baseParams BaseParams, msigAd
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigChangeWorkerApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner, newWorker string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigChangeWorkerApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner, newWorker string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -1091,7 +1090,7 @@ func (m *Msiger) NewMsigConfirmChangeWorkerProposeMessage(baseParams BaseParams,
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigConfirmChangeWorkerApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner, newWorker string, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigConfirmChangeWorkerApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner, newWorker string, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -1219,7 +1218,7 @@ func (m *Msiger) NewMsigSetControlProposeMessage(baseParams BaseParams, msigAddr
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigSetControlApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner string, from string, controlAddrs ...string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigSetControlApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, miner string, from string, controlAddrs ...string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -1360,7 +1359,7 @@ func (m *Msiger) NewMsigChangeBeneficiaryProposeMessage(baseParams BaseParams, m
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigChangeBeneficiaryApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, minerId string, from string, beneficiaryAddress, quota, expiration string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigChangeBeneficiaryApproveMessage(baseParams BaseParams, msigAddress, proposerAddress, txId, minerId string, from string, beneficiaryAddress, quota, expiration string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -1477,7 +1476,7 @@ func (m *Msiger) NewMsigConfirmChangeBeneficiaryProposeMessage(baseParams BasePa
 	return msg, proposeParams, nil
 }
 
-func (m *Msiger) NewMsigConfirmChangeBeneficiaryApproveMessage(baseParams BaseParams, msigAddress, minerId, proposerAddress, txId, from string) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) NewMsigConfirmChangeBeneficiaryApproveMessage(baseParams BaseParams, msigAddress, minerId, proposerAddress, txId, from string) (*types.Message, *multisig9.TxnIDParams, error) {
 	msig, err := address.NewFromString(msigAddress)
 	if err != nil {
 		return nil, nil, err
@@ -1609,7 +1608,7 @@ func (m *Msiger) MsigAddPropose(msig address.Address, src address.Address, newAd
 	return m.MsigPropose(msig, msig, big.Zero(), src, uint64(multisig.Methods.AddSigner), enc)
 }
 
-func (m *Msiger) MsigAddApprove(msig address.Address, src address.Address, txID uint64, proposer address.Address, newAdd address.Address, inc bool) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigAddApprove(msig address.Address, src address.Address, txID uint64, proposer address.Address, newAdd address.Address, inc bool) (*types.Message, *multisig9.TxnIDParams, error) {
 	enc, actErr := serializeAddParams(newAdd, inc)
 	if actErr != nil {
 		return nil, nil, actErr
@@ -1618,7 +1617,7 @@ func (m *Msiger) MsigAddApprove(msig address.Address, src address.Address, txID 
 	return m.MsigApproveTxnHash(msig, txID, proposer, msig, big.Zero(), src, uint64(multisig.Methods.AddSigner), enc)
 }
 
-func (m *Msiger) MsigAddCancel(msig address.Address, src address.Address, txID uint64, newAdd address.Address, inc bool) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigAddCancel(msig address.Address, src address.Address, txID uint64, newAdd address.Address, inc bool) (*types.Message, *multisig9.TxnIDParams, error) {
 	enc, actErr := serializeAddParams(newAdd, inc)
 	if actErr != nil {
 		return nil, nil, actErr
@@ -1636,7 +1635,7 @@ func (m *Msiger) MsigSwapPropose(msig address.Address, src address.Address, oldA
 	return m.MsigPropose(msig, msig, big.Zero(), src, uint64(multisig.Methods.SwapSigner), enc)
 }
 
-func (m *Msiger) MsigSwapApprove(msig address.Address, src address.Address, txID uint64, proposer address.Address, oldAdd address.Address, newAdd address.Address) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigSwapApprove(msig address.Address, src address.Address, txID uint64, proposer address.Address, oldAdd address.Address, newAdd address.Address) (*types.Message, *multisig9.TxnIDParams, error) {
 	enc, actErr := serializeSwapParams(oldAdd, newAdd)
 	if actErr != nil {
 		return nil, nil, actErr
@@ -1645,7 +1644,7 @@ func (m *Msiger) MsigSwapApprove(msig address.Address, src address.Address, txID
 	return m.MsigApproveTxnHash(msig, txID, proposer, msig, big.Zero(), src, uint64(multisig.Methods.SwapSigner), enc)
 }
 
-func (m *Msiger) MsigSwapCancel(msig address.Address, src address.Address, txID uint64, oldAdd address.Address, newAdd address.Address) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigSwapCancel(msig address.Address, src address.Address, txID uint64, oldAdd address.Address, newAdd address.Address) (*types.Message, *multisig9.TxnIDParams, error) {
 	enc, actErr := serializeSwapParams(oldAdd, newAdd)
 	if actErr != nil {
 		return nil, nil, actErr
@@ -1654,20 +1653,20 @@ func (m *Msiger) MsigSwapCancel(msig address.Address, src address.Address, txID 
 	return m.MsigCancelTxnHash(msig, txID, msig, big.Zero(), src, uint64(multisig.Methods.SwapSigner), enc)
 }
 
-func (m *Msiger) MsigApprove(msig address.Address, txID uint64, src address.Address) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigApprove(msig address.Address, txID uint64, src address.Address) (*types.Message, *multisig9.TxnIDParams, error) {
 
 	return m.MsigApproveOrCancelSimple(api.MsigApprove, msig, txID, src)
 }
 
-func (m *Msiger) MsigApproveTxnHash(msig address.Address, txID uint64, proposer address.Address, to address.Address, amt types.BigInt, src address.Address, method uint64, params []byte) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigApproveTxnHash(msig address.Address, txID uint64, proposer address.Address, to address.Address, amt types.BigInt, src address.Address, method uint64, params []byte) (*types.Message, *multisig9.TxnIDParams, error) {
 	return m.MsigApproveOrCancelTxnHash(api.MsigApprove, msig, txID, proposer, to, amt, src, method, params)
 }
 
-func (m *Msiger) MsigCancel(msig address.Address, txID uint64, src address.Address) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigCancel(msig address.Address, txID uint64, src address.Address) (*types.Message, *multisig9.TxnIDParams, error) {
 	return m.MsigApproveOrCancelSimple(api.MsigCancel, msig, txID, src)
 }
 
-func (m *Msiger) MsigCancelTxnHash(msig address.Address, txID uint64, to address.Address, amt types.BigInt, src address.Address, method uint64, params []byte) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigCancelTxnHash(msig address.Address, txID uint64, to address.Address, amt types.BigInt, src address.Address, method uint64, params []byte) (*types.Message, *multisig9.TxnIDParams, error) {
 	return m.MsigApproveOrCancelTxnHash(api.MsigCancel, msig, txID, src, to, amt, src, method, params)
 }
 
@@ -1680,7 +1679,7 @@ func (m *Msiger) MsigRemoveSigner(msig address.Address, proposer address.Address
 	return m.MsigPropose(msig, msig, types.NewInt(0), proposer, uint64(multisig.Methods.RemoveSigner), enc)
 }
 
-func (m *Msiger) MsigApproveOrCancelSimple(operation api.MsigProposeResponse, msig address.Address, txID uint64, src address.Address) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigApproveOrCancelSimple(operation api.MsigProposeResponse, msig address.Address, txID uint64, src address.Address) (*types.Message, *multisig9.TxnIDParams, error) {
 	if msig == address.Undef {
 		return nil, nil, xerrors.Errorf("must provide multisig address")
 	}
@@ -1715,7 +1714,7 @@ func (m *Msiger) MsigApproveOrCancelSimple(operation api.MsigProposeResponse, ms
 	return msg, params, nil
 }
 
-func (m *Msiger) MsigApproveOrCancelTxnHash(operation api.MsigProposeResponse, msig address.Address, txID uint64, proposer address.Address, to address.Address, amt types.BigInt, src address.Address, method uint64, params []byte) (*types.Message, *msig8.TxnIDParams, error) {
+func (m *Msiger) MsigApproveOrCancelTxnHash(operation api.MsigProposeResponse, msig address.Address, txID uint64, proposer address.Address, to address.Address, amt types.BigInt, src address.Address, method uint64, params []byte) (*types.Message, *multisig9.TxnIDParams, error) {
 	if msig == address.Undef {
 		return nil, nil, xerrors.Errorf("must provide multisig address")
 	}
@@ -1767,7 +1766,7 @@ func (m *Msiger) MsigApproveOrCancelTxnHash(operation api.MsigProposeResponse, m
 }
 
 func serializeAddParams(new address.Address, inc bool) ([]byte, error) {
-	enc, actErr := actors.SerializeParams(&msig8.AddSignerParams{
+	enc, actErr := actors.SerializeParams(&multisig9.AddSignerParams{
 		Signer:   new,
 		Increase: inc,
 	})
@@ -1779,7 +1778,7 @@ func serializeAddParams(new address.Address, inc bool) ([]byte, error) {
 }
 
 func serializeSwapParams(old address.Address, new address.Address) ([]byte, error) {
-	enc, actErr := actors.SerializeParams(&msig8.SwapSignerParams{
+	enc, actErr := actors.SerializeParams(&multisig9.SwapSignerParams{
 		From: old,
 		To:   new,
 	})
@@ -1791,7 +1790,7 @@ func serializeSwapParams(old address.Address, new address.Address) ([]byte, erro
 }
 
 func serializeRemoveParams(rem address.Address, dec bool) ([]byte, error) {
-	enc, actErr := actors.SerializeParams(&msig8.RemoveSignerParams{
+	enc, actErr := actors.SerializeParams(&multisig9.RemoveSignerParams{
 		Signer:   rem,
 		Decrease: dec,
 	})
@@ -1802,8 +1801,8 @@ func serializeRemoveParams(rem address.Address, dec bool) ([]byte, error) {
 	return enc, nil
 }
 
-func txnParams(id uint64, data *multisig9.ProposalHashData) (*msig8.TxnIDParams, error) {
-	params := msig8.TxnIDParams{ID: msig8.TxnID(id)}
+func txnParams(id uint64, data *multisig9.ProposalHashData) (*multisig9.TxnIDParams, error) {
+	params := multisig9.TxnIDParams{ID: multisig9.TxnID(id)}
 	if data != nil {
 		if data.Requester.Protocol() != address.ID {
 			return nil, xerrors.Errorf("proposer address must be an ID address, was %s", data.Requester)
