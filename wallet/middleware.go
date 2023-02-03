@@ -1,10 +1,14 @@
 package wallet
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/modules/app"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"net/http"
 	"strings"
+	"time"
 )
 
 func Recovery() gin.HandlerFunc {
@@ -89,5 +93,49 @@ func (w *Wallet) JWT() gin.HandlerFunc {
 		}
 
 		c.Next()
+	}
+}
+
+type LoggerWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (l LoggerWriter) Write(p []byte) (int, error) {
+	if n, err := l.body.Write(p); err != nil {
+		return n, err
+	}
+	return l.ResponseWriter.Write(p)
+}
+
+func (w *Wallet) TraceLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		bodyWriter := &LoggerWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
+		c.Writer = bodyWriter
+
+		method := c.Request.URL.String()
+		start := time.Now()
+		c.Next()
+		log.Infow("TraceLogger", "method", method, "cost", time.Since(start).String())
+
+		// The login response contains token,
+		// which is sensitive information, skip it
+		if method != "/login" {
+			request := ""
+			response := bodyWriter.body.String()
+			if c.Request.Method == http.MethodPost {
+				body, err := ioutil.ReadAll(c.Request.Body)
+				if err != nil {
+					log.Warnw("TraceLogger: ReadAll Request.Body Failed", "err", err)
+				}
+
+				request = string(body)
+			} else {
+				request = c.Request.URL.RawQuery
+			}
+
+			log.Debugw("TraceLogger", "method", method, "request", request, "response", response)
+
+		}
 	}
 }
