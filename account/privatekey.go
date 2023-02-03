@@ -34,6 +34,8 @@ func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic s
 		index = int64(i)
 	}
 
+	log.Debugw("GeneratePrivateKeyFromMnemonicIndex", "index", index)
+
 	path := hd.FILPath(uint64(index))
 	extendSeed, err := hd.GetExtendSeedFromPath(path, seed)
 	if err != nil {
@@ -89,6 +91,8 @@ func GeneratePrivateKeyFromMnemonicIndex(walletDB datastore.WalletDB, mnemonic s
 }
 
 func ImportPrivateKey(walletDB datastore.WalletDB, priKey, keyFormat string, passwordKey []byte) error {
+	log.Debugw("ImportPrivateKey", "keyFormat", keyFormat)
+
 	ki, err := GenerateKeyInfoFromPriKey(priKey, keyFormat)
 	if err != nil {
 		return err
@@ -257,6 +261,8 @@ func GenerateKeyInfoFromPriKey(priKey, keyFormat string) (*types.KeyInfo, error)
 	default:
 		return nil, fmt.Errorf("unrecognized format: %s", keyFormat)
 	}
+
+	log.Debugw("GenerateKeyInfoFromPriKey", "keyFormat", keyFormat)
 
 	return &ki, nil
 }

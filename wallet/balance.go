@@ -12,6 +12,7 @@ import (
 func (w *Wallet) Balance(c *gin.Context) {
 	addrStr, ok := c.GetQuery("address")
 	if !ok {
+		log.Warnw("Balance: GetQuery", "err", "key: address does not exist")
 		ReturnError(c, ParamErr)
 		return
 	}
@@ -28,6 +29,7 @@ func (w *Wallet) Balance(c *gin.Context) {
 	amount, err := w.node.Api.WalletBalance(timeoutCtx, addr)
 	cancel()
 	if err != nil {
+		log.Warnw("Balance: WalletBalance", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}

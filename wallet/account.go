@@ -13,6 +13,7 @@ func (w *Wallet) WalletCreate(c *gin.Context) {
 	param := client.CreateWalletRequest{}
 	err := c.BindJSON(&param)
 	if err != nil {
+		log.Warnw("WalletCreate: BindJSON", "err", err.Error())
 		ReturnError(c, ParamErr)
 		return
 	}
@@ -21,6 +22,7 @@ func (w *Wallet) WalletCreate(c *gin.Context) {
 	if param.Index <= 0 {
 		index, err = w.db.NextMnemonicIndex()
 		if err != nil {
+			log.Warnw("WalletCreate: NextMnemonicIndex", "err", err.Error())
 			ReturnError(c, NewError(500, err.Error()))
 			return
 		}
@@ -30,18 +32,21 @@ func (w *Wallet) WalletCreate(c *gin.Context) {
 
 	mnemonic, err := account.LoadMnemonic(w.db, crypto.GenerateEncryptKey([]byte(w.rootPassword)))
 	if err != nil {
+		log.Warnw("WalletCreate: LoadMnemonic", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
 
 	nks, err := account.GeneratePrivateKeyFromMnemonicIndex(w.db, mnemonic, int64(index), crypto.GenerateEncryptKey([]byte(w.rootPassword)))
 	if err != nil {
+		log.Warnw("WalletCreate: GeneratePrivateKeyFromMnemonicIndex", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
 
 	err = w.signer.RegisterSigner(nks...)
 	if err != nil {
+		log.Warnw("WalletCreate: RegisterSigner", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -60,12 +65,14 @@ func (w *Wallet) WalletCreate(c *gin.Context) {
 func (w *Wallet) WalletList(c *gin.Context) {
 	walletList, err := w.db.WalletList()
 	if err != nil {
+		log.Warnw("WalletList: WalletList", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
 
 	msigList, err := w.db.MsigWalletList()
 	if err != nil {
+		log.Warnw("WalletList: MsigWalletList", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}

@@ -11,12 +11,14 @@ func (w *Wallet) TxHistory(c *gin.Context) {
 	addr := c.Query("address")
 	_, err := address.NewFromString(addr)
 	if err != nil {
+		log.Warnw("TxHistory: NewFromString", "addr", addr, "err", err.Error())
 		ReturnError(c, ParamErr)
 		return
 	}
 
 	historys, err := w.db.HistoryList(addr)
 	if err != nil {
+		log.Warnw("TxHistory: HistoryList", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}

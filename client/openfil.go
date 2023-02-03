@@ -8,6 +8,7 @@ import (
 	"github.com/OpenFilWallet/OpenFilWallet/chain"
 	"github.com/OpenFilWallet/OpenFilWallet/modules/buildmessage"
 	"github.com/OpenFilWallet/OpenFilWallet/repo"
+	logging "github.com/ipfs/go-log/v2"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 	"io/ioutil"
@@ -15,6 +16,8 @@ import (
 	"net/url"
 	"strings"
 )
+
+var log = logging.Logger("client")
 
 type OpenFilAPI struct {
 	endpoint string
@@ -1436,6 +1439,12 @@ func PostRequest(endpoint, relativePath string, token string, params interface{}
 		return nil, err
 	}
 
+	// The login request contains the login password,
+	// which is sensitive information, skip it
+	if relativePath != "/login" {
+		log.Debugw("start PostRequest", "relativePath", relativePath, "params", string(dataByte))
+	}
+
 	req, err := http.NewRequest("POST", urlJoin(endpoint, relativePath), bytes.NewBuffer(dataByte))
 	if err != nil {
 		return nil, err
@@ -1458,6 +1467,8 @@ func GetRequest(endpoint, relativePath string, token string, params map[string]s
 
 	u.RawQuery = values.Encode()
 
+	log.Debugw("start GetRequest", "relativePath", relativePath, "RawQuery", u.RawQuery)
+
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, err
@@ -1476,6 +1487,7 @@ func Call(req *http.Request, token string) ([]byte, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Debugf("end of request: %s", err.Error())
 		return nil, err
 	}
 	defer resp.Body.Close()
@@ -1490,6 +1502,7 @@ func Call(req *http.Request, token string) ([]byte, error) {
 	}
 
 	if err := ifServerErr(body); err != nil {
+		log.Debugf("end of request: server err: %s", err.Error())
 		return nil, err
 	}
 

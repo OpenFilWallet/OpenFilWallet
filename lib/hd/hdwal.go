@@ -23,6 +23,17 @@ const (
 	Mnemonic24
 )
 
+func (m MnemonicType) String() string {
+	switch m {
+	case Mnemonic12:
+		return "12 mnemonics"
+	case Mnemonic24:
+		return "24 mnemonics"
+	}
+
+	panic("Unexpected MnemonicType")
+}
+
 func entropy(mt MnemonicType) ([]byte, error) {
 	randomBytes := make([]byte, 0)
 	cpuPercent, _ := cpu.Percent(time.Second, false)

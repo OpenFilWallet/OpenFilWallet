@@ -173,6 +173,9 @@ func (m *Msiger) NewMsigTransferProposeMessage(baseParams BaseParams, msigAddres
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, dest, types.BigInt(value), sendAddr, uint64(builtin.MethodSend), nil)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -199,6 +202,9 @@ func (m *Msiger) NewMsigTransferApproveMessage(baseParams BaseParams, msigAddres
 	}
 
 	msg, approveParams, err := m.MsigApprove(msig, txid, sendAddr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApprove: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -225,6 +231,9 @@ func (m *Msiger) NewMsigTransferCancelMessage(baseParams BaseParams, msigAddress
 	}
 
 	msg, cancelParams, err := m.MsigCancel(msig, txid, sendAddr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigCancel: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -251,6 +260,9 @@ func (m *Msiger) NewMsigAddSignerProposeMessage(baseParams BaseParams, msigAddre
 	}
 
 	msg, proposeParams, err := m.MsigAddPropose(msig, sendAddr, signer, increaseThreshold)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigAddPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -287,6 +299,9 @@ func (m *Msiger) NewMsigAddSignerApproveMessage(baseParams BaseParams, msigAddre
 	}
 
 	msg, approveParams, err := m.MsigAddApprove(msig, sendAddr, txid, prop, signer, increaseThreshold)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigAddApprove: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -318,6 +333,9 @@ func (m *Msiger) NewMsigAddSignerCancelMessage(baseParams BaseParams, msigAddres
 	}
 
 	msg, cancelParams, err := m.MsigAddCancel(msig, sendAddr, txid, signer, increaseThreshold)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigAddCancel: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -349,6 +367,9 @@ func (m *Msiger) NewMsigSwapProposeMessage(baseParams BaseParams, msigAddress, o
 	}
 
 	msg, proposeParams, err := m.MsigSwapPropose(msig, sendAddr, oldAddr, newAddr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigSwapPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -390,6 +411,9 @@ func (m *Msiger) NewMsigSwapApproveMessage(baseParams BaseParams, msigAddress, p
 	}
 
 	msg, approveParams, err := m.MsigSwapApprove(msig, sendAddr, txid, prop, oldAddr, newAddr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigSwapApprove: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -426,6 +450,9 @@ func (m *Msiger) NewMsigSwapCancelMessage(baseParams BaseParams, msigAddress, tx
 	}
 
 	msg, cancelParams, err := m.MsigSwapCancel(msig, sendAddr, txid, oldAddr, newAddr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigSwapCancel: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -472,6 +499,9 @@ func (m *Msiger) NewMsigLockProposeMessage(baseParams BaseParams, msigAddress, s
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, msig, big.Zero(), sendAddr, uint64(multisig.Methods.LockBalance), params)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -528,6 +558,9 @@ func (m *Msiger) NewMsigLockApproveMessage(baseParams BaseParams, msigAddress, p
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, msig, big.Zero(), sendAddr, uint64(multisig.Methods.LockBalance), params)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -579,6 +612,9 @@ func (m *Msiger) NewMsigLockCancelMessage(baseParams BaseParams, msigAddress, tx
 	}
 
 	msg, cancelParams, err := m.MsigCancelTxnHash(msig, txid, msig, big.Zero(), sendAddr, uint64(multisig.Methods.LockBalance), params)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigCancelTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -613,6 +649,9 @@ func (m *Msiger) NewMsigThresholdProposeMessage(baseParams BaseParams, msigAddre
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, msig, big.Zero(), sendAddr, uint64(multisig.Methods.ChangeNumApprovalsThreshold), params)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -657,6 +696,9 @@ func (m *Msiger) NewMsigThresholdApproveMessage(baseParams BaseParams, msigAddre
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, msig, big.Zero(), sendAddr, uint64(multisig.Methods.ChangeNumApprovalsThreshold), params)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -696,6 +738,9 @@ func (m *Msiger) NewMsigThresholdCancelMessage(baseParams BaseParams, msigAddres
 	}
 
 	msg, cancelParams, err := m.MsigCancelTxnHash(msig, txid, msig, big.Zero(), sendAddr, uint64(multisig.Methods.ChangeNumApprovalsThreshold), params)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigCancelTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -748,6 +793,9 @@ func (m *Msiger) NewMsigChangeOwnerProposeMessage(baseParams BaseParams, msigAdd
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeOwnerAddress), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -810,6 +858,9 @@ func (m *Msiger) NewMsigChangeOwnerApproveMessage(baseParams BaseParams, msigAdd
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeOwnerAddress), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -845,6 +896,9 @@ func (m *Msiger) NewMsigWithdrawProposeMessage(baseParams BaseParams, msigAddres
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.WithdrawBalance), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -890,6 +944,9 @@ func (m *Msiger) NewMsigWithdrawApproveMessage(baseParams BaseParams, msigAddres
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.WithdrawBalance), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -953,6 +1010,9 @@ func (m *Msiger) NewMsigChangeWorkerProposeMessage(baseParams BaseParams, msigAd
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeWorkerAddress), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1026,6 +1086,9 @@ func (m *Msiger) NewMsigChangeWorkerApproveMessage(baseParams BaseParams, msigAd
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeWorkerAddress), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1081,6 +1144,9 @@ func (m *Msiger) NewMsigConfirmChangeWorkerProposeMessage(baseParams BaseParams,
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ConfirmUpdateWorkerKey), nil)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1146,6 +1212,9 @@ func (m *Msiger) NewMsigConfirmChangeWorkerApproveMessage(baseParams BaseParams,
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ConfirmUpdateWorkerKey), nil)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1209,6 +1278,9 @@ func (m *Msiger) NewMsigSetControlProposeMessage(baseParams BaseParams, msigAddr
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeWorkerAddress), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1282,6 +1354,9 @@ func (m *Msiger) NewMsigSetControlApproveMessage(baseParams BaseParams, msigAddr
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeWorkerAddress), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1350,6 +1425,9 @@ func (m *Msiger) NewMsigChangeBeneficiaryProposeMessage(baseParams BaseParams, m
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeBeneficiary), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1419,6 +1497,9 @@ func (m *Msiger) NewMsigChangeBeneficiaryApproveMessage(baseParams BaseParams, m
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeBeneficiary), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1467,6 +1548,9 @@ func (m *Msiger) NewMsigConfirmChangeBeneficiaryProposeMessage(baseParams BasePa
 	}
 
 	msg, proposeParams, err := m.MsigPropose(msig, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeBeneficiary), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigPropose: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {
@@ -1525,6 +1609,9 @@ func (m *Msiger) NewMsigConfirmChangeBeneficiaryApproveMessage(baseParams BasePa
 	}
 
 	msg, approveParams, err := m.MsigApproveTxnHash(msig, txid, prop, minerAddr, big.Zero(), sendAddr, uint64(builtin.MethodsMiner.ChangeBeneficiary), sp)
+	if err != nil {
+		return nil, nil, fmt.Errorf("MsigApproveTxnHash: %w", err)
+	}
 
 	msg, err = buildMessage(m.node, msg, baseParams)
 	if err != nil {

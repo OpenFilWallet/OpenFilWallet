@@ -37,6 +37,7 @@ func newTxTracker(node *node, db datastore.WalletDB, close <-chan struct{}) *txT
 }
 
 func (tt *txTracker) trackTx(msg *datastore.History) {
+	log.Infof("txTracker: trackTx: %s", msg.TxCid)
 	tt.txReceiver <- msg
 }
 
@@ -56,6 +57,7 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 		time.Sleep(1 * time.Minute)
 
 		if tt.node == nil {
+			log.Warn("txTracker: node is nil, try again in 1 minute")
 			continue
 		}
 
@@ -76,11 +78,13 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 			// For some public node services, StateSearchMsg request parameters are optimized: only one msg cid parameter is required
 			r, err := client.LotusStateSearchMsg(tt.node.nodeEndpoint, tt.node.token, msg.TxCid)
 			if err != nil {
+				log.Warnw("txTracker: LotusStateSearchMsg", "err", err)
 				recordFailedTx(err)
 				return
 			}
 
 			if r == nil {
+				log.Debugw("txTracker: LotusStateSearchMsg: pending transaction", "cid", msg.TxCid)
 				continue
 			}
 
@@ -95,13 +99,15 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 
 		if searchRes != nil {
 			if searchRes.Receipt.ExitCode.IsError() {
-				recordFailedTx(err)
+				log.Warnw("txTracker: Receipt", "cid", msg.TxCid, "ExitCode", searchRes.Receipt.ExitCode)
+				recordFailedTx(fmt.Errorf("ExitCode: %d", searchRes.Receipt.ExitCode))
 				return
 			}
 
 			if msg.ParamName == "ConstructorParams" { // create msig tx
 				var execreturn init2.ExecReturn
 				if err := execreturn.UnmarshalCBOR(bytes.NewReader(searchRes.Receipt.Return)); err != nil {
+					log.Warnw("txTracker: ConstructorParams: UnmarshalCBOR", "cid", msg.TxCid)
 					recordFailedTx(err)
 					return
 				}
@@ -141,6 +147,7 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 			}
 
 			recordSuccessTx()
+			log.Infow("txTracker: recordSuccessTx", "cid", msg.TxCid)
 			return
 		}
 	}

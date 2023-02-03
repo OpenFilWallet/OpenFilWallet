@@ -2,6 +2,7 @@ package buildmessage
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
@@ -12,9 +13,12 @@ import (
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/types"
 	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
+	logging "github.com/ipfs/go-log/v2"
 	"golang.org/x/xerrors"
 	"strconv"
 )
+
+var log = logging.Logger("buildmessage")
 
 type BaseParams struct {
 	MaxFee     string `json:"max_fee"`
@@ -22,6 +26,14 @@ type BaseParams struct {
 	GasPremium string `json:"gas_premium"`
 	GasLimit   int64  `json:"gas_limit"`
 	Nonce      uint64 `json:"nonce"`
+}
+
+func (b BaseParams) String() string {
+	return fmt.Sprintf("max_fee: %s, gas_feecap: %s, gas_premium: %s, gas_limit: %d, nonce: %d", b.MaxFee, b.GasFeeCap, b.GasPremium, b.GasLimit, b.Nonce)
+}
+
+func LotusMessageToString(msg *types.Message) string {
+	return fmt.Sprintf("version: %d, to: %s, from: %s, nonce: %d, value: %s, gasLimit: %d, gasFeeCap: %s, gasPremium: %s, method: %d, params: %s", msg.Version, msg.To.String(), msg.From.String(), msg.Nonce, big.Int(msg.Value).String(), msg.GasLimit, big.Int(msg.GasFeeCap).String(), big.Int(msg.GasPremium).String(), msg.Method, hex.EncodeToString(msg.Params))
 }
 
 func NewTransferMessage(node api.FullNode, baseParams BaseParams, from, to string, amount string) (*types.Message, error) {
@@ -465,6 +477,8 @@ func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, miner
 }
 
 func buildMessage(node api.FullNode, msg *types.Message, baseParams BaseParams) (*types.Message, error) {
+	log.Debugw("buildMessage: start", "baseParams", baseParams.String())
+
 	msg.GasFeeCap, _ = types.BigFromString(baseParams.GasFeeCap)
 	msg.GasPremium, _ = types.BigFromString(baseParams.GasPremium)
 	msg.GasLimit = baseParams.GasLimit
@@ -493,5 +507,6 @@ func buildMessage(node api.FullNode, msg *types.Message, baseParams BaseParams) 
 		msg.Nonce = mpoolNonce
 	}
 
+	log.Debugw("buildMessage: end", "msg", LotusMessageToString(msg))
 	return msg, nil
 }

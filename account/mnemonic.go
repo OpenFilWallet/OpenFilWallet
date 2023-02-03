@@ -3,12 +3,18 @@ package account
 import (
 	"crypto/subtle"
 	"errors"
+	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/crypto"
 	"github.com/OpenFilWallet/OpenFilWallet/datastore"
 	"github.com/OpenFilWallet/OpenFilWallet/lib/hd"
+	logging "github.com/ipfs/go-log/v2"
+	"strings"
 )
 
+var log = logging.Logger("account")
+
 func GenerateMnemonic(walletDB datastore.WalletDB, mType hd.MnemonicType, passwordKey []byte) error {
+	log.Debugw("GenerateMnemonic", "mnemonic type", mType.String())
 	mnemonic, err := hd.NewMnemonic(mType)
 	if err != nil {
 		return err
@@ -31,6 +37,9 @@ func GenerateMnemonic(walletDB datastore.WalletDB, mType hd.MnemonicType, passwo
 }
 
 func ImportMnemonic(walletDB datastore.WalletDB, mnemonic string, passwordKey []byte) error {
+	mnemonicNumber := strings.Split(mnemonic, " ")
+	log.Debugw("ImportMnemonic", "mnemonic type", fmt.Sprintf("%d mnemonics", len(mnemonicNumber)))
+
 	// check mnemonic
 	good := hd.CheckMnemonic(mnemonic)
 	if !good {

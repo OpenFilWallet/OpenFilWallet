@@ -5,14 +5,18 @@ import (
 	"github.com/OpenFilWallet/OpenFilWallet/lib/sigs"
 	_ "github.com/OpenFilWallet/OpenFilWallet/lib/sigs/bls"
 	_ "github.com/OpenFilWallet/OpenFilWallet/lib/sigs/secp"
+	"github.com/OpenFilWallet/OpenFilWallet/modules/buildmessage"
 	"github.com/filecoin-project/go-state-types/crypto"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/lotus/chain/wallet/key"
 	_ "github.com/filecoin-project/lotus/lib/sigs/bls"
 	_ "github.com/filecoin-project/lotus/lib/sigs/secp"
+	logging "github.com/ipfs/go-log/v2"
 	"golang.org/x/xerrors"
 	"sync"
 )
+
+var log = logging.Logger("buildmessage")
 
 type Signer interface {
 	RegisterSigner(...key.Key) error
@@ -42,6 +46,7 @@ func (s *SignerHouse) RegisterSigner(keys ...key.Key) error {
 		}
 
 		s.signers[key.Address.String()] = key
+		log.Infow("RegisterSigner", "address", key.Address.String())
 	}
 
 	return nil
@@ -66,6 +71,7 @@ func (s *SignerHouse) SignMsg(msg *types.Message) (*types.SignedMessage, error) 
 		return nil, xerrors.Errorf("failed to sign message: %w", err)
 	}
 
+	log.Infow("SignMsg", "message", buildmessage.LotusMessageToString(msg))
 	return &types.SignedMessage{
 		Message:   *msg,
 		Signature: *sig,
@@ -86,6 +92,7 @@ func (s *SignerHouse) Sign(from string, data []byte) (*crypto.Signature, error) 
 		return nil, xerrors.Errorf("failed to sign message: %w", err)
 	}
 
+	log.Infow("Sign", "data", string(data))
 	return sig, nil
 }
 

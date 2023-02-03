@@ -54,6 +54,7 @@ func NewWallet(offline bool, rootPassword string, db datastore.WalletDB, close <
 
 	keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
 	if err != nil {
+		log.Warnw("NewWallet: LoadPrivateKeys", "err", err)
 		return nil, err
 	}
 

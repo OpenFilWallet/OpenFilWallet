@@ -22,6 +22,7 @@ func (w *Wallet) Decode(c *gin.Context) {
 	param := client.DecodeRequest{}
 	err := c.BindJSON(&param)
 	if err != nil {
+		log.Warnw("Decode: BindJSON", "err", err.Error())
 		ReturnError(c, ParamErr)
 		return
 	}
@@ -31,22 +32,26 @@ func (w *Wallet) Decode(c *gin.Context) {
 	case "base64":
 		params, err = base64.StdEncoding.DecodeString(param.Params)
 		if err != nil {
+			log.Warnw("Decode: DecodeString", "err", err.Error())
 			ReturnError(c, NewError(500, fmt.Sprintf("decoding base64 value: %s", err)))
 			return
 		}
 	case "hex":
 		params, err = hex.DecodeString(param.Params)
 		if err != nil {
+			log.Warnw("Decode: DecodeString", "err", err.Error())
 			ReturnError(c, NewError(500, fmt.Sprintf("decoding hex value: %s", err)))
 			return
 		}
 	default:
+		log.Warnw("Decode: DecodeString", "err", fmt.Sprintf("unrecognized encoding: %s", param.Encoding))
 		ReturnError(c, NewError(500, fmt.Sprintf("unrecognized encoding: %s", param.Encoding)))
 		return
 	}
 
 	decParams, err := DecodeParams(abi.MethodNum(param.Method), params)
 	if err != nil {
+		log.Warnw("Decode: DecodeParams", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 	}
 
@@ -57,12 +62,14 @@ func (w *Wallet) Encode(c *gin.Context) {
 	param := client.EncodeRequest{}
 	err := c.BindJSON(&param)
 	if err != nil {
+		log.Warnw("Encode: BindJSON", "err", err.Error())
 		ReturnError(c, ParamErr)
 		return
 	}
 
 	encParams, err := EncodeParams(abi.MethodNum(param.Method), param.Params)
 	if err != nil {
+		log.Warnw("Encode: EncodeParams", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 	}
 
@@ -73,6 +80,7 @@ func (w *Wallet) Encode(c *gin.Context) {
 	case "hex":
 		encodeMsg = hex.EncodeToString(encParams)
 	default:
+		log.Warnw("Encode: EncodeToString", "err", fmt.Sprintf("not support encoding: %s", param.Encoding))
 		ReturnError(c, NewError(500, "not support encoding"))
 	}
 

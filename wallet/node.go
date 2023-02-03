@@ -25,6 +25,7 @@ func newNode(name, nodeEndpoint, nodeToken string) (*node, error) {
 
 	_, err = lotusClient.Api.ChainHead(context.Background())
 	if err != nil {
+		log.Warnw("newNode: ChainHead", "err", err)
 		return nil, fmt.Errorf("nodeEndpoint: %s is bad", nodeEndpoint)
 	}
 
@@ -41,12 +42,14 @@ func (w *Wallet) NodeAdd(c *gin.Context) {
 	param := client.NodeRequest{}
 	err := c.BindJSON(&param)
 	if err != nil {
+		log.Warnw("NodeAdd: BindJSON", "err", err)
 		ReturnError(c, ParamErr)
 		return
 	}
 
 	_, err = newNode(param.Name, param.Endpoint, param.Token)
 	if err != nil {
+		log.Warnw("NodeAdd: newNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -57,6 +60,7 @@ func (w *Wallet) NodeAdd(c *gin.Context) {
 		Token:    param.Token,
 	})
 	if err != nil {
+		log.Warnw("NodeAdd: SetNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -69,12 +73,14 @@ func (w *Wallet) NodeUpdate(c *gin.Context) {
 	param := client.NodeRequest{}
 	err := c.BindJSON(&param)
 	if err != nil {
+		log.Warnw("NodeUpdate: BindJSON", "err", err)
 		ReturnError(c, ParamErr)
 		return
 	}
 
 	_, err = w.db.GetNode(param.Name)
 	if err != nil {
+		log.Warnw("NodeUpdate: GetNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -85,6 +91,7 @@ func (w *Wallet) NodeUpdate(c *gin.Context) {
 		Token:    param.Token,
 	})
 	if err != nil {
+		log.Warnw("NodeUpdate: UpdateNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -96,6 +103,7 @@ func (w *Wallet) NodeDelete(c *gin.Context) {
 	param := client.NodeRequest{}
 	err := c.BindJSON(&param)
 	if err != nil {
+		log.Warnw("NodeDelete: BindJSON", "err", err)
 		ReturnError(c, ParamErr)
 		return
 	}
@@ -107,6 +115,7 @@ func (w *Wallet) NodeDelete(c *gin.Context) {
 
 	err = w.db.DeleteNode(param.Name)
 	if err != nil {
+		log.Warnw("NodeDelete: DeleteNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -118,6 +127,7 @@ func (w *Wallet) UseNode(c *gin.Context) {
 	param := client.NodeRequest{}
 	err := c.BindJSON(&param)
 	if err != nil {
+		log.Warnw("UseNode: BindJSON", "err", err)
 		ReturnError(c, ParamErr)
 		return
 	}
@@ -129,12 +139,14 @@ func (w *Wallet) UseNode(c *gin.Context) {
 
 	nodeInfo, err := w.db.GetNode(param.Name)
 	if err != nil {
+		log.Warnw("UseNode: GetNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
 
 	node, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
 	if err != nil {
+		log.Warnw("UseNode: newNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -148,6 +160,7 @@ func (w *Wallet) UseNode(c *gin.Context) {
 func (w *Wallet) NodeList(c *gin.Context) {
 	nodeInfos, err := w.db.NodeList()
 	if err != nil {
+		log.Warnw("NodeList: NodeList", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -176,12 +189,14 @@ func (w *Wallet) NodeList(c *gin.Context) {
 func (w *Wallet) NodeBest(c *gin.Context) {
 	nodeInfo, err := w.getBestNode()
 	if err != nil {
+		log.Warnw("NodeBest: getBestNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
 
 	node, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
 	if err != nil {
+		log.Warnw("NodeBest: newNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
