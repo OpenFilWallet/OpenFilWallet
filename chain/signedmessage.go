@@ -3,6 +3,7 @@ package chain
 import (
 	"bytes"
 	"encoding/hex"
+	"encoding/json"
 	"github.com/filecoin-project/go-state-types/crypto"
 	"github.com/filecoin-project/lotus/chain/types"
 )
@@ -21,6 +22,11 @@ import (
 type SignedMessage struct {
 	Message   Message `json:"message"`
 	Signature string  `json:"signature"`
+}
+
+func (m *SignedMessage) String() string {
+	signedMessage, _ := json.Marshal(m)
+	return string(signedMessage)
 }
 
 func BuildSignedMessage(msg *Message, signature crypto.Signature) (*SignedMessage, error) {

@@ -38,6 +38,11 @@ type ParamsInfo struct {
 	Params string `json:"params"`
 }
 
+func (m *Message) String() string {
+	msg, _ := json.Marshal(m)
+	return string(msg)
+}
+
 func EncodeMessage(msg *types.Message, params interface{}) (*Message, error) {
 	paramsInfo, err := EncodeParams(params)
 	if err != nil {
