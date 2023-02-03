@@ -18,19 +18,24 @@ import (
 var log = logging.Logger("openfild")
 
 func main() {
-	_ = logging.SetLogLevel("*", "INFO")
-
 	app := &cli.App{
 		Name:                 "openfild",
 		Usage:                "open source hd wallet for Filecoin",
 		Version:              build.Version(),
 		EnableBashCompletion: true,
+		Before:               before,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    repo.FlagWalletRepo,
 				EnvVars: []string{"OPEN_FIL_WALLET_PATH"},
 				Value:   "~/.openfilwallet",
 				Usage:   fmt.Sprintf("Specify openfilwallet repo path. flag(--wallet-repo) or env(OPEN_FIL_WALLET_PATH)"),
+			},
+			&cli.BoolFlag{
+				Name:    "verbose",
+				Value:   false,
+				Aliases: []string{"vv"},
+				Usage:   "enables very verbose mode",
 			},
 		},
 		Commands: []*cli.Command{
@@ -141,6 +146,16 @@ func requirePassword(db datastore.WalletDB) error {
 	}
 	if !ok {
 		return errors.New("login password does not exist")
+	}
+
+	return nil
+}
+
+func before(cctx *cli.Context) error {
+	_ = logging.SetLogLevel("*", "INFO")
+
+	if cctx.Bool("verbose") {
+		_ = logging.SetLogLevel("*", "DEBUG")
 	}
 
 	return nil

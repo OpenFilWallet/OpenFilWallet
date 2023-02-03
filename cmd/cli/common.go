@@ -32,6 +32,8 @@ func getBaseParams(cctx *cli.Context) (buildmessage.BaseParams, error) {
 	baseParams.MaxFee = cctx.String("max-fee")
 	baseParams.Nonce = cctx.Uint64("nonce")
 
+	log.Debugw("getBaseParams", "BaseParams", baseParams.String())
+
 	return baseParams, nil
 }
 
@@ -51,14 +53,14 @@ func printMessage(cctx *cli.Context, msg interface{}) error {
 			return nil
 		}
 
-		defer fi.Close()
-
 		_, err = fi.Write(v)
 		if err != nil {
 			log.Warnf("save message: %s \n", err)
 			fmt.Println(string(v))
 			return nil
 		}
+
+		fi.Close()
 
 		return nil
 	} else {

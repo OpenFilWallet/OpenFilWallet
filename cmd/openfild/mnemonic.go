@@ -67,7 +67,7 @@ var mnemonicGenerateCmd = &cli.Command{
 			return err
 		}
 
-		log.Info("mnemonic generated successfully")
+		fmt.Println("mnemonic generated successfully")
 		return nil
 	},
 }
@@ -123,7 +123,7 @@ var mnemonicImportCmd = &cli.Command{
 			return err
 		}
 
-		log.Info("mnemonic imported successfully")
+		fmt.Println("mnemonic imported successfully")
 		return nil
 	},
 }
@@ -214,7 +214,7 @@ var mnemonicDeleteCmd = &cli.Command{
 			return err
 		}
 
-		log.Info("mnemonic deleted successfully")
+		fmt.Println("mnemonic deleted successfully")
 		return nil
 	},
 }

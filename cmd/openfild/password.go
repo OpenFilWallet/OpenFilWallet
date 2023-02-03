@@ -65,7 +65,7 @@ var updateRootCmd = &cli.Command{
 			return err
 		}
 
-		log.Info("root password updated successfully")
+		fmt.Println("root password updated successfully")
 
 		return nil
 	},

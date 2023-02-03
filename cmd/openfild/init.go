@@ -93,7 +93,7 @@ var initCmd = &cli.Command{
 			return err
 		}
 
-		log.Info("openFilWallet initialized successfully, you can now start it with 'openfild mnemonic generate or openfild mnemonic import'")
+		fmt.Println("openFilWallet initialized successfully, you can now start it with 'openfild mnemonic generate or openfild mnemonic import'")
 
 		return nil
 	},

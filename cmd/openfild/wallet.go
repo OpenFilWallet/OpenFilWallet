@@ -175,7 +175,7 @@ var walletImportCmd = &cli.Command{
 			return err
 		}
 
-		log.Info("private key imported successfully")
+		fmt.Println("private key imported successfully")
 		return nil
 	},
 }
@@ -259,7 +259,7 @@ var walletDeleteCmd = &cli.Command{
 			return err
 		}
 
-		log.Info("private key deleted successfully")
+		fmt.Println("private key deleted successfully")
 		return nil
 	},
 }
