@@ -16,6 +16,7 @@ import (
 	logging "github.com/ipfs/go-log/v2"
 	"golang.org/x/xerrors"
 	"strconv"
+	"strings"
 )
 
 var log = logging.Logger("buildmessage")
@@ -103,8 +104,13 @@ func NewWithdrawMessage(node api.FullNode, baseParams BaseParams, minerId string
 		return nil, nil, err
 	}
 
-	from, err := node.StateAccountKey(ctx, mi.Owner, types.EmptyTSK)
+	// todo Whether to use beneficiary withdrawal?
+	from, err := node.StateAccountKey(ctx, mi.Beneficiary, types.EmptyTSK)
 	if err != nil {
+		if strings.Contains(err.Error(), "multisig") {
+			err = xerrors.Errorf("minerId: %s owner: %s is multisig account, please use Msig Withdraw", minerId, mi.Owner.String())
+		}
+
 		return nil, nil, err
 	}
 
@@ -326,7 +332,7 @@ func NewConfirmUpdateWorkerMessage(node api.FullNode, baseParams BaseParams, min
 	msg := &types.Message{
 		From:   from,
 		To:     minerAddr,
-		Method: builtin.MethodsMiner.ConfirmUpdateWorkerKey,
+		Method: builtin.MethodsMiner.ConfirmChangeWorkerAddress,
 		Value:  big.Zero(),
 	}
 
@@ -490,7 +496,8 @@ func buildMessage(node api.FullNode, msg *types.Message, baseParams BaseParams) 
 
 		maxFee, err := types.ParseFIL(baseParams.MaxFee)
 		if err != nil {
-			return nil, fmt.Errorf("parsing max-fee: %w", err)
+			log.Warnf("parsing max-fee: %s", err)
+			maxFee, _ = types.ParseFIL("1 FIL")
 		}
 
 		msg, err = node.GasEstimateMessageGas(ctx, msg, &api.MessageSendSpec{MaxFee: abi.TokenAmount(maxFee)}, types.EmptyTSK)
