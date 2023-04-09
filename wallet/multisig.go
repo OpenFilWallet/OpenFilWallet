@@ -20,10 +20,12 @@ import (
 	cbg "github.com/whyrusleeping/cbor-gen"
 	"reflect"
 	"sort"
+	"time"
 )
 
 // MsigWalletList Get
 func (w *Wallet) MsigWalletList(c *gin.Context) {
+	_, isBalance := c.GetQuery("balance")
 	msigList, err := w.db.MsigWalletList()
 	if err != nil {
 		log.Warnw("Msig: MsigWalletList: MsigWalletList", "err", err.Error())
@@ -31,12 +33,27 @@ func (w *Wallet) MsigWalletList(c *gin.Context) {
 		return
 	}
 
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
 	data := []client.MsigWalletListInfo{}
 	for _, ms := range msigList {
+		var amount = types.NewInt(0)
+		if isBalance {
+			addr, _ := address.NewFromString(ms.MsigAddr)
+			amount, err = w.node.Api.WalletBalance(timeoutCtx, addr)
+			if err != nil {
+				log.Warnw("Balance: WalletBalance", "err", err.Error())
+				ReturnError(c, NewError(500, err.Error()))
+				return
+			}
+		}
+
 		data = append(data, client.MsigWalletListInfo{
 			MsigAddr:              ms.MsigAddr,
 			Signers:               ms.Signers,
 			NumApprovalsThreshold: ms.NumApprovalsThreshold,
+			Balance:               types.FIL(amount).String(),
 		})
 	}
 
@@ -83,7 +100,7 @@ func (w *Wallet) MsigAdd(c *gin.Context) {
 
 	_, err = w.db.GetMsig(param.MsigAddress)
 	if err == nil {
-		log.Warnw("Msig: MsigAdd: GetMsig", "err", err.Error())
+		log.Warn("Msig: MsigAdd: Msig exist")
 		ReturnError(c, NewError(500, "msig wallet already exists"))
 		return
 	}

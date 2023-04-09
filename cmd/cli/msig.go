@@ -242,20 +242,15 @@ var msigWalletListCmd = &cli.Command{
 		}
 		defer lotusAPI.Closer()
 
-		walletInfo, err := walletAPI.MsigWalletList()
+		walletInfo, err := walletAPI.MsigWalletList(true)
 		if err != nil {
 			return err
 		}
 
 		ctx := context.Background()
 		for _, wallet := range walletInfo {
-			bi, err := walletAPI.Balance(wallet.MsigAddr)
-			if err != nil {
-				log.Warnw("request wallet balance fail", "addr", wallet.MsigAddr)
-				continue
-			}
 			fmt.Fprintf(cctx.App.Writer, "Msig address: %s \n", wallet.MsigAddr)
-			fmt.Fprintf(cctx.App.Writer, "Balance: %s\n", bi.Amount)
+			fmt.Fprintf(cctx.App.Writer, "Balance: %s\n", wallet.Balance)
 			fmt.Fprintf(cctx.App.Writer, "Threshold: %d / %d\n", wallet.NumApprovalsThreshold, len(wallet.Signers))
 			fmt.Fprintln(cctx.App.Writer, "Signers:")
 
