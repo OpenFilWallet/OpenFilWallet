@@ -163,20 +163,55 @@ func (w *Wallet) ControlList(c *gin.Context) {
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	mi, err := w.Api.StateMinerInfo(ctx, minerAddr, types.EmptyTSK)
-	cancel()
 	if err != nil {
 		log.Warnw("Miner: ControlList: StateMinerInfo", "minerId", minerId, "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
 
-	ReturnOk(c, client.MinerControl{
-		Owner:            mi.Owner.String(),
-		Worker:           mi.Worker.String(),
-		NewWorker:        mi.NewWorker.String(),
-		ControlAddresses: addr2Str(mi.ControlAddresses),
-	})
+	printMeta := func(addr address.Address) client.Meta {
+		meta := client.Meta{
+			ID:      addr.String(),
+			Balance: "",
+		}
+
+		k, err := w.Api.StateAccountKey(ctx, addr, types.EmptyTSK)
+		if err == nil {
+			meta.Address = k.String()
+		} else {
+			meta.ID = addr.String() + " (multisig)"
+		}
+		amount, err := w.node.Api.WalletBalance(ctx, addr)
+		if err != nil {
+			log.Warnw("Balance: WalletBalance", "err", err.Error())
+		} else {
+			meta.Balance = types.FIL(amount).String()
+		}
+		return meta
+	}
+
+	controlAddrs := make([]client.Meta, 0)
+	for _, addr := range mi.ControlAddresses {
+		controlAddrs = append(controlAddrs, printMeta(addr))
+	}
+
+	minerControl := client.MinerControl{
+		Owner:       printMeta(mi.Owner),
+		Beneficiary: printMeta(mi.Beneficiary),
+		Worker:      printMeta(mi.Worker),
+	}
+
+	if mi.NewWorker.String() != address.UndefAddressString {
+		m := printMeta(mi.NewWorker)
+		minerControl.NewWorker = &m
+	}
+	if len(controlAddrs) != 0 {
+		minerControl.ControlAddresses = controlAddrs
+	}
+
+	ReturnOk(c, minerControl)
 }
 
 // ChangeBeneficiary Post

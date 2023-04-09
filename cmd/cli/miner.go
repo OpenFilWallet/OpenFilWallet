@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/client"
 	"github.com/fatih/color"
@@ -11,7 +10,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 	"os"
-	"strings"
 )
 
 var minerCmd = &cli.Command{
@@ -221,51 +219,12 @@ var actorControlList = &cli.Command{
 			tablewriter.Col("balance"),
 		)
 
-		printKey := func(name string, a string) {
-			balance, err := walletAPI.Balance(a)
-			if err != nil {
-				fmt.Printf("%s\t%s: error getting balance: %s\n", name, a, err)
-				return
-			}
-
-			b, err := types.ParseFIL(balance.Amount)
-			if err != nil {
-				fmt.Printf("%s\t%s: error parsing balance: %s\n", name, a, err)
-				return
-			}
-
-			addr, err := address.NewFromString(a)
-			if err != nil {
-				fmt.Printf("%s\t%s: error parsing address: %s\n", name, a, err)
-				return
-			}
-
-			k, err := lotusAPI.Api.StateAccountKey(context.Background(), addr, types.EmptyTSK)
-			if err != nil {
-				if strings.Contains(err.Error(), "multisig") {
-					fmt.Printf("%s\t%s (multisig) \n", name, a)
-					return
-				}
-
-				fmt.Printf("%s\t%s: error getting account key: %s\n", name, a, err)
-				return
-			}
-
-			bstr := b.String()
-			switch {
-			case types.BigInt(b).LessThan(types.FromFil(10)):
-				bstr = color.RedString(bstr)
-			case types.BigInt(b).LessThan(types.FromFil(50)):
-				bstr = color.YellowString(bstr)
-			default:
-				bstr = color.GreenString(bstr)
-			}
-
+		printKey := func(name string, meta client.Meta) {
 			tw.Write(map[string]interface{}{
 				"name":    name,
-				"ID":      a,
-				"key":     k,
-				"balance": bstr,
+				"ID":      meta.ID,
+				"key":     meta.Address,
+				"balance": meta.Balance,
 			})
 		}
 
