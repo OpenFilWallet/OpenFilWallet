@@ -54,7 +54,7 @@ var runCmd = &cli.Command{
 			return err
 		}
 
-		endpoint := "127.0.0.1:" + cctx.String("wallet-api")
+		endpoint := "localhost:" + cctx.String("wallet-api")
 
 		err = lr.SetAPIEndpoint("http://" + endpoint)
 		if err != nil {
