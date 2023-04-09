@@ -1,11 +1,15 @@
 package wallet
 
 import (
+	"context"
 	"github.com/OpenFilWallet/OpenFilWallet/account"
 	"github.com/OpenFilWallet/OpenFilWallet/client"
 	"github.com/OpenFilWallet/OpenFilWallet/crypto"
 	"github.com/OpenFilWallet/OpenFilWallet/datastore"
+	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 // WalletCreate Post
@@ -18,6 +22,7 @@ func (w *Wallet) WalletCreate(c *gin.Context) {
 		return
 	}
 
+	log.Infow("WalletCreate", "index", param.Index)
 	var index = uint64(0)
 	if param.Index <= 0 {
 		index, err = w.db.NextMnemonicIndex()
@@ -63,16 +68,10 @@ func (w *Wallet) WalletCreate(c *gin.Context) {
 
 // WalletList Get
 func (w *Wallet) WalletList(c *gin.Context) {
+	_, isBalance := c.GetQuery("balance")
 	walletList, err := w.db.WalletList()
 	if err != nil {
 		log.Warnw("WalletList: WalletList", "err", err.Error())
-		ReturnError(c, NewError(500, err.Error()))
-		return
-	}
-
-	msigList, err := w.db.MsigWalletList()
-	if err != nil {
-		log.Warnw("WalletList: MsigWalletList", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
@@ -88,21 +87,28 @@ func (w *Wallet) WalletList(c *gin.Context) {
 	}
 
 	data := make([]client.WalletListInfo, 0)
-	for _, ms := range msigList {
-		data = append(data, client.WalletListInfo{
-			WalletType:    "msig",
-			WalletAddress: ms.MsigAddr,
-			WalletPath:    "",
-		})
-	}
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
 	for _, key := range []string{"secp256k1", "bls"} {
 		if wallets, ok := walletListMap[key]; ok {
 			for _, wallet := range wallets {
+				var amount = types.NewInt(0)
+				if isBalance {
+					addr, _ := address.NewFromString(wallet.Address)
+					amount, err = w.node.Api.WalletBalance(timeoutCtx, addr)
+					if err != nil {
+						log.Warnw("Balance: WalletBalance", "err", err.Error())
+						ReturnError(c, NewError(500, err.Error()))
+						return
+					}
+				}
+
 				data = append(data, client.WalletListInfo{
 					WalletType:    key,
 					WalletAddress: wallet.Address,
 					WalletPath:    wallet.Path,
+					Balance:       types.FIL(amount).String(),
 				})
 			}
 		}
