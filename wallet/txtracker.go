@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/client"
 	"github.com/OpenFilWallet/OpenFilWallet/datastore"
-	multisig9 "github.com/filecoin-project/go-state-types/builtin/v9/multisig"
+	multisig10 "github.com/filecoin-project/go-state-types/builtin/v10/multisig"
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/stmgr"
 	"github.com/filecoin-project/lotus/chain/types"
@@ -113,7 +113,7 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 				}
 
 				msig := execreturn.RobustAddress.String()
-				var p multisig9.ConstructorParams
+				var p multisig10.ConstructorParams
 				err = json.Unmarshal([]byte(msg.Params), &p)
 				if err != nil {
 					log.Warnw("txTracker: Unmarshal Msig ConstructorParams fail", "err", err.Error())
@@ -123,7 +123,6 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 
 				signers := make([]string, 0)
 				for _, signer := range p.Signers {
-					signers = append(signers, signer.String())
 					actorId, err := tt.node.Api.StateLookupID(context.Background(), signer, types.EmptyTSK)
 					if err != nil {
 						log.Warnw("txTracker: StateLookupID fail", "err", err.Error())
