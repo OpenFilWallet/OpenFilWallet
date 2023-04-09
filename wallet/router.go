@@ -2,12 +2,14 @@ package wallet
 
 import (
 	"github.com/OpenFilWallet/OpenFilWallet/modules/app"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"strings"
 )
 
 func (w *Wallet) NewRouter() *gin.Engine {
 	r := gin.New()
+	r.Use(cors.Default())
 	r.Use(Recovery())
 	r.Use(w.MustUnlock())
 	r.Use(w.MustHaveNode())
@@ -15,10 +17,12 @@ func (w *Wallet) NewRouter() *gin.Engine {
 	r.Use(w.JWT())
 	r.Use(w.TraceLogger())
 
+	r.GET("/getRouters", w.GetRouters)
+
 	r.GET("/status", w.Status)
 
 	r.POST("/login", w.Login)
-	r.POST("/signout", w.SignOut)
+	r.POST("/logout", w.Logout)
 
 	r.POST("/chain/decode", w.Decode)
 	r.POST("/chain/encode", w.Encode)
@@ -97,7 +101,7 @@ func (w *Wallet) NewRouter() *gin.Engine {
 var HandlePermMap = map[string]app.Permission{
 	"/status":                                  app.PermRead,
 	"/login":                                   app.PermWrite,
-	"/signout":                                 app.PermWrite,
+	"/logout":                                  app.PermWrite,
 	"/chain/decode":                            app.PermRead,
 	"/chain/encode":                            app.PermRead,
 	"/node/add":                                app.PermWrite,
