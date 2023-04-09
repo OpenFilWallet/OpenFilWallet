@@ -10,10 +10,17 @@ import (
 	"time"
 )
 
+var glifNodeInfo = &datastore.NodeInfo{
+	Name:     "glif",
+	Endpoint: "https://api.node.glif.io/rpc/v0",
+	Token:    "",
+}
+
 type node struct {
 	name         string
 	nodeEndpoint string
 	token        string
+	height       string
 	*client.LotusClient
 }
 
@@ -23,7 +30,7 @@ func newNode(name, nodeEndpoint, nodeToken string) (*node, error) {
 		return nil, err
 	}
 
-	_, err = lotusClient.Api.ChainHead(context.Background())
+	head, err := lotusClient.Api.ChainHead(context.Background())
 	if err != nil {
 		log.Warnw("newNode: ChainHead", "err", err)
 		return nil, fmt.Errorf("nodeEndpoint: %s is bad", nodeEndpoint)
@@ -33,6 +40,7 @@ func newNode(name, nodeEndpoint, nodeToken string) (*node, error) {
 		name,
 		nodeEndpoint,
 		nodeToken,
+		head.Height().String(),
 		lotusClient,
 	}, nil
 }
@@ -137,21 +145,24 @@ func (w *Wallet) UseNode(c *gin.Context) {
 		return
 	}
 
-	nodeInfo, err := w.db.GetNode(param.Name)
-	if err != nil {
-		log.Warnw("UseNode: GetNode", "err", err)
-		ReturnError(c, NewError(500, err.Error()))
-		return
+	nodeInfo := glifNodeInfo
+	if param.Name != glifNodeInfo.Name {
+		nodeInfo, err = w.db.GetNode(param.Name)
+		if err != nil {
+			log.Warnw("UseNode: GetNode", "err", err)
+			ReturnError(c, NewError(500, err.Error()))
+			return
+		}
 	}
 
-	node, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
+	n, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
 	if err != nil {
 		log.Warnw("UseNode: newNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
-	w.node = node
-	w.txTracker.node = node
+	w.node = n
+	w.txTracker.node = n
 
 	ReturnOk(c, nil)
 }
@@ -166,18 +177,27 @@ func (w *Wallet) NodeList(c *gin.Context) {
 	}
 
 	// Add a default node
-	nodeInfos = append(nodeInfos, datastore.NodeInfo{
-		Name:     "glif",
-		Endpoint: "https://api.node.glif.io/rpc/v0",
-		Token:    "",
-	})
+	nodeInfos = append(nodeInfos, *glifNodeInfo)
+
 	var nis = []client.NodeInfo{}
 
 	for _, ni := range nodeInfos {
+		isUsing := false
+		if ni.Name == w.node.name {
+			isUsing = true
+		}
+		n, err := newNode(ni.Name, ni.Endpoint, ni.Token)
+		if err != nil {
+			n = &node{
+				height: "0",
+			}
+		}
 		nis = append(nis, client.NodeInfo{
-			Name:     ni.Name,
-			Endpoint: ni.Endpoint,
-			Token:    ni.Token,
+			Name:        ni.Name,
+			Endpoint:    ni.Endpoint,
+			Token:       ni.Token,
+			IsUsing:     isUsing,
+			BlockHeight: n.height,
 		})
 	}
 
@@ -194,18 +214,19 @@ func (w *Wallet) NodeBest(c *gin.Context) {
 		return
 	}
 
-	node, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
+	n, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
 	if err != nil {
 		log.Warnw("NodeBest: newNode", "err", err)
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
-	w.node = node
+	w.node = n
 
 	ReturnOk(c, client.NodeInfo{
-		Name:     nodeInfo.Name,
-		Endpoint: nodeInfo.Endpoint,
-		Token:    nodeInfo.Token,
+		Name:        nodeInfo.Name,
+		Endpoint:    nodeInfo.Endpoint,
+		Token:       nodeInfo.Token,
+		BlockHeight: n.height,
 	})
 }
 
