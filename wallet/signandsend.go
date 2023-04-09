@@ -109,21 +109,23 @@ func (w *Wallet) SignAndSend(c *gin.Context) {
 		return
 	}
 
-	w.txTracker.trackTx(&datastore.History{
-		Version:    signedMsg.Message.Version,
-		To:         signedMsg.Message.To.String(),
-		From:       signedMsg.Message.From.String(),
-		Nonce:      signedMsg.Message.Nonce,
-		Value:      signedMsg.Message.Value.Int64(),
-		GasLimit:   signedMsg.Message.GasLimit,
-		GasFeeCap:  signedMsg.Message.GasFeeCap.Int64(),
-		GasPremium: signedMsg.Message.GasPremium.Int64(),
-		Method:     uint64(signedMsg.Message.Method),
-		Params:     param.Params.Params,
-		ParamName:  param.Params.Name,
-		TxCid:      cid.String(),
-		TxState:    datastore.Pending,
-	})
+	if ok := w.signer.HasSigner(signedMsg.Message.From.String()); ok {
+		w.txTracker.trackTx(&datastore.History{
+			Version:    signedMsg.Message.Version,
+			To:         signedMsg.Message.To.String(),
+			From:       signedMsg.Message.From.String(),
+			Nonce:      signedMsg.Message.Nonce,
+			Value:      signedMsg.Message.Value.Int64(),
+			GasLimit:   signedMsg.Message.GasLimit,
+			GasFeeCap:  signedMsg.Message.GasFeeCap.Int64(),
+			GasPremium: signedMsg.Message.GasPremium.Int64(),
+			Method:     uint64(signedMsg.Message.Method),
+			Params:     param.Params.Params,
+			ParamName:  param.Params.Name,
+			TxCid:      cid.String(),
+			TxState:    datastore.Pending,
+		})
+	}
 
 	ReturnOk(c, client.Response{
 		Code:    200,
