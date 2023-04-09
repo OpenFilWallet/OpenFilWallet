@@ -20,21 +20,25 @@ type NodeRequest struct {
 }
 
 type NodeInfo struct {
-	Name     string `json:"name"`
-	Endpoint string `json:"endpoint"`
-	Token    string `json:"token"`
+	Name        string `json:"name"`
+	Endpoint    string `json:"endpoint"`
+	Token       string `json:"token"`
+	IsUsing     bool   `json:"isUsing"`
+	BlockHeight string `json:"blockHeight"`
 }
 
 type WalletListInfo struct {
-	WalletType    string
-	WalletAddress string
-	WalletPath    string
+	WalletType    string `json:"type"`
+	WalletAddress string `json:"address"`
+	WalletPath    string `json:"path"`
+	Balance       string `json:"balance"`
 }
 
 type MsigWalletListInfo struct {
-	MsigAddr              string   `json:"msig_addr"`
+	MsigAddr              string   `json:"address"`
 	Signers               []string `json:"signers"`
 	NumApprovalsThreshold uint64   `json:"num_approvals_threshold"`
+	Balance               string   `json:"balance"`
 }
 
 type CreateWalletRequest struct {
@@ -119,11 +123,17 @@ type BalanceInfo struct {
 	Amount  string `json:"amount"`
 }
 
+type Meta struct {
+	ID      string `json:"id,omitempty"`
+	Address string `json:"address,omitempty"`
+	Balance string `json:"balance,omitempty"`
+}
 type MinerControl struct {
-	Owner            string   `json:"owner"`
-	Worker           string   `json:"worker"`
-	NewWorker        string   `json:"new_worker"`
-	ControlAddresses []string `json:"control_addresses"`
+	Owner            Meta   `json:"owner"`
+	Beneficiary      Meta   `json:"beneficiary"`
+	Worker           Meta   `json:"worker"`
+	NewWorker        *Meta  `json:"new_worker,omitempty"`
+	ControlAddresses []Meta `json:"control_addresses"`
 }
 
 type StatusInfo struct {
