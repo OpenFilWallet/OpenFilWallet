@@ -276,8 +276,13 @@ func (api *OpenFilAPI) WalletCreate(index int) (*CreateWalletResponse, error) {
 	return &r, nil
 }
 
-func (api *OpenFilAPI) WalletList() ([]WalletListInfo, error) {
-	res, err := GetRequest(api.endpoint, "/wallet/list", api.token, nil)
+func (api *OpenFilAPI) WalletList(balance bool) ([]WalletListInfo, error) {
+	params := make(map[string]string, 0)
+	if balance {
+		params["balance"] = "true"
+	}
+
+	res, err := GetRequest(api.endpoint, "/wallet/list", api.token, params)
 	if err != nil {
 		return nil, err
 	}
@@ -291,8 +296,13 @@ func (api *OpenFilAPI) WalletList() ([]WalletListInfo, error) {
 	return r, nil
 }
 
-func (api *OpenFilAPI) MsigWalletList() ([]MsigWalletListInfo, error) {
-	res, err := GetRequest(api.endpoint, "/msig/list", api.token, nil)
+func (api *OpenFilAPI) MsigWalletList(balance bool) ([]MsigWalletListInfo, error) {
+	params := make(map[string]string, 0)
+	if balance {
+		params["balance"] = "true"
+	}
+
+	res, err := GetRequest(api.endpoint, "/msig/list", api.token, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1481,7 +1491,7 @@ func Call(req *http.Request, token string) ([]byte, error) {
 	req.Header.Set("Content-Type", "application/json")
 
 	if len(strings.Trim(token, " ")) > 0 {
-		req.Header.Set("Authorization", token)
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
 
 	client := &http.Client{}

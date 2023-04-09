@@ -94,13 +94,13 @@ var walletListCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
+		balance := cctx.Bool("balance")
 
-		walletInfo, err := walletAPI.WalletList()
+		walletInfo, err := walletAPI.WalletList(balance)
 		if err != nil {
 			return err
 		}
 
-		balance := cctx.Bool("balance")
 		w := tabwriter.NewWriter(cctx.App.Writer, 8, 4, 2, ' ', 0)
 		if balance {
 			fmt.Fprintf(w, "ID\tWallet Type\tAddress\tPath\tBalance\n")
@@ -111,12 +111,7 @@ var walletListCmd = &cli.Command{
 		i := 0
 		for _, wallet := range walletInfo {
 			if balance {
-				bi, err := walletAPI.Balance(wallet.WalletAddress)
-				if err != nil {
-					log.Warnw("request wallet balance fail", "addr", wallet.WalletAddress)
-					continue
-				}
-				fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n", i, wallet.WalletType, wallet.WalletAddress, wallet.WalletPath, bi.Amount)
+				fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n", i, wallet.WalletType, wallet.WalletAddress, wallet.WalletPath, wallet.Balance)
 				continue
 			}
 

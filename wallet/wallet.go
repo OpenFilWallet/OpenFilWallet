@@ -42,14 +42,14 @@ func NewWallet(offline bool, rootPassword string, db datastore.WalletDB, close <
 		return nil, err
 	}
 
-	node, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
+	n, err := newNode(nodeInfo.Name, nodeInfo.Endpoint, nodeInfo.Token)
 	if err == nil {
-		w.node = node
+		w.node = n
 	} else {
 		log.Warn("no nodes available")
 	}
 
-	txTracker := newTxTracker(node, db, close)
+	txTracker := newTxTracker(n, db, close)
 	w.txTracker = txTracker
 
 	keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(rootPassword)))

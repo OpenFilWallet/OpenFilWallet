@@ -23,10 +23,10 @@ func TestWallet_TxHistory(t *testing.T) {
 
 	db := datastore.NewWalletDB(ds)
 
-	node, err := newNode("glif", "https://api.node.glif.io/rpc/v0", "")
+	n, err := newNode("glif", "https://api.node.glif.io/rpc/v0", "")
 	require.NoError(t, err)
 
-	txTracker := newTxTracker(node, db, nil)
+	txTracker := newTxTracker(n, db, nil)
 
 	txTracker.trackTx(&datastore.History{
 		Version:    0,
