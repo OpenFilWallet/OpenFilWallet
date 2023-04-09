@@ -28,7 +28,8 @@ func Recovery() gin.HandlerFunc {
 func (w *Wallet) MustUnlock() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if strings.Contains(c.Request.URL.String(), "status") ||
-			strings.Contains(c.Request.URL.String(), "login") {
+			strings.Contains(c.Request.URL.String(), "login") ||
+			strings.Contains(c.Request.URL.String(), "logout") {
 			c.Next()
 			return
 		}
@@ -77,19 +78,27 @@ func (w *Wallet) IfOfflineWallet() gin.HandlerFunc {
 
 func (w *Wallet) JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
+		method := c.Request.URL.String()
+		if method != "/login" && method != "/getRouters" {
+			token := c.GetHeader("Authorization")
+			tokens := strings.Split(token, " ")
+			if len(tokens) != 2 {
+				ReturnError(c, NewError(505, "invalid token"))
+				c.Abort()
+				return
+			}
+			allow, err := app.AuthVerify(tokens[1])
+			if err != nil {
+				ReturnError(c, NewError(505, err.Error()))
+				c.Abort()
+				return
+			}
 
-		allow, err := app.AuthVerify(token)
-		if err != nil {
-			ReturnError(c, NewError(505, err.Error()))
-			c.Abort()
-			return
-		}
-
-		if !VerifyPermission(c.Request.URL.String(), allow) {
-			ReturnError(c, NewError(505, "Insufficient Permission"))
-			c.Abort()
-			return
+			if !VerifyPermission(c.Request.URL.String(), allow) {
+				ReturnError(c, NewError(505, "Insufficient Permission"))
+				c.Abort()
+				return
+			}
 		}
 
 		c.Next()
