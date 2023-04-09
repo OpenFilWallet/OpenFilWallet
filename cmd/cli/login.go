@@ -32,9 +32,9 @@ var loginCmd = &cli.Command{
 	},
 }
 
-var signOutCmd = &cli.Command{
-	Name:  "signout",
-	Usage: "sign out openfil wallet",
+var logoutCmd = &cli.Command{
+	Name:  "logout",
+	Usage: "logout openfil wallet",
 	Action: func(cctx *cli.Context) error {
 		walletAPI, err := client.GetOpenFilAPI(cctx)
 		if err != nil {

@@ -67,8 +67,8 @@ func (w *Wallet) Login(c *gin.Context) {
 	})
 }
 
-// SignOut Post
-func (w *Wallet) SignOut(c *gin.Context) {
+// Logout Post
+func (w *Wallet) Logout(c *gin.Context) {
 	w.lock = true
 }
 
