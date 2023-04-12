@@ -6,16 +6,15 @@ OpenFilWallet provides a safe and simple way to send Filecoin transactions, and 
 
 See the docs at [https://docs.openfilwallet.com](https://docs.openfilwallet.com/) to get started.
 
+Note: Because the git submodule is used in the compilation process, the code of `filecoin-ffi` needs to be automatically pulled during compilation, so you need to configure the ssh key in your github
 
 ## Warn
 
 A release will be made when it has been thoroughly tested. It is not recommended to use it on the mainnet, unless you know what you are doing!
-
-
 
 ## TODO
 
 - Web UI
 - Display transactions through QR codes
 - Support docker
-- ... 
+- ...
