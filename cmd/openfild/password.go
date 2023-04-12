@@ -45,7 +45,7 @@ var updateRootCmd = &cli.Command{
 
 		rootScrypt := crypto.Scrypt(rootPassword)
 
-		err = db.SetRootPassword(rootScrypt)
+		err = db.UpdateRootPassword(rootScrypt)
 		if err != nil {
 			return err
 		}
@@ -97,7 +97,7 @@ var updateLoginCmd = &cli.Command{
 		}
 
 		loginScrypt := crypto.Scrypt(loginPassword)
-		err = db.SetLoginPassword(loginScrypt)
+		err = db.UpdateLoginPassword(loginScrypt)
 		if err != nil {
 			return err
 		}
