@@ -93,7 +93,7 @@ func (api *OpenFilAPI) Login(loginPassword string) error {
 }
 
 func (api *OpenFilAPI) SignOut() error {
-	_, err := PostRequest(api.endpoint, "/signout", api.token, nil)
+	_, err := PostRequest(api.endpoint, "/logout", api.token, nil)
 	if err != nil {
 		return err
 	}
