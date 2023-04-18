@@ -13,14 +13,14 @@ var passwordCmd = &cli.Command{
 	Name:  "password",
 	Usage: "OpenFilWallet password settings",
 	Subcommands: []*cli.Command{
-		updateRootCmd,
+		updateMasterCmd,
 		updateLoginCmd,
 	},
 }
 
-var updateRootCmd = &cli.Command{
-	Name:  "update-root",
-	Usage: "update root password",
+var updateMasterCmd = &cli.Command{
+	Name:  "update-master",
+	Usage: "update master password",
 	Action: func(cctx *cli.Context) error {
 		db, closer, err := getWalletDB(cctx, false)
 		if err != nil {
@@ -32,25 +32,25 @@ var updateRootCmd = &cli.Command{
 			return err
 		}
 
-		oldPassword, verified := verifyRootPassword(db)
+		oldPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
 
-		fmt.Println("Please enter a new root password")
-		rootPassword, err := app.Password(true)
+		fmt.Println("Please enter a new master password")
+		masterPassword, err := app.Password(true)
 		if err != nil {
 			return err
 		}
 
-		rootScrypt := crypto.Scrypt(rootPassword)
+		masterScrypt := crypto.Scrypt(masterPassword)
 
-		err = db.UpdateRootPassword(rootScrypt)
+		err = db.UpdateMasterPassword(masterScrypt)
 		if err != nil {
 			return err
 		}
 
-		newPasswordKey := crypto.GenerateEncryptKey([]byte(rootPassword))
+		newPasswordKey := crypto.GenerateEncryptKey([]byte(masterPassword))
 		oldPasswordKey := crypto.GenerateEncryptKey([]byte(oldPassword))
 
 		// Encrypt the mnemonic with the new key
@@ -65,7 +65,7 @@ var updateRootCmd = &cli.Command{
 			return err
 		}
 
-		fmt.Println("root password updated successfully")
+		fmt.Println("master password updated successfully")
 
 		return nil
 	},
@@ -73,7 +73,7 @@ var updateRootCmd = &cli.Command{
 
 var updateLoginCmd = &cli.Command{
 	Name:  "update-login",
-	Usage: "update login password, need root password",
+	Usage: "update login password, need master password",
 	Action: func(cctx *cli.Context) error {
 		db, closer, err := getWalletDB(cctx, false)
 		if err != nil {
@@ -85,7 +85,7 @@ var updateLoginCmd = &cli.Command{
 			return err
 		}
 
-		_, verified := verifyRootPassword(db)
+		_, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}

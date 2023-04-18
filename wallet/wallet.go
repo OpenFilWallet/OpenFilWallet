@@ -20,21 +20,21 @@ type Wallet struct {
 
 	signer messagesigner.Signer
 
-	rootPassword string
+	masterPassword string
 
 	db datastore.WalletDB
 	lk sync.Mutex
 }
 
-func NewWallet(offline bool, rootPassword string, db datastore.WalletDB, close <-chan struct{}) (*Wallet, error) {
+func NewWallet(offline bool, masterPassword string, db datastore.WalletDB, close <-chan struct{}) (*Wallet, error) {
 	login := newLogin(close)
 
 	w := &Wallet{
-		offline:      offline,
-		login:        login,
-		signer:       messagesigner.NewSigner(),
-		rootPassword: rootPassword,
-		db:           db,
+		offline:        offline,
+		login:          login,
+		signer:         messagesigner.NewSigner(),
+		masterPassword: masterPassword,
+		db:             db,
 	}
 
 	nodeInfo, err := w.getBestNode()
@@ -52,7 +52,7 @@ func NewWallet(offline bool, rootPassword string, db datastore.WalletDB, close <
 	txTracker := newTxTracker(n, db, close)
 	w.txTracker = txTracker
 
-	keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
+	keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(masterPassword)))
 	if err != nil {
 		log.Warnw("NewWallet: LoadPrivateKeys", "err", err)
 		return nil, err

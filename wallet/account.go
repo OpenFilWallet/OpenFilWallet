@@ -35,14 +35,14 @@ func (w *Wallet) WalletCreate(c *gin.Context) {
 		index = uint64(param.Index)
 	}
 
-	mnemonic, err := account.LoadMnemonic(w.db, crypto.GenerateEncryptKey([]byte(w.rootPassword)))
+	mnemonic, err := account.LoadMnemonic(w.db, crypto.GenerateEncryptKey([]byte(w.masterPassword)))
 	if err != nil {
 		log.Warnw("WalletCreate: LoadMnemonic", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))
 		return
 	}
 
-	nks, err := account.GeneratePrivateKeyFromMnemonicIndex(w.db, mnemonic, int64(index), crypto.GenerateEncryptKey([]byte(w.rootPassword)))
+	nks, err := account.GeneratePrivateKeyFromMnemonicIndex(w.db, mnemonic, int64(index), crypto.GenerateEncryptKey([]byte(w.masterPassword)))
 	if err != nil {
 		log.Warnw("WalletCreate: GeneratePrivateKeyFromMnemonicIndex", "err", err.Error())
 		ReturnError(c, NewError(500, err.Error()))

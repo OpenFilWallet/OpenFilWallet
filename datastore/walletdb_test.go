@@ -21,18 +21,18 @@ func TestNewWalletDB(t *testing.T) {
 
 	db := NewWalletDB(ds)
 
-	require.NoError(t, db.DeleteRootPassword())
+	require.NoError(t, db.DeleteMasterPassword())
 	require.NoError(t, db.DeleteLoginPassword())
 
-	rootPassword, err := db.GetRootPassword()
-	require.Equal(t, rootPassword, []byte{})
+	masterPassword, err := db.GetMasterPassword()
+	require.Equal(t, masterPassword, []byte{})
 	loginPassword, err := db.GetLoginPassword()
 	require.Equal(t, loginPassword, []byte{})
 
-	require.NoError(t, db.SetRootPassword([]byte("root password")))
+	require.NoError(t, db.SetMasterPassword([]byte("root password")))
 	require.NoError(t, db.SetLoginPassword([]byte("login password")))
 
-	require.Equal(t, db.SetRootPassword([]byte("root password")).Error(), "scrypt already exist")
+	require.Equal(t, db.SetMasterPassword([]byte("root password")).Error(), "scrypt already exist")
 	require.Equal(t, db.SetLoginPassword([]byte("login password")).Error(), "scrypt already exist")
 
 }

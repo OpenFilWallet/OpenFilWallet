@@ -50,13 +50,13 @@ var initCmd = &cli.Command{
 
 		db := datastore.NewWalletDB(ds)
 
-		rootPasswordExist, err := db.HasRootPassword()
+		masterPasswordExist, err := db.HasMasterPassword()
 		if err != nil {
 			return err
 		}
 
-		if rootPasswordExist {
-			return errors.New("root password exists")
+		if masterPasswordExist {
+			return errors.New("master password exists")
 		}
 
 		loginPasswordExist, err := db.HasLoginPassword()
@@ -68,13 +68,13 @@ var initCmd = &cli.Command{
 			return errors.New("login password exists")
 		}
 
-		fmt.Println("Please enter the root password to encrypt the mnemonic and private key")
-		rootPassword, err := app.Password(true)
+		fmt.Println("Please enter the master password to encrypt the mnemonic and private key")
+		masterPassword, err := app.Password(true)
 		if err != nil {
 			return err
 		}
 
-		rootScrypt := crypto.Scrypt(rootPassword)
+		masterScrypt := crypto.Scrypt(masterPassword)
 
 		fmt.Println("Please enter the login password to login to the wallet")
 		loginPassword, err := app.Password(true)
@@ -84,7 +84,7 @@ var initCmd = &cli.Command{
 
 		loginScrypt := crypto.Scrypt(loginPassword)
 
-		err = db.SetRootPassword(rootScrypt)
+		err = db.SetMasterPassword(masterScrypt)
 		if err != nil {
 			return err
 		}

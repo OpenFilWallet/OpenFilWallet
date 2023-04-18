@@ -9,13 +9,13 @@ import (
 type scryptType int
 
 const (
-	root scryptType = iota
+	master scryptType = iota
 	login
 )
 
 const (
-	scryptRootPrefix  = "/scrypt/root"
-	scryptLoginPrefix = "/scrypt/login"
+	scryptMasterPrefix = "/scrypt/root"
+	scryptLoginPrefix  = "/scrypt/login"
 )
 
 type ScryptStore struct {
@@ -56,8 +56,8 @@ func (db *ScryptStore) delete(st scryptType) error {
 
 func prefix(st scryptType) datastore.Key {
 	switch st {
-	case root:
-		return datastore.NewKey(scryptRootPrefix)
+	case master:
+		return datastore.NewKey(scryptMasterPrefix)
 	case login:
 		return datastore.NewKey(scryptLoginPrefix)
 	default:

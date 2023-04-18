@@ -57,12 +57,12 @@ var mnemonicGenerateCmd = &cli.Command{
 			return errors.New("mnemonic already exists")
 		}
 
-		rootPassword, verified := verifyRootPassword(db)
+		masterPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
 
-		err = account.GenerateMnemonic(db, mType, crypto.GenerateEncryptKey([]byte(rootPassword)))
+		err = account.GenerateMnemonic(db, mType, crypto.GenerateEncryptKey([]byte(masterPassword)))
 		if err != nil {
 			return err
 		}
@@ -96,7 +96,7 @@ var mnemonicImportCmd = &cli.Command{
 			return errors.New("mnemonic already exists")
 		}
 
-		rootPassword, verified := verifyRootPassword(db)
+		masterPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
@@ -118,7 +118,7 @@ var mnemonicImportCmd = &cli.Command{
 			mnemonic = fdata
 		}
 
-		err = account.ImportMnemonic(db, strings.Replace(string(mnemonic), "\n", "", -1), crypto.GenerateEncryptKey([]byte(rootPassword)))
+		err = account.ImportMnemonic(db, strings.Replace(string(mnemonic), "\n", "", -1), crypto.GenerateEncryptKey([]byte(masterPassword)))
 		if err != nil {
 			return err
 		}
@@ -151,12 +151,12 @@ var mnemonicExportCmd = &cli.Command{
 			return errors.New("mnemonic does not exist")
 		}
 
-		rootPassword, verified := verifyRootPassword(db)
+		masterPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
 
-		mnemonic, err := account.LoadMnemonic(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
+		mnemonic, err := account.LoadMnemonic(db, crypto.GenerateEncryptKey([]byte(masterPassword)))
 		if err != nil {
 			return err
 		}
@@ -193,7 +193,7 @@ var mnemonicDeleteCmd = &cli.Command{
 			return errors.New("mnemonic does not exist")
 		}
 
-		_, verified := verifyRootPassword(db)
+		_, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}

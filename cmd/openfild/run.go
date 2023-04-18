@@ -97,19 +97,19 @@ var runCmd = &cli.Command{
 			return errors.New("mnemonic does not exist")
 		}
 
-		rootPassword, verified := verifyRootPassword(db)
+		masterPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
 
-		_, err = account.LoadMnemonic(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
+		_, err = account.LoadMnemonic(db, crypto.GenerateEncryptKey([]byte(masterPassword)))
 		if err != nil {
 			return fmt.Errorf("failed to decrypt mnemonic, err: %s", err.Error())
 		}
 
 		var closeCh = make(chan struct{})
 		// new server
-		walletServer, err := wallet.NewWallet(cctx.Bool("offline"), rootPassword, db, closeCh)
+		walletServer, err := wallet.NewWallet(cctx.Bool("offline"), masterPassword, db, closeCh)
 		if err != nil {
 			return fmt.Errorf("new Wallet fail: %s", err.Error())
 		}

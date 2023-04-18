@@ -53,22 +53,22 @@ func main() {
 	}
 }
 
-func verifyRootPassword(db datastore.WalletDB) (string, bool) {
-	fmt.Println("Please enter root password")
+func verifyMasterPassword(db datastore.WalletDB) (string, bool) {
+	fmt.Println("Please enter master password")
 	for i := 0; i < 3; i++ {
-		rootPassword, err := app.Password(false)
+		masterPassword, err := app.Password(false)
 		if err != nil {
 			continue
 		}
 
-		rootKey, err := db.GetRootPassword()
+		masterKey, err := db.GetMasterPassword()
 		if err != nil {
 			log.Warnw("walletDB load encrypted password failed", "err", err)
 			return "", false
 		}
 
 		// check password
-		isOk, err := crypto.VerifyScrypt(rootPassword, rootKey)
+		isOk, err := crypto.VerifyScrypt(masterPassword, masterKey)
 		if err != nil || !isOk {
 			if i == 2 {
 				fmt.Println("Incorrect password")
@@ -79,7 +79,7 @@ func verifyRootPassword(db datastore.WalletDB) (string, bool) {
 			continue
 		}
 
-		return rootPassword, true
+		return masterPassword, true
 	}
 
 	return "", false
@@ -132,12 +132,12 @@ func getWalletDB(cctx *cli.Context, readonly bool) (datastore.WalletDB, func(), 
 }
 
 func requirePassword(db datastore.WalletDB) error {
-	ok, err := db.HasRootPassword()
+	ok, err := db.HasMasterPassword()
 	if err != nil {
-		return fmt.Errorf("root password check failed, err: %s", err.Error())
+		return fmt.Errorf("master password check failed, err: %s", err.Error())
 	}
 	if !ok {
-		return errors.New("root password does not exist")
+		return errors.New("master password does not exist")
 	}
 
 	ok, err = db.HasLoginPassword()

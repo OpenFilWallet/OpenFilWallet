@@ -41,17 +41,17 @@ var walletNew = &cli.Command{
 			return err
 		}
 
-		rootPassword, verified := verifyRootPassword(db)
+		masterPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
 
-		mnemonic, err := account.LoadMnemonic(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
+		mnemonic, err := account.LoadMnemonic(db, crypto.GenerateEncryptKey([]byte(masterPassword)))
 		if err != nil {
 			return err
 		}
 
-		nks, err := account.GeneratePrivateKeyFromMnemonicIndex(db, mnemonic, -1, crypto.GenerateEncryptKey([]byte(rootPassword)))
+		nks, err := account.GeneratePrivateKeyFromMnemonicIndex(db, mnemonic, -1, crypto.GenerateEncryptKey([]byte(masterPassword)))
 		if err != nil {
 			return err
 		}
@@ -86,7 +86,7 @@ var walletListCmd = &cli.Command{
 			return err
 		}
 
-		rootPassword, verified := verifyRootPassword(db)
+		masterPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
@@ -94,7 +94,7 @@ var walletListCmd = &cli.Command{
 		afmt := app.NewAppFmt(cctx.App)
 
 		export := cctx.Bool("export")
-		keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(rootPassword)))
+		keys, err := account.LoadPrivateKeys(db, crypto.GenerateEncryptKey([]byte(masterPassword)))
 		if err != nil {
 			return err
 		}
@@ -147,7 +147,7 @@ var walletImportCmd = &cli.Command{
 			return errors.New("mnemonic does not exist")
 		}
 
-		rootPassword, verified := verifyRootPassword(db)
+		masterPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
@@ -170,7 +170,7 @@ var walletImportCmd = &cli.Command{
 			inpdata = fdata
 		}
 
-		err = account.ImportPrivateKey(db, string(inpdata), cctx.String("format"), crypto.GenerateEncryptKey([]byte(rootPassword)))
+		err = account.ImportPrivateKey(db, string(inpdata), cctx.String("format"), crypto.GenerateEncryptKey([]byte(masterPassword)))
 		if err != nil {
 			return err
 		}
@@ -199,7 +199,7 @@ var walletExportCmd = &cli.Command{
 			return err
 		}
 
-		rootPassword, verified := verifyRootPassword(db)
+		masterPassword, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}
@@ -209,7 +209,7 @@ var walletExportCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
-		key, err := account.GetPrivateKey(db, addr.String(), crypto.GenerateEncryptKey([]byte(rootPassword)))
+		key, err := account.GetPrivateKey(db, addr.String(), crypto.GenerateEncryptKey([]byte(masterPassword)))
 
 		b, err := json.Marshal(key.KeyInfo)
 		if err != nil {
@@ -243,7 +243,7 @@ var walletDeleteCmd = &cli.Command{
 			return err
 		}
 
-		_, verified := verifyRootPassword(db)
+		_, verified := verifyMasterPassword(db)
 		if !verified {
 			return errors.New("password verification failed")
 		}

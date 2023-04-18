@@ -32,28 +32,28 @@ func NewWalletDB(ds datastore.Batching) WalletDB {
 
 // ------ scrypt ------
 
-func (db *WalletDB) HasRootPassword() (bool, error) {
-	return db.sStore.has(root)
+func (db *WalletDB) HasMasterPassword() (bool, error) {
+	return db.sStore.has(master)
 }
 
 func (db *WalletDB) HasLoginPassword() (bool, error) {
 	return db.sStore.has(login)
 }
 
-func (db *WalletDB) GetRootPassword() ([]byte, error) {
-	return db.sStore.get(root)
+func (db *WalletDB) GetMasterPassword() ([]byte, error) {
+	return db.sStore.get(master)
 }
 
 func (db *WalletDB) GetLoginPassword() ([]byte, error) {
 	return db.sStore.get(login)
 }
 
-func (db *WalletDB) SetRootPassword(password []byte) error {
+func (db *WalletDB) SetMasterPassword(password []byte) error {
 	if len(password) == 0 {
 		return errors.New("password cannot be empty")
 	}
 
-	return db.sStore.put(root, password, false)
+	return db.sStore.put(master, password, false)
 }
 
 func (db *WalletDB) SetLoginPassword(password []byte) error {
@@ -64,12 +64,12 @@ func (db *WalletDB) SetLoginPassword(password []byte) error {
 	return db.sStore.put(login, password, false)
 }
 
-func (db *WalletDB) UpdateRootPassword(password []byte) error {
+func (db *WalletDB) UpdateMasterPassword(password []byte) error {
 	if len(password) == 0 {
 		return errors.New("password cannot be empty")
 	}
 
-	return db.sStore.put(root, password, true)
+	return db.sStore.put(master, password, true)
 }
 
 func (db *WalletDB) UpdateLoginPassword(password []byte) error {
@@ -80,8 +80,8 @@ func (db *WalletDB) UpdateLoginPassword(password []byte) error {
 	return db.sStore.put(login, password, true)
 }
 
-func (db *WalletDB) DeleteRootPassword() error {
-	return db.sStore.delete(root)
+func (db *WalletDB) DeleteMasterPassword() error {
+	return db.sStore.delete(master)
 }
 
 func (db *WalletDB) DeleteLoginPassword() error {
