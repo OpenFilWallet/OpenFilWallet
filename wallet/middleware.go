@@ -79,7 +79,7 @@ func (w *Wallet) IfOfflineWallet() gin.HandlerFunc {
 func (w *Wallet) JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.URL.String()
-		if method != "/login" && method != "/getRouters" {
+		if method != "/login" && method != "/getRouters" && method != "/logout" {
 			token := c.GetHeader("Authorization")
 			tokens := strings.Split(token, " ")
 			if len(tokens) != 2 {
