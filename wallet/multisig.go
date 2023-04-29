@@ -346,6 +346,7 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 
 			targAct, err := w.Api.StateGetActor(ctx, tx.To, types.EmptyTSK)
 			paramStr := fmt.Sprintf("%x", tx.Params)
+			method := filcns.NewActorRegistry().Methods[targAct.Code][tx.Method]
 
 			if err != nil {
 				if tx.Method == 0 {
@@ -353,7 +354,7 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 						Txid:     txid,
 						To:       tx.To.String(),
 						Value:    tx.Value.String(),
-						Method:   fmt.Sprintf("Send(%d)", tx.Method),
+						Method:   fmt.Sprintf("%s(%d)", method.Name, tx.Method),
 						Params:   "",
 						Approved: addr2Str(tx.Approved),
 					})
@@ -362,14 +363,12 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 						Txid:     txid,
 						To:       tx.To.String(),
 						Value:    tx.Value.String(),
-						Method:   fmt.Sprintf("%d", tx.Method),
+						Method:   fmt.Sprintf("%s(%d)", method.Name, tx.Method),
 						Params:   paramStr,
 						Approved: addr2Str(tx.Approved),
 					})
 				}
 			} else {
-				method := filcns.NewActorRegistry().Methods[targAct.Code][tx.Method]
-
 				if tx.Method != 0 {
 					ptyp := reflect.New(method.Params.Elem()).Interface().(cbg.CBORUnmarshaler)
 					if err := ptyp.UnmarshalCBOR(bytes.NewReader(tx.Params)); err != nil {
@@ -391,7 +390,7 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 					Txid:     txid,
 					To:       tx.To.String(),
 					Value:    tx.Value.String(),
-					Method:   fmt.Sprintf("%d", tx.Method),
+					Method:   fmt.Sprintf("%s(%d)", method.Name, tx.Method),
 					Params:   paramStr,
 					Approved: addr2Str(tx.Approved),
 				})
