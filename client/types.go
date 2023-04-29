@@ -30,12 +30,14 @@ type NodeInfo struct {
 type WalletListInfo struct {
 	WalletType    string `json:"type"`
 	WalletAddress string `json:"address"`
+	WalletId      string `json:"id"`
 	WalletPath    string `json:"path"`
 	Balance       string `json:"balance"`
 }
 
 type MsigWalletListInfo struct {
 	MsigAddr              string   `json:"address"`
+	ID                    string   `json:"id"`
 	Signers               []string `json:"signers"`
 	NumApprovalsThreshold uint64   `json:"num_approvals_threshold"`
 	Balance               string   `json:"balance"`

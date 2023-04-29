@@ -39,8 +39,9 @@ func (w *Wallet) MsigWalletList(c *gin.Context) {
 	data := []client.MsigWalletListInfo{}
 	for _, ms := range msigList {
 		var amount = types.NewInt(0)
+		addr, _ := address.NewFromString(ms.MsigAddr)
+
 		if isBalance {
-			addr, _ := address.NewFromString(ms.MsigAddr)
 			amount, err = w.node.Api.WalletBalance(timeoutCtx, addr)
 			if err != nil {
 				log.Warnw("Balance: WalletBalance", "err", err.Error())
@@ -48,9 +49,16 @@ func (w *Wallet) MsigWalletList(c *gin.Context) {
 				return
 			}
 		}
+		id, err := w.node.Api.StateLookupID(timeoutCtx, addr, types.EmptyTSK)
+		if err != nil {
+			log.Warnw("StateLookupID", "err", err.Error())
+			ReturnError(c, NewError(500, err.Error()))
+			return
+		}
 
 		data = append(data, client.MsigWalletListInfo{
 			MsigAddr:              ms.MsigAddr,
+			ID:                    id.String(),
 			Signers:               ms.Signers,
 			NumApprovalsThreshold: ms.NumApprovalsThreshold,
 			Balance:               types.FIL(amount).String(),
@@ -346,7 +354,6 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 
 			targAct, err := w.Api.StateGetActor(ctx, tx.To, types.EmptyTSK)
 			paramStr := fmt.Sprintf("%x", tx.Params)
-			method := filcns.NewActorRegistry().Methods[targAct.Code][tx.Method]
 
 			if err != nil {
 				if tx.Method == 0 {
@@ -354,7 +361,7 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 						Txid:     txid,
 						To:       tx.To.String(),
 						Value:    tx.Value.String(),
-						Method:   fmt.Sprintf("%s(%d)", method.Name, tx.Method),
+						Method:   fmt.Sprintf("Send(%d)", tx.Method),
 						Params:   "",
 						Approved: addr2Str(tx.Approved),
 					})
@@ -363,12 +370,14 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 						Txid:     txid,
 						To:       tx.To.String(),
 						Value:    tx.Value.String(),
-						Method:   fmt.Sprintf("%s(%d)", method.Name, tx.Method),
+						Method:   fmt.Sprintf("unknown method(%d)", tx.Method),
 						Params:   paramStr,
 						Approved: addr2Str(tx.Approved),
 					})
 				}
 			} else {
+				method := filcns.NewActorRegistry().Methods[targAct.Code][tx.Method]
+
 				if tx.Method != 0 {
 					ptyp := reflect.New(method.Params.Elem()).Interface().(cbg.CBORUnmarshaler)
 					if err := ptyp.UnmarshalCBOR(bytes.NewReader(tx.Params)); err != nil {

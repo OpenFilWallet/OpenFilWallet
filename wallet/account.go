@@ -94,8 +94,9 @@ func (w *Wallet) WalletList(c *gin.Context) {
 		if wallets, ok := walletListMap[key]; ok {
 			for _, wallet := range wallets {
 				var amount = types.NewInt(0)
+				addr, _ := address.NewFromString(wallet.Address)
+
 				if isBalance {
-					addr, _ := address.NewFromString(wallet.Address)
 					amount, err = w.node.Api.WalletBalance(timeoutCtx, addr)
 					if err != nil {
 						log.Warnw("Balance: WalletBalance", "err", err.Error())
@@ -104,9 +105,19 @@ func (w *Wallet) WalletList(c *gin.Context) {
 					}
 				}
 
+				walletId := ""
+				id, err := w.node.Api.StateLookupID(timeoutCtx, addr, types.EmptyTSK)
+				if err != nil {
+					log.Infow("StateLookupID", "err", err.Error())
+					walletId = "NotFound"
+				} else {
+					walletId = id.String()
+				}
+
 				data = append(data, client.WalletListInfo{
 					WalletType:    key,
 					WalletAddress: wallet.Address,
+					WalletId:      walletId,
 					WalletPath:    wallet.Path,
 					Balance:       types.FIL(amount).String(),
 				})
