@@ -7,7 +7,7 @@ import (
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	actorstypes "github.com/filecoin-project/go-state-types/actors"
-	multisig10 "github.com/filecoin-project/go-state-types/builtin/v10/multisig"
+	multisig11 "github.com/filecoin-project/go-state-types/builtin/v11/multisig"
 	init8 "github.com/filecoin-project/go-state-types/builtin/v9/init"
 	"github.com/filecoin-project/go-state-types/builtin/v9/miner"
 	"github.com/filecoin-project/go-state-types/manifest"
@@ -138,7 +138,7 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 		}
 		cbor = &p
 	case "ConstructorParams":
-		var p multisig10.ConstructorParams
+		var p multisig11.ConstructorParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
@@ -161,49 +161,49 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 
 		cbor = ep
 	case "ProposeParams":
-		var p multisig10.ProposeParams
+		var p multisig11.ProposeParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "TxnIDParams":
-		var p multisig10.TxnIDParams
+		var p multisig11.TxnIDParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "AddSignerParams":
-		var p multisig10.AddSignerParams
+		var p multisig11.AddSignerParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "RemoveSignerParams":
-		var p multisig10.RemoveSignerParams
+		var p multisig11.RemoveSignerParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "SwapSignerParams":
-		var p multisig10.SwapSignerParams
+		var p multisig11.SwapSignerParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "ChangeNumApprovalsThresholdParams":
-		var p multisig10.ChangeNumApprovalsThresholdParams
+		var p multisig11.ChangeNumApprovalsThresholdParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
 		}
 		cbor = &p
 	case "LockBalanceParams":
-		var p multisig10.LockBalanceParams
+		var p multisig11.LockBalanceParams
 		err = json.Unmarshal([]byte(params.Params), &p)
 		if err != nil {
 			return nil, err
@@ -260,42 +260,42 @@ func EncodeParams(params interface{}) (*ParamsInfo, error) {
 			Name:   "ChangeWorkerAddressParams",
 			Params: string(b),
 		}, nil
-	case *multisig10.ConstructorParams: // Msig Constructor
+	case *multisig11.ConstructorParams: // Msig Constructor
 		return &ParamsInfo{
 			Name:   "ConstructorParams",
 			Params: string(b),
 		}, nil
-	case *multisig10.ProposeParams: // Propose
+	case *multisig11.ProposeParams: // Propose
 		return &ParamsInfo{
 			Name:   "ProposeParams",
 			Params: string(b),
 		}, nil
-	case *multisig10.TxnIDParams: // Cancel & Approve
+	case *multisig11.TxnIDParams: // Cancel & Approve
 		return &ParamsInfo{
 			Name:   "TxnIDParams",
 			Params: string(b),
 		}, nil
-	case *multisig10.AddSignerParams: // AddSigner
+	case *multisig11.AddSignerParams: // AddSigner
 		return &ParamsInfo{
 			Name:   "AddSignerParams",
 			Params: string(b),
 		}, nil
-	case *multisig10.RemoveSignerParams: // RemoveSigner
+	case *multisig11.RemoveSignerParams: // RemoveSigner
 		return &ParamsInfo{
 			Name:   "RemoveSignerParams",
 			Params: string(b),
 		}, nil
-	case *multisig10.SwapSignerParams: // SwapSigner
+	case *multisig11.SwapSignerParams: // SwapSigner
 		return &ParamsInfo{
 			Name:   "SwapSignerParams",
 			Params: string(b),
 		}, nil
-	case *multisig10.ChangeNumApprovalsThresholdParams: // ChangeNumApprovalsThreshold
+	case *multisig11.ChangeNumApprovalsThresholdParams: // ChangeNumApprovalsThreshold
 		return &ParamsInfo{
 			Name:   "ChangeNumApprovalsThresholdParams",
 			Params: string(b),
 		}, nil
-	case *multisig10.LockBalanceParams: // LockBalance
+	case *multisig11.LockBalanceParams: // LockBalance
 		return &ParamsInfo{
 			Name:   "LockBalanceParams",
 			Params: string(b),

@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/filecoin-project/go-jsonrpc v0.2.1
-	github.com/filecoin-project/go-state-types v0.10.0
+	github.com/filecoin-project/go-state-types v0.11.1
 	github.com/stretchr/testify v1.8.1
 )
 
@@ -15,7 +15,7 @@ require (
 	github.com/filecoin-project/filecoin-ffi v0.30.4-0.20200910194244-f640612a1a1f
 	github.com/filecoin-project/go-address v1.1.0
 	github.com/filecoin-project/go-crypto v0.0.1
-	github.com/filecoin-project/lotus v1.20.0
+	github.com/filecoin-project/lotus v1.22.1
 	github.com/filecoin-project/specs-actors/v8 v8.0.1
 	github.com/ipfs/go-datastore v0.6.0
 	github.com/ipfs/go-ds-leveldb v0.5.0
@@ -29,7 +29,7 @@ require (
 	github.com/whyrusleeping/cbor-gen v0.0.0-20221021053955-c138aae13722
 	go.opencensus.io v0.23.0
 	go.uber.org/multierr v1.8.0
-	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
+	golang.org/x/crypto v0.1.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 )
 
