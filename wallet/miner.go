@@ -250,7 +250,7 @@ func (w *Wallet) ConfirmChangeBeneficiary(c *gin.Context) {
 		ReturnError(c, ParamErr)
 		return
 	}
-	msg, msgParams, err := buildmessage.NewConfirmChangeBeneficiary(w.Api, param.BaseParams, param.MinerId, param.ExistingBeneficiary, param.NewBeneficiary)
+	msg, msgParams, err := buildmessage.NewConfirmChangeBeneficiary(w.Api, param.BaseParams, param.MinerId)
 	if err != nil {
 		log.Warnw("Miner: ConfirmChangeBeneficiary: NewConfirmChangeBeneficiary", "err", err)
 		ReturnError(c, NewError(500, err.Error()))

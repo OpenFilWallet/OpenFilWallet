@@ -446,16 +446,6 @@ var actorConfirmChangeBeneficiary = &cli.Command{
 	Usage:     "Confirm a beneficiary address change",
 	ArgsUsage: "[minerAddress]",
 	Flags: []cli.Flag{
-		&cli.BoolFlag{
-			Name:    "existing-beneficiary",
-			Aliases: []string{"eb"},
-			Usage:   "send confirmation from the existing beneficiary address",
-		},
-		&cli.BoolFlag{
-			Name:    "new-beneficiary",
-			Aliases: []string{"nb"},
-			Usage:   "send confirmation from the new beneficiary address",
-		},
 		&cli.StringFlag{
 			Name:    "output",
 			Aliases: []string{"o"},
@@ -484,7 +474,7 @@ var actorConfirmChangeBeneficiary = &cli.Command{
 			return err
 		}
 
-		msg, err := walletAPI.ConfirmChangeBeneficiary(baseParams, maddr.String(), cctx.Bool("existing-beneficiary"), cctx.Bool("new-beneficiary"))
+		msg, err := walletAPI.ConfirmChangeBeneficiary(baseParams, maddr.String())
 		if err != nil {
 			return err
 		}

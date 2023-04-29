@@ -107,10 +107,8 @@ type ChangeBeneficiaryRequest struct {
 }
 
 type ConfirmChangeBeneficiaryRequest struct {
-	BaseParams          buildmessage.BaseParams `json:"base_params"`
-	MinerId             string                  `json:"miner_id"`
-	ExistingBeneficiary bool                    `json:"existing_beneficiary"`
-	NewBeneficiary      bool                    `json:"new_beneficiary"`
+	BaseParams buildmessage.BaseParams `json:"base_params"`
+	MinerId    string                  `json:"miner_id"`
 }
 
 type SingRequest struct {

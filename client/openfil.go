@@ -543,12 +543,10 @@ func (api *OpenFilAPI) ChangeBeneficiary(baseParams buildmessage.BaseParams, min
 	return &r, nil
 }
 
-func (api *OpenFilAPI) ConfirmChangeBeneficiary(baseParams buildmessage.BaseParams, minerId string, existingBeneficiary, newBeneficiary bool) (*chain.Message, error) {
+func (api *OpenFilAPI) ConfirmChangeBeneficiary(baseParams buildmessage.BaseParams, minerId string) (*chain.Message, error) {
 	req := ConfirmChangeBeneficiaryRequest{
-		BaseParams:          baseParams,
-		MinerId:             minerId,
-		ExistingBeneficiary: existingBeneficiary,
-		NewBeneficiary:      newBeneficiary,
+		BaseParams: baseParams,
+		MinerId:    minerId,
 	}
 
 	res, err := PostRequest(api.endpoint, "/miner/confirm_change_beneficiary", api.token, req)

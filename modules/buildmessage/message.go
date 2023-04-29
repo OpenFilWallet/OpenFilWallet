@@ -147,19 +147,24 @@ func NewChangeOwnerMessage(node api.FullNode, baseParams BaseParams, minerId, ne
 		return nil, nil, err
 	}
 
-	fa, err := address.NewFromString(sender)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	fromAddrId, err := node.StateLookupID(ctx, fa, types.EmptyTSK)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	mi, err := node.StateMinerInfo(ctx, minerAddr, types.EmptyTSK)
 	if err != nil {
 		return nil, nil, err
+	}
+
+	var fromAddrId address.Address
+	if sender == "" {
+		fromAddrId = mi.Owner
+	} else {
+		fa, err := address.NewFromString(sender)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		fromAddrId, err = node.StateLookupID(ctx, fa, types.EmptyTSK)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 
 	if fromAddrId != mi.Owner && fromAddrId != newAddrId {
@@ -416,7 +421,7 @@ func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams
 	return msg, params, nil
 }
 
-func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, minerId string, existingBeneficiary, newBeneficiary bool) (*types.Message, *miner.ChangeBeneficiaryParams, error) {
+func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, minerId string) (*types.Message, *miner.ChangeBeneficiaryParams, error) {
 	ctx := context.Background()
 
 	minerAddr, err := address.NewFromString(minerId)
@@ -433,21 +438,11 @@ func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, miner
 		return nil, nil, fmt.Errorf("no pending beneficiary term found for miner %s", minerAddr)
 	}
 
-	if (existingBeneficiary && newBeneficiary) || (!existingBeneficiary && !newBeneficiary) {
-		return nil, nil, fmt.Errorf("must pass exactly one of --existing-beneficiary or --new-beneficiary")
-	}
-
 	var fromAddr address.Address
-	if existingBeneficiary {
-		if mi.PendingBeneficiaryTerm.ApprovedByBeneficiary {
-			return nil, nil, fmt.Errorf("beneficiary change already approved by current beneficiary")
-		}
-		fromAddr = mi.Beneficiary
-	} else {
-		if mi.PendingBeneficiaryTerm.ApprovedByNominee {
-			return nil, nil, fmt.Errorf("beneficiary change already approved by new beneficiary")
-		}
+	if mi.Owner.String() == mi.Beneficiary.String() || mi.PendingBeneficiaryTerm != nil {
 		fromAddr = mi.PendingBeneficiaryTerm.NewBeneficiary
+	} else {
+		fromAddr = mi.Beneficiary
 	}
 
 	params := &miner.ChangeBeneficiaryParams{
