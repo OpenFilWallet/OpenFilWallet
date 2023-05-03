@@ -1624,7 +1624,7 @@ func (m *Msiger) NewMsigConfirmChangeBeneficiaryApproveMessage(baseParams BasePa
 // --------------------
 
 func (m *Msiger) messageBuilder(from address.Address) (multisig.MessageBuilder, error) {
-	av, err := actorstypes.VersionForNetwork(network.Version18)
+	av, err := actorstypes.VersionForNetwork(network.Version19)
 	if err != nil {
 		return nil, err
 	}

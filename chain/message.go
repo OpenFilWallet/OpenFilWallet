@@ -149,7 +149,7 @@ func DecodeParams(params ParamsInfo) ([]byte, error) {
 			return nil, actErr
 		}
 
-		code, ok := actors.GetActorCodeID(actorstypes.Version10, manifest.MultisigKey)
+		code, ok := actors.GetActorCodeID(actorstypes.Version11, manifest.MultisigKey)
 		if !ok {
 			return nil, xerrors.Errorf("failed to get multisig code ID")
 		}
