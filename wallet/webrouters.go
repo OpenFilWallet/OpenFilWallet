@@ -140,18 +140,18 @@ var msigRouter = Routers{
 	},
 	Children: []Children{
 		{
-			Name:      "Msig",
+			Name:      "MsigTx",
 			Path:      "/msig/msig",
 			Hidden:    false,
 			Component: "openfil/msig/msig",
 			Meta: Meta{
-				Title:   "Msig",
+				Title:   "Msig Tx",
 				Icon:    "peoples",
 				NoCache: false,
 			},
 		},
 		{
-			Name:      "Transfer",
+			Name:      "MsigTransfer",
 			Path:      "/msig/transfer",
 			Hidden:    false,
 			Component: "openfil/msig/transfer",
@@ -162,7 +162,7 @@ var msigRouter = Routers{
 			},
 		},
 		{
-			Name:      "Withdraw",
+			Name:      "MsigWithdraw",
 			Path:      "/msig/withdraw",
 			Hidden:    false,
 			Component: "openfil/msig/withdraw",
@@ -173,7 +173,7 @@ var msigRouter = Routers{
 			},
 		},
 		{
-			Name:      "Owner",
+			Name:      "MsigOwner",
 			Path:      "/msig/owner",
 			Hidden:    false,
 			Component: "openfil/msig/owner",
@@ -184,7 +184,7 @@ var msigRouter = Routers{
 			},
 		},
 		{
-			Name:      "Worker",
+			Name:      "MsigWorker",
 			Path:      "/msig/worker",
 			Hidden:    false,
 			Component: "openfil/msig/worker",
@@ -195,7 +195,7 @@ var msigRouter = Routers{
 			},
 		},
 		{
-			Name:      "Control",
+			Name:      "MsigControl",
 			Path:      "/msig/control",
 			Hidden:    false,
 			Component: "openfil/msig/control",
@@ -206,7 +206,7 @@ var msigRouter = Routers{
 			},
 		},
 		{
-			Name:      "Beneficiary",
+			Name:      "MsigBeneficiary",
 			Path:      "/msig/beneficiary",
 			Hidden:    false,
 			Component: "openfil/msig/beneficiary",
