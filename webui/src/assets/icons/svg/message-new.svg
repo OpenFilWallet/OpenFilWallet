@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+
+      }
+
+      .cls-3 {
+        fill: #ee4545;
+      }
+    </style>
+  </defs>
+  <g id="组_6347" data-name="组 6347" transform="translate(-653 -17)">
+    <g id="组_6217" data-name="组 6217" transform="translate(10)">
+      <g id="组_4452" data-name="组 4452" transform="translate(519.571 -133.792)">
+        <rect id="矩形_2110" data-name="矩形 2110" class="cls-1" width="16" height="16" transform="translate(123.429 150.792)"/>
+        <g id="组_4451" data-name="组 4451" transform="translate(126.096 152.125)">
+          <path id="路径_5906" data-name="路径 5906" class="cls-2" d="M137.1,162.125h-.333v-4.667a3.335,3.335,0,0,0-2.667-3.267v-.067a1.333,1.333,0,0,0-2.667,0v.067a3.334,3.334,0,0,0-2.667,3.267v4.667h-.333a1,1,0,1,0,0,2H137.1a1,1,0,0,0,0-2Z" transform="translate(-127.429 -152.792)"/>
+          <path id="路径_5907" data-name="路径 5907" class="cls-2" d="M134.762,172.125a1.334,1.334,0,0,0,1.333-1.333h-2.667A1.333,1.333,0,0,0,134.762,172.125Z" transform="translate(-129.429 -158.792)"/>
+        </g>
+      </g>
+    </g>
+    <circle id="椭圆_57" data-name="椭圆 57" class="cls-3" cx="3" cy="3" r="3" transform="translate(663 17)"/>
+  </g>
+</svg>

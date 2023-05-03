@@ -1,0 +1,153 @@
+.child-div {
+  display: inline-block;
+}
+
+.font-800 {
+  font-weight: 800;
+}
+
+.res-info-body {
+  margin-top: 20px;
+
+  span {
+    color: #999999;
+    font-weight: 600;
+  }
+}
+
+.info-tag {
+  span {
+    margin-top: 10px;
+    color: #888888;
+    font-weight: 600;
+  }
+}
+
+.advert {
+  border-radius: 10px;
+  height: 233px;
+
+  .el-card__body {
+    padding: 0px;
+    height: 100%;
+
+    .el-image {
+      height: 100%;
+    }
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.res-info {}
+
+.info-tag-100 {
+  width: 50%;
+  text-align: center;
+  display: inline-block;
+
+  span {
+    display: block;
+    margin-top: 20px;
+    color: #888888;
+    font-weight: 600;
+  }
+}
+
+.info-tag-100-10 {
+  text-align: left;
+  padding-left: 40px;
+
+  span {
+    cursor: pointer;
+    display: block;
+    margin-top: 10px;
+    color: #67C23A;
+    font-weight: 600;
+  }
+}
+
+.index-row-2 {
+  margin-top: 10px;
+
+  .el-card {
+    height: 200px;
+  }
+}
+
+pre {
+  display: block;
+  font-family: monospace;
+  white-space: pre-wrap;
+  margin: 0em 0px;
+
+  code {
+    line-height: 1.8;
+    font-family: Menlo, Monaco, Consolas, Courier, monospace;
+    font-size: 14px;
+    padding: 18px 24px;
+    background-color: #fafafa;
+    border: 1px solid #eaeefb;
+    margin-bottom: 0px;
+    border-radius: 4px;
+    -webkit-font-smoothing: auto;
+    color: #000;
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+  }
+}
+
+.el-notification__group {
+  word-break: break-all;
+}
+
+.el-notification {
+  width: 500px;
+}
+
+.el-notification__content {
+  text-align: left;
+}
+
+.el-dropdown-menu {
+  max-height: 300px;
+  overflow-y: auto
+}
+
+.el-select {
+  width: 100%;
+}
+
+.article-title {
+  padding: 20px;
+  font-size: 20px;
+}
+
+.article-body {
+  padding: 10px 20px;
+  font-size: 18px;
+}
+
+.primary {
+  color: #409eff;
+}
+
+.success {
+  color: #67c23a;
+}
+
+.warning {
+  color: #e6a23c;
+}
+
+.danger {
+  color: #f56c6c;
+}
+
+.info {
+  color: #909399;
+}
