@@ -20,7 +20,13 @@ import (
 	cbg "github.com/whyrusleeping/cbor-gen"
 	"reflect"
 	"sort"
+	"strings"
 	"time"
+)
+
+const (
+	CancelErr  = "Cannot cancel another signers transaction"
+	ApproveErr = "already approved this message"
 )
 
 // MsigWalletList Get
@@ -425,7 +431,12 @@ func (w *Wallet) MsigApprove(c *gin.Context) {
 	msg, msgParams, err := msig.NewMsigApproveMessage(param.BaseParams, param.MsigAddress, param.TxId, param.From)
 	if err != nil {
 		log.Warnw("Msig: MsigApprove: NewMsigApproveMessage", "err", err.Error())
-		ReturnError(c, NewError(500, err.Error()))
+		if strings.Contains(err.Error(), ApproveErr) {
+			ReturnError(c, NewError(500, ApproveErr))
+		} else {
+			ReturnError(c, NewError(500, err.Error()))
+		}
+
 		return
 	}
 
@@ -453,7 +464,11 @@ func (w *Wallet) MsigCancel(c *gin.Context) {
 	msg, msgParams, err := msig.NewMsigCancelMessage(param.BaseParams, param.MsigAddress, param.TxId, param.From)
 	if err != nil {
 		log.Warnw("Msig: MsigCancel: NewMsigCancelMessage", "err", err.Error())
-		ReturnError(c, NewError(500, err.Error()))
+		if strings.Contains(err.Error(), CancelErr) {
+			ReturnError(c, NewError(500, CancelErr))
+		} else {
+			ReturnError(c, NewError(500, err.Error()))
+		}
 		return
 	}
 
