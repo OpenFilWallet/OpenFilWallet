@@ -1,0 +1,23 @@
+.DS_Store
+webui/node_modules/
+webui/dist/
+webui/npm-debug.log*
+webui/yarn-debug.log*
+webui/yarn-error.log*
+webui/**/*.log
+
+webui/tests/**/coverage/
+webui/tests/e2e/reports
+webui/selenium-debug.log
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.local
+
+webui/package-lock.json
+webui/yarn.lock
