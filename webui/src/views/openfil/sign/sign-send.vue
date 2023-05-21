@@ -3,7 +3,7 @@
         <div class="input-container">
             <el-input class="input-box" type="textarea" :rows="10" placeholder="Enter transaction data here"
                 v-model="txData"></el-input>
-            <el-button :loading="loading" size="medium" type="primary" @click="signTransaction">
+            <el-button class="sign-button" :loading="loading" size="medium" type="primary" @click="signTransaction">
                 <span v-if="!loading">{{ $t("Sign And Send") }}</span>
                 <span v-else>sending...</span>
             </el-button>
