@@ -2,15 +2,15 @@ import axios from 'axios'
 import { Notification, MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+const defaultSettings = require('../../src/settings.js')
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 10000000
+  baseURL: defaultSettings.openFilWalletAPI,
+  timeout: 60000000
 })
 
 service.interceptors.request.use(config => {
-
   if (getToken()) {
     config.headers['Authorization'] = 'Bearer ' + getToken()
   }
@@ -54,7 +54,7 @@ service.interceptors.response.use(res => {
     }
     ).then(() => {
       store.dispatch('LogOut').then(() => {
-        location.href = '/index';
+        location.href = '/';
       })
     })
   } else if (code === 500) {

@@ -13,7 +13,5 @@ npm run dev
 ## release
 
 ```bash
-npm run build:stage
-
 npm run build:prod
 ```

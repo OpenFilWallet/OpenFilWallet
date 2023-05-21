@@ -11,5 +11,7 @@ module.exports = {
 
   sidebarLogo: true,
 
-  errorLog: 'production'
+  errorLog: 'production',
+
+  openFilWalletAPI: 'http://localhost:6678',
 }

@@ -11,7 +11,7 @@ const name = defaultSettings.title
 const port = 6678
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === "production" ? "/" : "/",
+  publicPath: "/",
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
