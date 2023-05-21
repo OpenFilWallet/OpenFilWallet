@@ -1,6 +1,6 @@
 module github.com/OpenFilWallet/OpenFilWallet
 
-go 1.18
+go 1.19
 
 require (
 	github.com/filecoin-project/go-jsonrpc v0.2.1
@@ -37,7 +37,6 @@ require (
 	github.com/filecoin-project/specs-actors/v2 v2.3.6
 	github.com/filecoin-project/specs-actors/v7 v7.0.1
 	github.com/gbrlsnchs/jwt/v3 v3.0.1
-	github.com/gin-contrib/cors v1.4.0
 	github.com/ipfs/go-cid v0.3.2
 	github.com/ipfs/go-ipld-cbor v0.0.6
 )
