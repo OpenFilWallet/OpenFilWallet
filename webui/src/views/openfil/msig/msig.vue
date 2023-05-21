@@ -1,10 +1,14 @@
 <template>
     <div class="container">
         <div class="transaction-group" v-for="msigWalletGroup in msigWalletGroups" :key="msigWalletGroup.msig_addr">
-            <div class="header">{{ msigWalletGroup.msig_addr }}</div>
+            <!-- <div class="header">{{ msigWalletGroup.msig_addr }}</div> -->
             <template v-if="msigWalletGroup.transactions && msigWalletGroup.transactions.length > 0">
                 <el-card class="card" v-for="transaction in msigWalletGroup.transactions" :key="transaction.txid">
                     <div class="card-content">
+                        <div class="card-item">
+                            <span class="label">Msig:</span>
+                            <span>{{ msigWalletGroup.msig_addr }}</span>
+                        </div>
                         <div class="card-item">
                             <span class="label">TxId:</span>
                             <span>{{ transaction.txid }}</span>
@@ -53,7 +57,11 @@
             <template v-else>
                 <el-card class="card">
                     <div class="card-content">
-                        <div class="no-transactions">{{ $t("No transactions") }}</div>
+                        <div class="card-item">
+                            <span class="label">Msig:</span>
+                            <span>{{ msigWalletGroup.msig_addr }}</span>
+                        </div>
+                        <div class="no-transactions">{{ $t("No Transactions") }}</div>
                     </div>
                 </el-card>
             </template>
@@ -81,7 +89,7 @@
         </el-dialog>
     </div>
 </template>
-  
+
 <script>
 import { walletList, msigWalletList } from "@/api/openfil/wallet.js";
 import { msigInspect } from "@/api/openfil/tool.js";
@@ -208,7 +216,7 @@ export default {
     },
 };
 </script>
-  
+
 <style scoped>
 .container {
     display: flex;
