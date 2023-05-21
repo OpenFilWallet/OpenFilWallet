@@ -10,8 +10,10 @@ import (
 	"github.com/OpenFilWallet/OpenFilWallet/modules/app"
 	"github.com/OpenFilWallet/OpenFilWallet/repo"
 	"github.com/OpenFilWallet/OpenFilWallet/wallet"
+	"github.com/OpenFilWallet/OpenFilWallet/webui"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
+	"io/fs"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,9 +26,10 @@ var runCmd = &cli.Command{
 	Usage: "Start OpenFilWallet process",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
-			Name:  "wallet-api",
-			Usage: "wallet api port",
-			Value: "6678",
+			Name:    "wallet-api",
+			Usage:   "wallet api port",
+			EnvVars: []string{"OPEN_FIL_WALLET_API"},
+			Value:   "6678",
 		},
 		&cli.BoolFlag{
 			Name:  "offline",
@@ -122,6 +125,37 @@ var runCmd = &cli.Command{
 			ReadTimeout:  10 * time.Second,
 			WriteTimeout: 10 * time.Second,
 		}
+
+		go func() {
+			mux := http.NewServeMux()
+
+			staticFS, err := fs.Sub(webui.BuildDir, "dist")
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			vueApp := http.FileServer(http.FS(staticFS))
+
+			mux.Handle("/", vueApp)
+
+			vueAppRouters := []string{"/login", "/index", "/transfer", "/miner/withdraw", "/miner/owner", "/miner/worker", "/miner/control", "/miner/beneficiary",
+				"/msig/msig", "/msig/transfer", "/msig/withdraw", "/msig/owner", "/msig/worker", "/msig/control", "/msig/beneficiary",
+				"/sign_tx", "/sign_msg", "/sign_send", "/send", "/node", "/tool"}
+
+			redirectHandle := func(w http.ResponseWriter, r *http.Request) {
+				http.Redirect(w, r, "/", http.StatusSeeOther)
+			}
+
+			for _, router := range vueAppRouters {
+				mux.HandleFunc(router, redirectHandle)
+			}
+
+			srv := &http.Server{Addr: ":8080", Handler: mux}
+
+			if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+				log.Fatalf("gql.ListenAndServe(): %v", err)
+			}
+		}()
 
 		log.Infow("start wallet server", "endpoint", endpoint)
 		go func() {
