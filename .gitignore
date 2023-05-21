@@ -18,6 +18,3 @@ webui/selenium-debug.log
 *.njsproj
 *.sln
 *.local
-
-webui/package-lock.json
-webui/yarn.lock
