@@ -2,14 +2,13 @@ package wallet
 
 import (
 	"github.com/OpenFilWallet/OpenFilWallet/modules/app"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"strings"
 )
 
 func (w *Wallet) NewRouter() *gin.Engine {
 	r := gin.New()
-	r.Use(cors.Default())
+	r.Use(Cors())
 	r.Use(Recovery())
 	r.Use(w.MustUnlock())
 	r.Use(w.MustHaveNode())
