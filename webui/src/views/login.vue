@@ -1,7 +1,11 @@
 <template>
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">OpenFilWallet</h3>
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <span class="icon"></span>
+        <h3 class="title" style="margin: 0;">OpenFilWallet</h3>
+      </div>
+      <div class="form-item-spacing"></div>
       <el-form-item prop="password">
         <el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="password"
           @keyup.enter.native="handleLogin">
@@ -96,5 +100,19 @@ export default {
     width: 14px;
     margin-left: 2px;
   }
+}
+
+.icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url('../assets/logo/logo.png');
+  background-size: contain;
+  margin-right: 10px;
+}
+
+.form-item-spacing {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>
