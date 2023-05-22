@@ -3,43 +3,42 @@ module github.com/OpenFilWallet/OpenFilWallet
 go 1.19
 
 require (
-	github.com/filecoin-project/go-jsonrpc v0.2.1
-	github.com/filecoin-project/go-state-types v0.11.1
-	github.com/stretchr/testify v1.8.1
-)
-
-require (
 	github.com/btcsuite/btcd v0.22.1
+	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/ethereum/go-ethereum v1.10.16
+	github.com/fatih/color v1.13.0
 	github.com/filecoin-project/filecoin-ffi v0.30.4-0.20200910194244-f640612a1a1f
 	github.com/filecoin-project/go-address v1.1.0
 	github.com/filecoin-project/go-crypto v0.0.1
+	github.com/filecoin-project/go-jsonrpc v0.2.1
+	github.com/filecoin-project/go-state-types v0.11.1
 	github.com/filecoin-project/lotus v1.22.1
+	github.com/filecoin-project/specs-actors/v2 v2.3.6
+	github.com/filecoin-project/specs-actors/v7 v7.0.1
 	github.com/filecoin-project/specs-actors/v8 v8.0.1
+	github.com/gbrlsnchs/jwt/v3 v3.0.1
+	github.com/gin-gonic/gin v1.8.1
+	github.com/ipfs/go-cid v0.3.2
 	github.com/ipfs/go-datastore v0.6.0
 	github.com/ipfs/go-ds-leveldb v0.5.0
 	github.com/ipfs/go-fs-lock v0.0.7
+	github.com/ipfs/go-ipld-cbor v0.0.6
 	github.com/ipfs/go-log/v2 v2.5.1
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/shirou/gopsutil v3.21.4+incompatible
+	github.com/stretchr/testify v1.8.1
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 	github.com/tyler-smith/go-bip39 v1.1.0
+	github.com/urfave/cli/v2 v2.16.3
 	github.com/whyrusleeping/cbor-gen v0.0.0-20221021053955-c138aae13722
-	go.opencensus.io v0.23.0
 	go.uber.org/multierr v1.8.0
 	golang.org/x/crypto v0.1.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 )
 
-require (
-	github.com/filecoin-project/specs-actors/v2 v2.3.6
-	github.com/filecoin-project/specs-actors/v7 v7.0.1
-	github.com/gbrlsnchs/jwt/v3 v3.0.1
-	github.com/ipfs/go-cid v0.3.2
-	github.com/ipfs/go-ipld-cbor v0.0.6
-)
+replace github.com/filecoin-project/filecoin-ffi => ./extern/filecoin-ffi
 
 require (
 	contrib.go.opencensus.io/exporter/prometheus v0.4.0 // indirect
@@ -190,6 +189,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
+	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
@@ -198,6 +198,7 @@ require (
 	github.com/whyrusleeping/go-keyspace v0.0.0-20160322163242-5b898ac5add1 // indirect
 	github.com/whyrusleeping/timecache v0.0.0-20160911033111-cfcb2f1abfee // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/otel v1.11.1 // indirect
 	go.opentelemetry.io/otel/trace v1.11.1 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
@@ -217,17 +218,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
-)
-
-require (
-	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1
-	github.com/fatih/color v1.13.0
-	github.com/gin-gonic/gin v1.8.1
-	github.com/tklauser/go-sysconf v0.3.10 // indirect
-	github.com/urfave/cli/v2 v2.16.3
-)
-
-replace (
-	github.com/filecoin-project/filecoin-ffi => ./extern/filecoin-ffi
-	github.com/zondax/hid v0.9.0 => /Users/zouwenbin/zou/work/hid
 )

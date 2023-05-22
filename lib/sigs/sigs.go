@@ -6,7 +6,6 @@ import (
 
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/crypto"
-	"go.opencensus.io/trace"
 	"golang.org/x/xerrors"
 
 	"github.com/filecoin-project/lotus/chain/types"
@@ -69,9 +68,6 @@ func ToPublic(sigType crypto.SigType, pk []byte) ([]byte, error) {
 }
 
 func CheckBlockSignature(ctx context.Context, blk *types.BlockHeader, worker address.Address) error {
-	_, span := trace.StartSpan(ctx, "checkBlockSignature")
-	defer span.End()
-
 	if blk.IsValidated() {
 		return nil
 	}
