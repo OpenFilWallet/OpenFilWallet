@@ -5,8 +5,8 @@ import (
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	actorstypes "github.com/filecoin-project/go-state-types/actors"
-	multisig11 "github.com/filecoin-project/go-state-types/builtin/v11/multisig"
-	init8 "github.com/filecoin-project/go-state-types/builtin/v9/init"
+	init12 "github.com/filecoin-project/go-state-types/builtin/v12/init"
+	multisig12 "github.com/filecoin-project/go-state-types/builtin/v12/multisig"
 	"github.com/filecoin-project/go-state-types/manifest"
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/power"
@@ -64,7 +64,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	constructorParams := multisig11.ConstructorParams{
+	constructorParams := multisig12.ConstructorParams{
 		Signers:               []address.Address{testAddr},
 		NumApprovalsThreshold: 3,
 		UnlockDuration:        abi.ChainEpoch(10000),
@@ -80,7 +80,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.True(t, ok)
 
 	// new actors are created by invoking 'exec' on the init actor with the constructor params
-	execParams := &init8.ExecParams{
+	execParams := &init12.ExecParams{
 		CodeCID:           code,
 		ConstructorParams: enc,
 	}
@@ -90,7 +90,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 
 	serializedSlice = append(serializedSlice, sp)
 
-	proposeParams := multisig11.ProposeParams{
+	proposeParams := multisig12.ProposeParams{
 		To:     testAddr,
 		Value:  abi.NewTokenAmount(1000),
 		Method: abi.MethodNum(1),
@@ -102,8 +102,8 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	txnIDParams := multisig11.TxnIDParams{
-		ID:           multisig11.TxnID(1),
+	txnIDParams := multisig12.TxnIDParams{
+		ID:           multisig12.TxnID(1),
 		ProposalHash: []byte("test hash"),
 	}
 	paramsSlice = append(paramsSlice, &txnIDParams)
@@ -112,7 +112,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	addSignerParams := multisig11.AddSignerParams{
+	addSignerParams := multisig12.AddSignerParams{
 		Signer:   testAddr,
 		Increase: true,
 	}
@@ -122,7 +122,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	removeSignerParams := multisig11.RemoveSignerParams{
+	removeSignerParams := multisig12.RemoveSignerParams{
 		Signer:   testAddr,
 		Decrease: true,
 	}
@@ -132,7 +132,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	swapSignerParams := multisig11.SwapSignerParams{
+	swapSignerParams := multisig12.SwapSignerParams{
 		From: testAddr,
 		To:   testAddr,
 	}
@@ -142,7 +142,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	changeNumApprovalsThresholdParams := multisig11.ChangeNumApprovalsThresholdParams{
+	changeNumApprovalsThresholdParams := multisig12.ChangeNumApprovalsThresholdParams{
 		NewThreshold: 5,
 	}
 	paramsSlice = append(paramsSlice, &changeNumApprovalsThresholdParams)
@@ -151,7 +151,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	lockBalanceParams := multisig11.LockBalanceParams{
+	lockBalanceParams := multisig12.LockBalanceParams{
 		StartEpoch:     abi.ChainEpoch(10000),
 		UnlockDuration: abi.ChainEpoch(10000),
 		Amount:         abi.NewTokenAmount(10000),
@@ -223,7 +223,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	constructorParams := multisig11.ConstructorParams{
+	constructorParams := multisig12.ConstructorParams{
 		Signers:               []address.Address{testAddr},
 		NumApprovalsThreshold: 3,
 		UnlockDuration:        abi.ChainEpoch(10000),
@@ -240,7 +240,7 @@ func TestEncodeMessage(t *testing.T) {
 	}
 
 	// new actors are created by invoking 'exec' on the init actor with the constructor params
-	execParams := &init8.ExecParams{
+	execParams := &init12.ExecParams{
 		CodeCID:           code,
 		ConstructorParams: enc,
 	}
@@ -249,7 +249,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	proposeParams := multisig11.ProposeParams{
+	proposeParams := multisig12.ProposeParams{
 		To:     testAddr,
 		Value:  abi.NewTokenAmount(1000),
 		Method: abi.MethodNum(1),
@@ -261,8 +261,8 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	txnIDParams := multisig11.TxnIDParams{
-		ID:           multisig11.TxnID(1),
+	txnIDParams := multisig12.TxnIDParams{
+		ID:           multisig12.TxnID(1),
 		ProposalHash: []byte("test hash"),
 	}
 	paramsSlice = append(paramsSlice, &txnIDParams)
@@ -271,7 +271,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	addSignerParams := multisig11.AddSignerParams{
+	addSignerParams := multisig12.AddSignerParams{
 		Signer:   testAddr,
 		Increase: true,
 	}
@@ -281,7 +281,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	removeSignerParams := multisig11.RemoveSignerParams{
+	removeSignerParams := multisig12.RemoveSignerParams{
 		Signer:   testAddr,
 		Decrease: true,
 	}
@@ -291,7 +291,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	swapSignerParams := multisig11.SwapSignerParams{
+	swapSignerParams := multisig12.SwapSignerParams{
 		From: testAddr,
 		To:   testAddr,
 	}
@@ -301,7 +301,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	changeNumApprovalsThresholdParams := multisig11.ChangeNumApprovalsThresholdParams{
+	changeNumApprovalsThresholdParams := multisig12.ChangeNumApprovalsThresholdParams{
 		NewThreshold: 5,
 	}
 	paramsSlice = append(paramsSlice, &changeNumApprovalsThresholdParams)
@@ -310,7 +310,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	lockBalanceParams := multisig11.LockBalanceParams{
+	lockBalanceParams := multisig12.LockBalanceParams{
 		StartEpoch:     abi.ChainEpoch(10000),
 		UnlockDuration: abi.ChainEpoch(10000),
 		Amount:         abi.NewTokenAmount(10000),

@@ -13,7 +13,7 @@ import (
 	"github.com/filecoin-project/lotus/blockstore"
 	"github.com/filecoin-project/lotus/chain/actors/adt"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/multisig"
-	"github.com/filecoin-project/lotus/chain/consensus/filcns"
+	"github.com/filecoin-project/lotus/chain/consensus"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/gin-gonic/gin"
 	cbor "github.com/ipfs/go-ipld-cbor"
@@ -382,7 +382,7 @@ func (w *Wallet) MsigInspect(c *gin.Context) {
 					})
 				}
 			} else {
-				method := filcns.NewActorRegistry().Methods[targAct.Code][tx.Method]
+				method := consensus.NewActorRegistry().Methods[targAct.Code][tx.Method]
 
 				if tx.Method != 0 {
 					ptyp := reflect.New(method.Params.Elem()).Interface().(cbg.CBORUnmarshaler)
