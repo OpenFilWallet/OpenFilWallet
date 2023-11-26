@@ -8,11 +8,11 @@ import (
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/go-state-types/big"
 	"github.com/filecoin-project/go-state-types/builtin"
-	"github.com/filecoin-project/go-state-types/builtin/v9/miner"
+	miner12 "github.com/filecoin-project/go-state-types/builtin/v12/miner"
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/types"
-	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
+	specsminer8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
 	logging "github.com/ipfs/go-log/v2"
 	"golang.org/x/xerrors"
 	"strconv"
@@ -68,7 +68,7 @@ func NewTransferMessage(node api.FullNode, baseParams BaseParams, from, to strin
 	return msg, nil
 }
 
-func NewWithdrawMessage(node api.FullNode, baseParams BaseParams, minerId string, amount string) (*types.Message, *miner8.WithdrawBalanceParams, error) {
+func NewWithdrawMessage(node api.FullNode, baseParams BaseParams, minerId string, amount string) (*types.Message, *specsminer8.WithdrawBalanceParams, error) {
 	minerAddr, err := address.NewFromString(minerId)
 	if err != nil {
 		return nil, nil, err
@@ -95,7 +95,7 @@ func NewWithdrawMessage(node api.FullNode, baseParams BaseParams, minerId string
 		value = types.FIL(available)
 	}
 
-	params := &miner8.WithdrawBalanceParams{
+	params := &specsminer8.WithdrawBalanceParams{
 		AmountRequested: abi.TokenAmount(value),
 	}
 
@@ -200,7 +200,7 @@ func NewChangeOwnerMessage(node api.FullNode, baseParams BaseParams, minerId, ne
 }
 
 // NewChangeWorkerMessage ChangeWorker and Change Control
-func NewChangeWorkerMessage(node api.FullNode, baseParams BaseParams, minerId string, worker string, controlAddrs ...string) (*types.Message, *miner8.ChangeWorkerAddressParams, error) {
+func NewChangeWorkerMessage(node api.FullNode, baseParams BaseParams, minerId string, worker string, controlAddrs ...string) (*types.Message, *specsminer8.ChangeWorkerAddressParams, error) {
 	minerAddr, err := address.NewFromString(minerId)
 	if err != nil {
 		return nil, nil, err
@@ -263,7 +263,7 @@ func NewChangeWorkerMessage(node api.FullNode, baseParams BaseParams, minerId st
 		newWorker = newAddr
 	}
 
-	params := &miner8.ChangeWorkerAddressParams{
+	params := &specsminer8.ChangeWorkerAddressParams{
 		NewWorker:       newWorker,
 		NewControlAddrs: newControlAddrs,
 	}
@@ -349,7 +349,7 @@ func NewConfirmUpdateWorkerMessage(node api.FullNode, baseParams BaseParams, min
 	return msg, nil
 }
 
-func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams, minerId string, beneficiaryAddress, quota, expiration string, overwritePendingChange bool) (*types.Message, *miner.ChangeBeneficiaryParams, error) {
+func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams, minerId string, beneficiaryAddress, quota, expiration string, overwritePendingChange bool) (*types.Message, *miner12.ChangeBeneficiaryParams, error) {
 	ctx := context.Background()
 
 	na, err := address.NewFromString(beneficiaryAddress)
@@ -390,7 +390,7 @@ func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams
 		return nil, nil, fmt.Errorf("WARNING: replacing Pending Beneficiary Term of: Beneficiary: %s, Quota: %s, Expiration Epoch:%d", mi.PendingBeneficiaryTerm.NewBeneficiary.String(), mi.PendingBeneficiaryTerm.NewQuota.String(), mi.PendingBeneficiaryTerm.NewExpiration)
 	}
 
-	params := &miner.ChangeBeneficiaryParams{
+	params := &miner12.ChangeBeneficiaryParams{
 		NewBeneficiary: newAddr,
 		NewQuota:       abi.TokenAmount(quotaParam),
 		NewExpiration:  abi.ChainEpoch(expirationParam),
@@ -421,7 +421,7 @@ func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams
 	return msg, params, nil
 }
 
-func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, minerId string) (*types.Message, *miner.ChangeBeneficiaryParams, error) {
+func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, minerId string) (*types.Message, *miner12.ChangeBeneficiaryParams, error) {
 	ctx := context.Background()
 
 	minerAddr, err := address.NewFromString(minerId)
@@ -445,7 +445,7 @@ func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, miner
 		fromAddr = mi.Beneficiary
 	}
 
-	params := &miner.ChangeBeneficiaryParams{
+	params := &miner12.ChangeBeneficiaryParams{
 		NewBeneficiary: mi.PendingBeneficiaryTerm.NewBeneficiary,
 		NewQuota:       mi.PendingBeneficiaryTerm.NewQuota,
 		NewExpiration:  mi.PendingBeneficiaryTerm.NewExpiration,

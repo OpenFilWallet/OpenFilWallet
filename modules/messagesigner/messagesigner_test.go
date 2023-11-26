@@ -12,7 +12,7 @@ import (
 	"github.com/filecoin-project/lotus/chain/actors/builtin/power"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/lotus/chain/wallet/key"
-	power8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/power"
+	specspower8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/power"
 	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
@@ -31,7 +31,7 @@ func TestSignMessage(t *testing.T) {
 	require.NoError(t, signer.RegisterSigner(*nk))
 	require.Error(t, fmt.Errorf("wallet: %s already exist", nk.Address.String()), signer.RegisterSigner(*nk))
 
-	param := power8.CreateMinerParams{
+	param := specspower8.CreateMinerParams{
 		Owner:               nk.Address,
 		Worker:              workerAddr,
 		WindowPoStProofType: abi.RegisteredPoStProof_StackedDrgWindow64GiBV1,

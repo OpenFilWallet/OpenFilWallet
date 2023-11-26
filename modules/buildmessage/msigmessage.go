@@ -8,15 +8,15 @@ import (
 	actorstypes "github.com/filecoin-project/go-state-types/actors"
 	"github.com/filecoin-project/go-state-types/big"
 	"github.com/filecoin-project/go-state-types/builtin"
+	miner12 "github.com/filecoin-project/go-state-types/builtin/v12/miner"
 	multisig12 "github.com/filecoin-project/go-state-types/builtin/v12/multisig"
-	"github.com/filecoin-project/go-state-types/builtin/v9/miner"
 	"github.com/filecoin-project/go-state-types/network"
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors"
 	lotusbuiltin "github.com/filecoin-project/lotus/chain/actors/builtin"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/multisig"
 	"github.com/filecoin-project/lotus/chain/types"
-	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
+	specsminer8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
 	"github.com/minio/blake2b-simd"
 	"golang.org/x/xerrors"
 	"strconv"
@@ -886,7 +886,7 @@ func (m *Msiger) NewMsigWithdrawProposeMessage(baseParams BaseParams, msigAddres
 		return nil, nil, err
 	}
 
-	sp, err := actors.SerializeParams(&miner8.WithdrawBalanceParams{
+	sp, err := actors.SerializeParams(&specsminer8.WithdrawBalanceParams{
 		AmountRequested: abi.TokenAmount(val),
 	})
 
@@ -929,7 +929,7 @@ func (m *Msiger) NewMsigWithdrawApproveMessage(baseParams BaseParams, msigAddres
 		return nil, nil, err
 	}
 
-	sp, err := actors.SerializeParams(&miner8.WithdrawBalanceParams{
+	sp, err := actors.SerializeParams(&specsminer8.WithdrawBalanceParams{
 		AmountRequested: abi.TokenAmount(val),
 	})
 
@@ -994,7 +994,7 @@ func (m *Msiger) NewMsigChangeWorkerProposeMessage(baseParams BaseParams, msigAd
 		}
 	}
 
-	cwp := &miner8.ChangeWorkerAddressParams{
+	cwp := &specsminer8.ChangeWorkerAddressParams{
 		NewWorker:       newAddr,
 		NewControlAddrs: mi.ControlAddresses,
 	}
@@ -1075,7 +1075,7 @@ func (m *Msiger) NewMsigChangeWorkerApproveMessage(baseParams BaseParams, msigAd
 		}
 	}
 
-	cwp := &miner8.ChangeWorkerAddressParams{
+	cwp := &specsminer8.ChangeWorkerAddressParams{
 		NewWorker:       newAddr,
 		NewControlAddrs: mi.ControlAddresses,
 	}
@@ -1262,7 +1262,7 @@ func (m *Msiger) NewMsigSetControlProposeMessage(baseParams BaseParams, msigAddr
 		toSet = append(toSet, ka)
 	}
 
-	cwp := &miner8.ChangeWorkerAddressParams{
+	cwp := &specsminer8.ChangeWorkerAddressParams{
 		NewWorker:       mi.Worker,
 		NewControlAddrs: toSet,
 	}
@@ -1338,7 +1338,7 @@ func (m *Msiger) NewMsigSetControlApproveMessage(baseParams BaseParams, msigAddr
 		toSet = append(toSet, ka)
 	}
 
-	cwp := &miner8.ChangeWorkerAddressParams{
+	cwp := &specsminer8.ChangeWorkerAddressParams{
 		NewWorker:       mi.Worker,
 		NewControlAddrs: toSet,
 	}
@@ -1413,7 +1413,7 @@ func (m *Msiger) NewMsigChangeBeneficiaryProposeMessage(baseParams BaseParams, m
 		return nil, nil, fmt.Errorf("WARNING: replacing Pending Beneficiary Term of: Beneficiary: %s, Quota: %s, Expiration Epoch:%d", mi.PendingBeneficiaryTerm.NewBeneficiary.String(), mi.PendingBeneficiaryTerm.NewQuota.String(), mi.PendingBeneficiaryTerm.NewExpiration)
 	}
 
-	params := &miner.ChangeBeneficiaryParams{
+	params := &miner12.ChangeBeneficiaryParams{
 		NewBeneficiary: newAddr,
 		NewQuota:       abi.TokenAmount(quotaParam),
 		NewExpiration:  abi.ChainEpoch(expirationParam),
@@ -1485,7 +1485,7 @@ func (m *Msiger) NewMsigChangeBeneficiaryApproveMessage(baseParams BaseParams, m
 		return nil, nil, err
 	}
 
-	params := &miner.ChangeBeneficiaryParams{
+	params := &miner12.ChangeBeneficiaryParams{
 		NewBeneficiary: newAddr,
 		NewQuota:       abi.TokenAmount(quotaParam),
 		NewExpiration:  abi.ChainEpoch(expirationParam),
@@ -1536,7 +1536,7 @@ func (m *Msiger) NewMsigConfirmChangeBeneficiaryProposeMessage(baseParams BasePa
 		return nil, nil, fmt.Errorf("no pending beneficiary term found for miner %s", minerAddr)
 	}
 
-	params := &miner.ChangeBeneficiaryParams{
+	params := &miner12.ChangeBeneficiaryParams{
 		NewBeneficiary: mi.PendingBeneficiaryTerm.NewBeneficiary,
 		NewQuota:       mi.PendingBeneficiaryTerm.NewQuota,
 		NewExpiration:  mi.PendingBeneficiaryTerm.NewExpiration,
@@ -1597,7 +1597,7 @@ func (m *Msiger) NewMsigConfirmChangeBeneficiaryApproveMessage(baseParams BasePa
 		return nil, nil, fmt.Errorf("no pending beneficiary term found for miner %s", minerAddr)
 	}
 
-	params := &miner.ChangeBeneficiaryParams{
+	params := &miner12.ChangeBeneficiaryParams{
 		NewBeneficiary: mi.PendingBeneficiaryTerm.NewBeneficiary,
 		NewQuota:       mi.PendingBeneficiaryTerm.NewQuota,
 		NewExpiration:  mi.PendingBeneficiaryTerm.NewExpiration,

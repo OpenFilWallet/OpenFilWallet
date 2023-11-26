@@ -11,8 +11,8 @@ import (
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/power"
 	"github.com/filecoin-project/lotus/chain/types"
-	miner8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
-	power8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/power"
+	specsminer8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/miner"
+	specspower8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/power"
 	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
@@ -24,7 +24,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	var paramsSlice = make([]interface{}, 0)
 	var serializedSlice = make([][]byte, 0)
 
-	createMinerParams := power8.CreateMinerParams{
+	createMinerParams := specspower8.CreateMinerParams{
 		Owner:               testAddr,
 		Worker:              testAddr,
 		WindowPoStProofType: abi.RegisteredPoStProof_StackedDrgWindow64GiBV1,
@@ -38,7 +38,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	withdrawBalanceParams := miner8.WithdrawBalanceParams{
+	withdrawBalanceParams := specsminer8.WithdrawBalanceParams{
 		AmountRequested: abi.NewTokenAmount(10000),
 	}
 
@@ -54,7 +54,7 @@ func TestEncodeParamsAndDecodeParams(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	changeWorkerAddressParams := miner8.ChangeWorkerAddressParams{
+	changeWorkerAddressParams := specsminer8.ChangeWorkerAddressParams{
 		NewWorker:       testAddr,
 		NewControlAddrs: []address.Address{testAddr},
 	}
@@ -183,7 +183,7 @@ func TestEncodeMessage(t *testing.T) {
 	var paramsSlice = make([]interface{}, 0)
 	var serializedSlice = make([][]byte, 0)
 
-	createMinerParams := power8.CreateMinerParams{
+	createMinerParams := specspower8.CreateMinerParams{
 		Owner:               testAddr,
 		Worker:              testAddr,
 		WindowPoStProofType: abi.RegisteredPoStProof_StackedDrgWindow64GiBV1,
@@ -197,7 +197,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	withdrawBalanceParams := miner8.WithdrawBalanceParams{
+	withdrawBalanceParams := specsminer8.WithdrawBalanceParams{
 		AmountRequested: abi.NewTokenAmount(10000),
 	}
 
@@ -213,7 +213,7 @@ func TestEncodeMessage(t *testing.T) {
 	require.NoError(t, err)
 	serializedSlice = append(serializedSlice, sp)
 
-	changeWorkerAddressParams := miner8.ChangeWorkerAddressParams{
+	changeWorkerAddressParams := specsminer8.ChangeWorkerAddressParams{
 		NewWorker:       testAddr,
 		NewControlAddrs: []address.Address{testAddr},
 	}
