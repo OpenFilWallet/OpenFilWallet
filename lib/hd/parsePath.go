@@ -30,7 +30,7 @@ var LegacyLedgerBaseDerivationPath = DerivationPath{0x80000000 + 44, 0x80000000 
 // The BIP-32 spec https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 // defines derivation paths to be of the form:
 //
-//   m / purpose' / coin_type' / account' / change / address_index
+//	m / purpose' / coin_type' / account' / change / address_index
 //
 // The BIP-44 spec https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 // defines that the `purpose` be 44' (or 0x8000002C) for crypto currencies, and
@@ -135,7 +135,12 @@ func (path *DerivationPath) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// FILPath https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+// BIP-0044 https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+
 func FILPath(index uint64) string {
 	return fmt.Sprintf("m/44'/461'/0'/0/%d", index)
+}
+
+func EthPath(index uint64) string {
+	return fmt.Sprintf("m/44'/60'/0'/0/%d", index)
 }
