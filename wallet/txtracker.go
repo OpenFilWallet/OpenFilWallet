@@ -11,7 +11,7 @@ import (
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/stmgr"
 	"github.com/filecoin-project/lotus/chain/types"
-	init8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/init"
+	specsinit8 "github.com/filecoin-project/specs-actors/v8/actors/builtin/init"
 	"github.com/ipfs/go-cid"
 	"time"
 )
@@ -105,7 +105,7 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 			}
 
 			if msg.ParamName == "ConstructorParams" { // create msig tx
-				var execreturn init8.ExecReturn
+				var execreturn specsinit8.ExecReturn
 				if err := execreturn.UnmarshalCBOR(bytes.NewReader(searchRes.Receipt.Return)); err != nil {
 					log.Warnw("txTracker: ConstructorParams: UnmarshalCBOR", "cid", msg.TxCid)
 					recordFailedTx(err)
