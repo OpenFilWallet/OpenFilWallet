@@ -154,6 +154,7 @@ func UpdatePrivateKey(walletDB datastore.WalletDB, oldPasswordKey, newPasswordKe
 			PriKey:  encryptedPrivateKey,
 			Address: nk.Address.String(),
 			KeyHash: crypto.Hash256(encryptedPrivateKey),
+			Path:    pri.Path,
 		})
 
 		if err != nil {
