@@ -20,11 +20,16 @@ func (w *Wallet) SignMsg(c *gin.Context) {
 		return
 	}
 
-	msg, err := hex.DecodeString(param.HexMessage)
-	if err != nil {
-		log.Warnw("SignMsg: DecodeString", "err", err.Error())
-		ReturnError(c, NewError(500, err.Error()))
-		return
+	var msg []byte
+	if param.From[:2] == "0x" { // eth
+		msg = []byte(param.HexMessage)
+	} else {
+		msg, err = hex.DecodeString(param.HexMessage)
+		if err != nil {
+			log.Warnw("SignMsg: DecodeString", "err", err.Error())
+			ReturnError(c, NewError(500, err.Error()))
+			return
+		}
 	}
 
 	sign, err := w.signer.Sign(param.From, msg)
@@ -34,11 +39,9 @@ func (w *Wallet) SignMsg(c *gin.Context) {
 		return
 	}
 
-	sigBytes := append([]byte{byte(sign.Type)}, sign.Data...)
-
 	ReturnOk(c, client.Response{
 		Code:    200,
-		Message: hex.EncodeToString(sigBytes),
+		Message: hex.EncodeToString(sign),
 	})
 }
 
