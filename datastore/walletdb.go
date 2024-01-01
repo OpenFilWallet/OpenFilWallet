@@ -6,23 +6,27 @@ import (
 )
 
 type WalletDB struct {
-	hStore *HistoryStore
-	kStore *KeyStore
-	nStore *NodeStore
-	sStore *ScryptStore
+	hStore  *HistoryStore
+	ekStore *EthKeyStore
+	kStore  *KeyStore
+	nStore  *NodeStore
+	sStore  *ScryptStore
 }
 
 func NewWalletDB(ds datastore.Batching) WalletDB {
 	walletDB := WalletDB{
-		hStore: newHistoryStore(ds),
-		kStore: newKeyStore(ds),
-		nStore: newNodeStore(ds),
-		sStore: newScryptStore(ds),
+		hStore:  newHistoryStore(ds),
+		ekStore: newEthKeyStore(ds),
+		kStore:  newKeyStore(ds),
+		nStore:  newNodeStore(ds),
+		sStore:  newScryptStore(ds),
 	}
 
 	walletLists, _ := walletDB.WalletList()
-	if len(walletLists) != 0 {
-		for _, wallet := range walletLists {
+	ethWalletLists, _ := walletDB.EthWalletList()
+	lists := append(walletLists, ethWalletLists...)
+	if len(lists) != 0 {
+		for _, wallet := range lists {
 			walletDB.hStore.setupRecorder(wallet.Address)
 		}
 	}
@@ -260,4 +264,56 @@ func (db *WalletDB) MsigWalletList() ([]MsigWallet, error) {
 
 func (db *WalletDB) DeleteMsig(addr string) error {
 	return db.kStore.deleteMsig(addr)
+}
+
+func (db *WalletDB) MnemonicEthIndex() (uint64, error) {
+	return db.ekStore.index()
+}
+
+func (db *WalletDB) NextMnemonicEthIndex() (uint64, error) {
+	return db.ekStore.nextIndex()
+}
+
+func (db *WalletDB) GetEthPrivate(addr string) (*PrivateWallet, error) {
+	return db.ekStore.getP(addr)
+}
+
+func (db *WalletDB) SetEthPrivate(priWallet *PrivateWallet) error {
+	if priWallet == nil {
+		return errors.New("priWallet is not allowed to be nil")
+	}
+
+	if priWallet.Address == "" {
+		return errors.New("address is not allowed to be empty")
+	}
+
+	if priWallet.Address[:2] != "0x" {
+		return errors.New("address format error")
+	}
+
+	return db.ekStore.putP(priWallet, false)
+}
+
+func (db *WalletDB) UpdateEthPrivate(priWallet *PrivateWallet) error {
+	if priWallet == nil {
+		return errors.New("priWallet is not allowed to be nil")
+	}
+
+	if priWallet.Address == "" {
+		return errors.New("address is not allowed to be empty")
+	}
+
+	if priWallet.Address[:2] != "0x" {
+		return errors.New("address format error")
+	}
+
+	return db.ekStore.putP(priWallet, true)
+}
+
+func (db *WalletDB) EthWalletList() ([]PrivateWallet, error) {
+	return db.ekStore.listP()
+}
+
+func (db *WalletDB) DeleteEthPrivate(addr string) error {
+	return db.ekStore.deleteP(addr)
 }
