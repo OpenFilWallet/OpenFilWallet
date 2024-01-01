@@ -117,6 +117,7 @@ func (w *Wallet) WalletList(c *gin.Context) {
 				data = append(data, client.WalletListInfo{
 					WalletType:    key,
 					WalletAddress: wallet.Address,
+					FilAddress:    wallet.Address,
 					WalletId:      walletId,
 					WalletPath:    wallet.Path,
 					Balance:       types.FIL(amount).String(),

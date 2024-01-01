@@ -38,6 +38,11 @@ func (w *Wallet) NewRouter() *gin.Engine {
 
 	r.GET("/balance", w.Balance)
 
+	r.POST("/eth/wallet/create", w.EthWalletCreate)
+	r.GET("/eth/wallet/list", w.EthWalletList)
+
+	r.GET("/eth/balance", w.EthBalance)
+
 	r.POST("/transfer", w.Transfer)
 
 	r.POST("/send", w.Send)

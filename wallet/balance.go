@@ -35,7 +35,8 @@ func (w *Wallet) Balance(c *gin.Context) {
 	}
 
 	ReturnOk(c, client.BalanceInfo{
-		Address: addrStr,
-		Amount:  types.FIL(amount).String(),
+		Address:    addrStr,
+		FilAddress: addrStr,
+		Amount:     types.FIL(amount).String(),
 	})
 }

@@ -63,5 +63,16 @@ func NewWallet(offline bool, masterPassword string, db datastore.WalletDB, close
 		return nil, err
 	}
 
+	ethKeys, err := account.LoadEthPrivateKeys(db, crypto.GenerateEncryptKey([]byte(masterPassword)))
+	if err != nil {
+		log.Warnw("NewWallet: LoadEthPrivateKeys", "err", err)
+		return nil, err
+	}
+
+	err = w.signer.RegisterEthSigner(ethKeys...)
+	if err != nil {
+		return nil, err
+	}
+
 	return w, nil
 }
