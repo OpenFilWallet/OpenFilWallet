@@ -44,6 +44,7 @@ func main() {
 			runCmd,
 			mnemonicCmd,
 			walletCmd,
+			ethWalletCmd,
 			passwordCmd,
 		},
 	}

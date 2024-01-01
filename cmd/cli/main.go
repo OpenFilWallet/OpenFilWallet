@@ -41,6 +41,7 @@ func main() {
 			sendCmd,
 			signCmd,
 			walletCmd,
+			fevmWalletCmd,
 			transferCmd,
 			minerCmd,
 			multisigCmd,

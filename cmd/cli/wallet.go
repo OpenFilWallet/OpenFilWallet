@@ -73,7 +73,7 @@ var walletBalanceCmd = &cli.Command{
 			return err
 		}
 
-		fmt.Printf("%s %s\n", bi.Address, bi.Amount)
+		fmt.Printf("Address:%s \nBalance:%s\n", bi.Address, bi.Amount)
 		return nil
 	},
 }
@@ -108,15 +108,13 @@ var walletListCmd = &cli.Command{
 			fmt.Fprintf(w, "ID\tWallet Type\tAddress\tPath\n")
 		}
 
-		i := 0
 		for _, wallet := range walletInfo {
 			if balance {
-				fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n", i, wallet.WalletType, wallet.WalletAddress, wallet.WalletPath, wallet.Balance)
+				fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", wallet.WalletId, wallet.WalletType, wallet.WalletAddress, wallet.WalletPath, wallet.Balance)
 				continue
 			}
 
-			fmt.Fprintf(w, "%d\t%s\t%s\t%s\n", i, wallet.WalletType, wallet.WalletAddress, wallet.WalletPath)
-			i++
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", wallet.WalletId, wallet.WalletType, wallet.WalletAddress, wallet.WalletPath)
 		}
 
 		if err := w.Flush(); err != nil {

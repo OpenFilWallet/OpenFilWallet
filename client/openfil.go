@@ -257,6 +257,45 @@ func (api *OpenFilAPI) NodeBest() (*NodeInfo, error) {
 	return &ni, nil
 }
 
+func (api *OpenFilAPI) FevmWalletCreate(index int) (*CreateWalletResponse, error) {
+	req := CreateWalletRequest{
+		Index: index,
+	}
+
+	res, err := PostRequest(api.endpoint, "/eth/wallet/create", api.token, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var r CreateWalletResponse
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+func (api *OpenFilAPI) FevmWalletList(balance bool) ([]WalletListInfo, error) {
+	params := make(map[string]string, 0)
+	if balance {
+		params["balance"] = "true"
+	}
+
+	res, err := GetRequest(api.endpoint, "/eth/wallet/list", api.token, params)
+	if err != nil {
+		return nil, err
+	}
+
+	var r = make([]WalletListInfo, 0)
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
 func (api *OpenFilAPI) WalletCreate(index int) (*CreateWalletResponse, error) {
 	req := CreateWalletRequest{
 		Index: index,
@@ -314,6 +353,21 @@ func (api *OpenFilAPI) MsigWalletList(balance bool) ([]MsigWalletListInfo, error
 	}
 
 	return r, nil
+}
+
+func (api *OpenFilAPI) FevmBalance(addr string) (*BalanceInfo, error) {
+	res, err := GetRequest(api.endpoint, "/eth/balance", api.token, map[string]string{"address": addr})
+	if err != nil {
+		return nil, err
+	}
+
+	var r BalanceInfo
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &r, nil
 }
 
 func (api *OpenFilAPI) Balance(addr string) (*BalanceInfo, error) {

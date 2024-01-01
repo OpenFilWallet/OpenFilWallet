@@ -30,6 +30,7 @@ type NodeInfo struct {
 type WalletListInfo struct {
 	WalletType    string `json:"type"`
 	WalletAddress string `json:"address"`
+	FilAddress    string `json:"fil_address"`
 	WalletId      string `json:"id"`
 	WalletPath    string `json:"path"`
 	Balance       string `json:"balance"`
@@ -119,8 +120,9 @@ type SingRequest struct {
 }
 
 type BalanceInfo struct {
-	Address string `json:"address"`
-	Amount  string `json:"amount"`
+	Address    string `json:"address"`
+	FilAddress string `json:"fil_address"`
+	Amount     string `json:"amount"`
 }
 
 type Meta struct {
