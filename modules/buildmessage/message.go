@@ -8,7 +8,7 @@ import (
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/go-state-types/big"
 	"github.com/filecoin-project/go-state-types/builtin"
-	miner12 "github.com/filecoin-project/go-state-types/builtin/v12/miner"
+	miner13 "github.com/filecoin-project/go-state-types/builtin/v13/miner"
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/actors"
 	"github.com/filecoin-project/lotus/chain/types"
@@ -349,7 +349,7 @@ func NewConfirmUpdateWorkerMessage(node api.FullNode, baseParams BaseParams, min
 	return msg, nil
 }
 
-func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams, minerId string, beneficiaryAddress, quota, expiration string, overwritePendingChange bool) (*types.Message, *miner12.ChangeBeneficiaryParams, error) {
+func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams, minerId string, beneficiaryAddress, quota, expiration string, overwritePendingChange bool) (*types.Message, *miner13.ChangeBeneficiaryParams, error) {
 	ctx := context.Background()
 
 	na, err := address.NewFromString(beneficiaryAddress)
@@ -390,7 +390,7 @@ func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams
 		return nil, nil, fmt.Errorf("WARNING: replacing Pending Beneficiary Term of: Beneficiary: %s, Quota: %s, Expiration Epoch:%d", mi.PendingBeneficiaryTerm.NewBeneficiary.String(), mi.PendingBeneficiaryTerm.NewQuota.String(), mi.PendingBeneficiaryTerm.NewExpiration)
 	}
 
-	params := &miner12.ChangeBeneficiaryParams{
+	params := &miner13.ChangeBeneficiaryParams{
 		NewBeneficiary: newAddr,
 		NewQuota:       abi.TokenAmount(quotaParam),
 		NewExpiration:  abi.ChainEpoch(expirationParam),
@@ -421,7 +421,7 @@ func NewChangeBeneficiaryProposeMessage(node api.FullNode, baseParams BaseParams
 	return msg, params, nil
 }
 
-func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, minerId string) (*types.Message, *miner12.ChangeBeneficiaryParams, error) {
+func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, minerId string) (*types.Message, *miner13.ChangeBeneficiaryParams, error) {
 	ctx := context.Background()
 
 	minerAddr, err := address.NewFromString(minerId)
@@ -445,7 +445,7 @@ func NewConfirmChangeBeneficiary(node api.FullNode, baseParams BaseParams, miner
 		fromAddr = mi.Beneficiary
 	}
 
-	params := &miner12.ChangeBeneficiaryParams{
+	params := &miner13.ChangeBeneficiaryParams{
 		NewBeneficiary: mi.PendingBeneficiaryTerm.NewBeneficiary,
 		NewQuota:       mi.PendingBeneficiaryTerm.NewQuota,
 		NewExpiration:  mi.PendingBeneficiaryTerm.NewExpiration,

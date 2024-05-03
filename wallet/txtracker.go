@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/OpenFilWallet/OpenFilWallet/client"
 	"github.com/OpenFilWallet/OpenFilWallet/datastore"
-	multisig12 "github.com/filecoin-project/go-state-types/builtin/v12/multisig"
+	multisig13 "github.com/filecoin-project/go-state-types/builtin/v13/multisig"
 	"github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/chain/stmgr"
 	"github.com/filecoin-project/lotus/chain/types"
@@ -113,7 +113,7 @@ func (tt *txTracker) monitor(msg *datastore.History) {
 				}
 
 				msig := execreturn.RobustAddress.String()
-				var p multisig12.ConstructorParams
+				var p multisig13.ConstructorParams
 				err = json.Unmarshal([]byte(msg.Params), &p)
 				if err != nil {
 					log.Warnw("txTracker: Unmarshal Msig ConstructorParams fail", "err", err.Error())
